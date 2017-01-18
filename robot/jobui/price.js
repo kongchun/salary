@@ -265,3 +265,22 @@ function bdGeo(name) {
 //         max:max
 //     }})
 // });
+// 
+
+// db.jobui_company.find({position:{$ne:null}}).forEach((it)=> { 
+//       var company = it.company;
+//       var total=0;
+//       var count = 0;
+//       db.jobui.find({company:company}).forEach((i)=>{
+//          total =i.average+total;
+//          count++;
+//       })
+//      var average = (parseInt(total/count));
+
+//       db.jobui_company.update({_id:ObjectId(it._id)},{
+//           $set:{
+//               average:average
+//           }
+//       })
+
+// });
