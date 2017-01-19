@@ -155,15 +155,15 @@ function loadGeo() {
 			position: null
 		}, {
 			company: 1,
-			url: 1
+			url: 1,
+			addr: 1
 		}).toArray();
 	}).then(function(data) {
 
 		return helper.iteratorArr(data, function(i) {
-			var name = (i.company)
-			return bdGeo(name).then(function(position) {
-				console.log(name, position)
-				console.log(i._id)
+			var name = (i.company);
+			var addr = (i.addr);
+			return bdGeo(addr).then(function(position) {
 				return db.collection.update({
 					_id: db.ObjectId(i._id)
 				}, {
@@ -171,7 +171,6 @@ function loadGeo() {
 						position: position
 					}
 				}).then(function() {
-
 					return data;
 				})
 			})
@@ -187,10 +186,11 @@ function loadGeo() {
 }
 
 
-
 function bdGeo(name) {
 	return map.loadPlaceAPI(name, "苏州").then(function(data) {
-		if (data.status == 0 && data.total > 0) {
+		console.log(data)
+		if (data.status == 0 && data.total >= 0 && data.results.length > 0) {
+
 			var position = data.results[0];
 			if (position.location) {
 				return position.location
@@ -204,18 +204,54 @@ function bdGeo(name) {
 	})
 }
 
-//TODO:....
-// pageGep("/company/11356685/")
 
-// function pageGep(url) {
-// 	var url = `http://www.jobui.com/${url}`;
-// 	return loader.getDOM(url).then(function($) {
-// 		var addr = $("dl.dlli.fs16 dd").first().text();
-// 		console.log(addr)
-// 	}).catch(function(e) {
-// 		console.log(e)
-// 	})
-// }
+//------------------------
+//loadAddr()
+
+function loadAddr() {
+	return db.open("jobui_company").then(function() {
+		return db.collection.find({
+			addr: null
+		}, {
+			company: 1,
+			url: 1
+		}).toArray();
+	}).then(function(data) {
+		return helper.iteratorArr(data, function(i) {
+			var url = (i.url)
+			return pageGep(url).then(function(addr) {
+				return db.collection.update({
+					_id: db.ObjectId(i._id)
+				}, {
+					$set: {
+						addr: addr
+					}
+				}).then(function() {
+					return data;
+				})
+			})
+		})
+	}).then(function(data) {
+		db.close();
+		console.log("success");
+	}).catch(function(e) {
+		db.close();
+		console.log(e);
+	})
+}
+//pageGep("/company/11356685/")
+function pageGep(url) {
+	var url = `http://www.jobui.com/${url}`;
+	console.log(url);
+	return loader.getDOM(url).then(function($) {
+		var addr = $("dl.dlli.fs16 dd").first().text();
+		addr = addr.replace("（", "(").split("(")[0]
+
+		return addr;
+	}).catch(function(e) {
+		console.log(e)
+	})
+}
 // 
 // 平均薪资
 // db.jobui.find({}).forEach((it)=> { 
@@ -284,3 +320,28 @@ function bdGeo(name) {
 //       })
 
 // });
+// 
+
+hotMap()
+
+function hotMap() {
+	return db.open("jobui_company").then(function() {
+		return db.collection.find({
+			position: {
+				$ne: null
+			},
+			average: {
+				$ne: 0
+			}
+		}).toArray();
+	}).then(function(data) {
+		db.close();
+		var arr = [];
+		data.forEach((it) => {
+			arr.push([it.position.lng, it.position.lat, it.fix / 1000])
+		});
+		console.log(JSON.stringify(arr))
+	}).catch(function(e) {
+		console.log(e);
+	})
+}
