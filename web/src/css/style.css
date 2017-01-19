@@ -21,3 +21,10 @@ a {
 	opacity: 0.9;
 }
 
+.navbar-toggle {
+    border-color: #ddd;
+}
+
+.navbar-toggle .icon-bar {
+    background-color: #888;
+}

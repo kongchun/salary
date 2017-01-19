@@ -1,6 +1,8 @@
 $(function() {
 	initSize();
 	ChartMap.init();
+
+
 })
 
 function initSize() {
@@ -58,7 +60,8 @@ var ChartMap = {
 				}
 			},
 			title: {
-				text: "苏州前端平均薪资",
+				text: "苏州前端平均薪资热力图",
+				subtext: "来源:招聘网站 | 作者:天堂龙 | 公众号:苏州前端",
 				left: 'center',
 				top: 11,
 				backgroundColor: "rgba(255,255,255,0.8)",
@@ -70,8 +73,8 @@ var ChartMap = {
 			visualMap: {
 				type: 'piecewise',
 				show: true,
-				bottom: '10',
-				left: "10",
+				bottom: 10,
+				left: 10,
 				orient: 'vertical',
 				backgroundColor: "rgba(255,255,255,0.8)",
 				min: 1000,
@@ -124,6 +127,7 @@ var ChartMap = {
 		});
 		map.addControl(top_left_navigation);
 		map.removeEventListener("click");
+
 		this.map = map;
 	}
 }
