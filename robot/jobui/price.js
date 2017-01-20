@@ -110,44 +110,124 @@ function parseHTML() {
 	})
 }
 
-//-----------------
-//findCompany()
+// 平均薪资
+// db.jobui.find({}).forEach((it)=> { 
+//       var price = it.price;
+//       var limit = 0;
+//       var max = 0;
+//       if(price.indexOf("万/月")>-1){
+//           var arr = price.replace("万/月","").split("-");
 
-function findCompany() {
-	return db.open("jobui").then(function() {
-		return db.collection.find({}, {
-			company: 1,
-			url: 1
-		}).toArray();
-	}).then(function(data) {
-		db.close();
-		var obj = {};
-		data.forEach(function(i) {
-			obj[i.company] = i.url;
-		})
-		var arr = [];
-		for (prop in obj) {
-			arr.push({
-				company: prop,
-				url: obj[prop]
-			});
-		}
-		return (arr)
-	}).then(function(data) {
-		return db.open("jobui_company").then(function() {
-			return db.collection.insertMany(data);
-		}).then(function() {
-			db.close();
-			return
-		})
-	}).catch(function(e) {
-		console.log(e)
-	})
-}
+//            limit = (parseFloat(arr[0])*10000);
+//            max = (parseFloat(arr[1])*10000);
+//       }else
+//      if(price.indexOf("千/月")>-1){
+//           var arr = price.replace("千/月","").split("-");
+//            limit = parseFloat(arr[0])*1000;
+//            max= parseFloat(arr[1])*1000;
+//       }else
+//       if(price.indexOf("元/月")>-1){
+//           var arr = price.replace("元/月","").split("-");
+//            limit = parseFloat(arr[0]);
+//            max=parseFloat(arr[1]);
+//       }else
+//       if(price.indexOf("/月")>-1){
+//           var arr = price.replace("/月","").split("-");
+//            limit = parseFloat(arr[0]);
+//            max=parseFloat(arr[1]);
+//       }else
+//       if(price.indexOf("万/年")>-1){
+//           var arr = price.replace("万/年","").split("-");
+//            limit = parseFloat(arr[0])*10000/12;
+//            max=parseFloat(arr[1])*10000/12;
+//       }
+
+//      var average = 0;
+//      if(max>0&&limit>0){
+//          average = (max+limit)/2;
+//      }
+//      if(max==0&&limit>0){
+//          average = limit;
+//      }
+//      if(limit==0&&max>0){
+//          average = max;
+//      }
+//     db.jobui.update({_id:ObjectId(it._id)},{$set:{
+//         average:average,
+//         limit:limit,
+//         max:max
+//     }})
+// });
+// 
+
+//-----------------
+// var data = db.jobui.group({"key":{"company":true,url:"true"},"initial":{total: 0,count:0},"reduce":(doc,prev)=> {
+//     if(doc.average>0){
+//         prev.count++;
+//         prev.total+=doc.average
+//     }
+// }})
+
+// db.jobui_company.insertMany(data);
+// db.jobui_company.find({}).forEach((it)=>{
+//     var average = parseFloat(it.total/it.count)
+//      db.jobui_company.update({_id:ObjectId(it._id)},{$set:{
+//         average:average
+//     }})
+// })
 
 //------------
-//loadGeo()
+//loadSuggestionGeo();
 
+function loadSuggestionGeo() {
+	return db.open("jobui_company").then(function() {
+		return db.collection.find({
+			bdSuggestionGeo: null
+		}, {
+			company: 1,
+			url: 1,
+			addr: 1
+		}).toArray();
+	}).then(function(data) {
+		return helper.iteratorArr(data, function(i) {
+			var name = (i.company);
+			var addr = (name);
+			return bdSuggestionGeo(name).then(function(data) {
+				return db.collection.update({
+					_id: db.ObjectId(i._id)
+				}, {
+					$set: {
+						bdSuggestionGeo: data
+					}
+				}).then(function() {
+					return data;
+				})
+			})
+		})
+	}).then(function(data) {
+		db.close();
+		console.log("success");
+
+	}).catch(function(e) {
+		db.close();
+		console.log(e);
+	})
+}
+// db.jobui_company.find({},{bdSuggestionGeo:1}).forEach((it)=>{
+
+//     if(it.bdSuggestionGeo.result.length>0){
+//         db.jobui_company.update({_id:ObjectId(it._id)},{$set:{
+//             position:it.bdSuggestionGeo.result[0].location
+//         }})
+//     }else{
+//         db.jobui_company.update({_id:ObjectId(it._id)},{$set:{
+//             bdSuggestionGeo:null
+//         }})
+//     }
+// })
+
+// db.jobui_company.find({position:{$ne:null}})
+//loadGeo()
 
 function loadGeo() {
 	return db.open("jobui_company").then(function() {
@@ -205,6 +285,14 @@ function bdGeo(name) {
 }
 
 
+//bdSuggestionGeo("苏州尚游网络科技有限公司")
+
+function bdSuggestionGeo(name) {
+	return map.loadSuggestionAPI(name, "苏州").then(function(data) {
+		return data;
+	});
+}
+
 //------------------------
 //loadAddr()
 
@@ -251,78 +339,13 @@ function pageGep(url) {
 	}).catch(function(e) {
 		console.log(e)
 	})
+
 }
 // 
-// 平均薪资
-// db.jobui.find({}).forEach((it)=> { 
-//       var price = it.price;
-//       var limit = 0;
-//       var max = 0;
-//       if(price.indexOf("万/月")>-1){
-//           var arr = price.replace("万/月","").split("-");
 
-//            limit = (parseFloat(arr[0])*10000);
-//            max = (parseFloat(arr[1])*10000);
-//       }else
-//      if(price.indexOf("千/月")>-1){
-//           var arr = price.replace("千/月","").split("-");
-//            limit = parseFloat(arr[0])*1000;
-//            max= parseFloat(arr[1])*1000;
-//       }else
-//       if(price.indexOf("元/月")>-1){
-//           var arr = price.replace("元/月","").split("-");
-//            limit = parseFloat(arr[0]);
-//            max=parseFloat(arr[1]);
-//       }else
-//       if(price.indexOf("/月")>-1){
-//           var arr = price.replace("/月","").split("-");
-//            limit = parseFloat(arr[0]);
-//            max=parseFloat(arr[1]);
-//       }else
-//       if(price.indexOf("万/年")>-1){
-//           var arr = price.replace("万/年","").split("-");
-//            limit = parseFloat(arr[0])*10000/12;
-//            max=parseFloat(arr[1])*10000/12;
-//       }
 
-//      var average = 0;
-//      if(max>0&&limit>0){
-//          average = (max+limit)/2;
-//      }
-//      if(max==0&&limit>0){
-//          average = limit;
-//      }
-//      if(limit==0&&max>0){
-//          average = max;
-//      }
-//     db.jobui.update({_id:ObjectId(it._id)},{$set:{
-//         average:average,
-//         limit:limit,
-//         max:max
-//     }})
-// });
-// 
 
-// db.jobui_company.find({position:{$ne:null}}).forEach((it)=> { 
-//       var company = it.company;
-//       var total=0;
-//       var count = 0;
-//       db.jobui.find({company:company}).forEach((i)=>{
-//          total =i.average+total;
-//          count++;
-//       })
-//      var average = (parseInt(total/count));
-
-//       db.jobui_company.update({_id:ObjectId(it._id)},{
-//           $set:{
-//               average:average
-//           }
-//       })
-
-// });
-// 
-
-hotMap()
+//hotMap()
 
 function hotMap() {
 	return db.open("jobui_company").then(function() {
@@ -331,14 +354,14 @@ function hotMap() {
 				$ne: null
 			},
 			average: {
-				$ne: 0
+				"$gte": 0
 			}
 		}).toArray();
 	}).then(function(data) {
 		db.close();
 		var arr = [];
 		data.forEach((it) => {
-			arr.push([it.position.lng, it.position.lat, it.fix / 1000])
+			arr.push([it.position.lng, it.position.lat, parseInt(it.average)])
 		});
 		console.log(JSON.stringify(arr))
 	}).catch(function(e) {
