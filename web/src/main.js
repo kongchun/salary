@@ -23,11 +23,39 @@ var ChartMap = {
 	},
 
 	initChart: function() {
+
+		var colorList = [
+			'#5AB1EF', '#2EC7C9', '#B6A2DE', "#FFB980", '#D87A80', "red"
+		];
+
+		var labels = ["面议", "<5K", "5-8K", "8-10K", "10-15K", "15-20K", ">20K"];
+
+
+		var series = labels.map((i, j) => {
+			var name = i;
+			var data = points[name];
+			var color = colorList[j];
+			return {
+				name: name,
+				type: 'effectScatter',
+				coordinateSystem: 'bmap',
+				data: data,
+				showEffectOn: 'render',
+				rippleEffect: {
+					brushType: 'stroke'
+				},
+				itemStyle: {
+					normal: {
+						color: color
+					}
+				}
+			}
+		})
 		var myChart = this.create("map");
 		var option = {
 			bmap: {
 				center: [120.631007, 31.308762],
-				zoom: 10,
+				zoom: 12,
 				roam: true,
 				enableMapClick: false,
 				mapStyle: {
@@ -60,55 +88,27 @@ var ChartMap = {
 				}
 			},
 			title: {
-				text: "苏州前端平均薪资热力图",
+				text: "苏州前端招聘企业分布",
 				subtext: "来源:招聘网站 | 作者:天堂龙 | 公众号:苏州前端",
 				left: 'center',
-				top: 11,
+				top: 5,
 				backgroundColor: "rgba(255,255,255,0.8)",
 				textStyle: {
 					color: "#2B98DC",
 					fontWeight: "bold"
 				}
 			},
-			visualMap: {
-				type: 'piecewise',
-				show: true,
-				bottom: 10,
-				left: 10,
+			legend: {
 				orient: 'vertical',
+				bottom: '50',
+				left: "10",
 				backgroundColor: "rgba(255,255,255,0.8)",
-				min: 1000,
-				max: 20000,
-				seriesIndex: 0,
-				calculable: true,
-				pieces: [{
-					max: 5000,
-				}, {
-					max: 8000,
-				}, {
-					max: 12000,
-				}, {
-					max: 15000,
-				}, {
-					max: 20000,
-				}, {
-					min: 20000,
-
-				}],
-				inRange: {
-					color: ['#5AB1EF', '#2EC7C9', '#B6A2DE', "#FFB980", '#D87A80']
-						// color: ['green', 'red']
-						//color:['lightskyblue', 'red']
+				data: labels.reverse(),
+				formatter: function(name) {
+					return '薪资 ' + name;
 				}
 			},
-			series: [{
-				type: 'heatmap',
-				coordinateSystem: 'bmap',
-				data: hotMap,
-				minOpacity: 0.5,
-				pointSize: 12,
-				blurSize: 0
-			}]
+			series: series
 		}
 
 		myChart.setOption(option);

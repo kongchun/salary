@@ -137,6 +137,10 @@ function parseHTML() {
 //ETL
 //jobFilter()
 //去除不匹配的职位
+
+
+//console.log("WEB前端开发工程师c++".match(/java|net|php|c\+\+|"磨具"|"采购"|"销售"|"助理"|"运维"|go|"客服"|"后端"/ig))
+
 function jobFilter() {
 	return db.open("jobui").then(function() {
 		return db.collection.find({
@@ -144,10 +148,12 @@ function jobFilter() {
 		}).toArray()
 	}).then(function(arr) {
 		return arr.filter((data) => {
-			if (data.job.match(/[java|net|php|c++|磨具|采购|销售|助|运|go|客|后]/ig)) {
+			if (data.job.match(/java|net|php|c\+\+|"磨具"|"采购"|"销售"|"助理"|"运维"|go|"客服"|"后端"/ig)) {
+				console.log(data.job, true);
 				return true
 			}
-			if (data.job.match(/[前端|全栈|微信|node|web|javascript|AngularJS|程序员|软件工程师|移动|网站开发|网页]/ig)) {
+			if (data.job.match(/前端|全栈|微信|node|web|javascript|AngularJS|程序员|软件工程师|移动|网站开发|网页/ig)) {
+				console.log(data.job, false);
 				return false
 			}
 			return true;
@@ -652,11 +658,10 @@ function levelETL() {
 
 //priceETL()
 // var data = db.jobui.group({"key":{"priceETL":true},"initial":{count:0},"reduce":(doc,prev)=> {
-
 //         prev.count++;
-
 // }})
-// console.log(data)
+//console.log(data)
+
 function priceETL() {
 	return db.open("jobui").then(function() {
 		return db.collection.find({
@@ -696,7 +701,9 @@ function priceETL() {
 
 			average = (max + min) / 2;
 
-			if (average <= 5000) {
+			if (average == 0) {
+				price = '面议'
+			} else if (average <= 5000) {
 				price = "<5K";
 			} else if (average <= 8000) {
 				price = "5-8K"
@@ -744,6 +751,36 @@ function priceETL() {
 	}
 }
 
+//----------------
+// var data = [];
+// var yuan = 0;
+// var other = 0;
+
+// var dt= db.jobui_company.group({"key":{"district":true},"initial":{count:0,x:0},"reduce":(doc,prev)=> {
+//         prev.count+=doc.count;
+//         if(doc.addr&& doc.addr.indexOf("园区")>-1){
+//             prev.x++
+//         }
+// }})
+// //console.log(dt)
+// dt.forEach((i)=>{
+//     yuan +=i.x;
+//     if(i.district && i.district.indexOf("区")>-1){
+//         var label = i.district;
+//         if(label == "虎丘区"){
+//             label = "新区"
+//         }
+
+
+//         data.push({label:label,count:i.count-i.x})
+//     }else if(i.district){
+//         other += i.count; 
+//     }
+// })
+// data.push({label:"园区",count:yuan})；
+// data.push({label:"苏州周边",count:other})；
+// console.log(data)
+
 
 //hotMap()
 
@@ -768,3 +805,30 @@ function hotMap() {
 		console.log(e);
 	})
 }
+
+// 分布
+// var data= db.jobui_company.find({city:"苏州市"},{position:1,count:1,_id:0})
+// var t = data.toArray().map((i)=>{
+//     return [i.position.lng,i.position.lat,parseInt(i.count)]
+// })
+// console.log(t)
+
+//地址回写
+//var data= db.jobui_company.find({city:"苏州市"},{position:1,company:1,count:1,_id:0})
+// data.toArray().forEach((i)=>{
+//    db.jobui.update({company:i.company},{$set:{position:i.position}})
+// })
+// 
+// 统计数据
+// var data = db.jobui.group({"key":{"priceETL":true},"cond":{filter:{$ne:true},position:{$ne:null}},"initial":{positions:[],count:0},"reduce":(doc,prev)=> {
+//         prev.count++;
+//         var {lat,lng}=doc.position;
+//         prev.positions.push([lng,lat,1])
+// }})
+
+// var obj={}
+// data.forEach((i)=>{
+//   obj[i.priceETL]=i.positions
+// })
+
+// console.log(JSON.stringify(obj))
