@@ -2,20 +2,22 @@ var map = require("../../../iRobots/baidu.js")
 var loader = require('../../../iRobots/loader.js');
 var helper = require('../../../iRobots/helper.js');
 var db = require('../../../iRobots/db.js')("10.82.0.1", "kongchun");
-var pageSize = 99;
+var pageSize = 129;
 //------------------
-//start();//抓取
+//start(); //抓取
 //parseHTML(); //网站解析
 //jobFilter(); //去除不匹配的职位
 //
 //地址获取
 //groupCompany(); //获取公司
+//compareCompany();
+
 //loadCompanyAddr(); //获取公司地址
-//loadGeo("company"); //根据公司名获取坐标
 //loadGeo("addr"); //根据地址获取坐标
+//loadGeo("company"); //根据公司名获取坐标
 //fixedGeo(); //根据坐标转换地理位置信息
 //filterGeo(); //过滤掉非苏州坐标
-//loadJobCompanyAddr; //根据工作找到抓取来源网站
+//loadJobCompanyAddr(); //根据工作找到抓取来源网站
 //parseJobHTML(); //网站解析
 //未完待续
 //
@@ -44,7 +46,7 @@ function start() {
 }
 
 function pageLoad(page) {
-	var url = `http://www.jobui.com/jobs?jobKw=%E5%89%8D%E7%AB%AF&cityKw=%E8%8B%8F%E5%B7%9E&n=${page}`;
+	var url = `http://www.jobui.com/jobs?jobKw=%E5%89%8D%E7%AB%AF&cityKw=%E8%8B%8F%E5%B7%9E&sortField=last&n=${page}`;
 	return loader.getDOM(url).then(function($) {
 		var html = $(".j-recommendJob").html();
 		return db.open("jobui_page").then(function() {
@@ -275,8 +277,43 @@ function groupCompany() {
 //     }})
 // })
 
+//compareCompany()
+function compareCompany() {
+	return db.open("suzhou_company").then(function() {
+		return db.collection.find({}).toArray();
+	}).then(function(data) {
+		db.close();
+		return helper.iteratorArr(data, function(i) {
+			var company = i.company;
+			console.log(company)
+			return db.open("jobui_company").then(function() {
+				return db.collection.findOne({
+					company: company
+				}).then(function(t) {
+					if (t == null) {
+						return t;
+					}
 
-
+					return db.collection.update({
+						company: company
+					}, {
+						$set: {
+							addr: i.addr,
+							position: i.position,
+							city: i.city,
+							district: i.district
+						}
+					})
+				})
+			})
+		})
+	}).then(function(data) {
+		db.close()
+	}).catch(function(e) {
+		db.close()
+		console.log(e)
+	})
+}
 //------------
 //loadSuggestionGeo();
 
@@ -342,6 +379,7 @@ function loadGeo(key) {
 	}).then(function(data) {
 		return helper.iteratorArr(data, function(i) {
 			var name = (i[key]);
+			console.log(name)
 			return bdGeo(name).then(function(position) {
 				return db.collection.update({
 					_id: db.ObjectId(i._id)
@@ -352,6 +390,7 @@ function loadGeo(key) {
 				}).then(function() {
 					return data;
 				})
+
 			})
 		})
 	}).then(function(data) {
@@ -363,12 +402,8 @@ function loadGeo(key) {
 	})
 }
 
-
-//bdGeo("苏州工业园区苏雅路318号 明天翔国际大厦1504、1505室 ")
-
 function bdGeo(name) {
 	return map.loadPlaceAPI(name, "苏州").then(function(data) {
-		console.log(data)
 		if (data.status == 0 && data.total >= 0 && data.results.length > 0) {
 			var position = data.results[0];
 			if (position.location) {
@@ -433,7 +468,8 @@ function filterGeo() {
 				$set: {
 					position: null,
 					city: null,
-					district: null
+					district: null,
+					filter: true
 				}
 			})
 
@@ -463,7 +499,8 @@ function filterGeo() {
 function loadCompanyAddr() {
 	return db.open("jobui_company").then(function() {
 		return db.collection.find({
-			addr: null
+			addr: null,
+			position: null,
 		}, {
 			company: 1,
 			url: 1
@@ -556,11 +593,47 @@ function parseJobHTML() {
 			position: null
 		}).toArray()
 	}).then(function(arr) {
-		arr.forEach((data) => {
+
+		helper.iteratorArr(arr, function(data) {
 			var $ = loader.parseHTML(data.html);
-			console.log($("title").text())
-				//to be continue
+			var title = ($("title").text());
+			var source = null;
+			var addr = null;
+			if (title.indexOf("前程无忧") > -1) {
+				source = "前程无忧";
+				addr = $(".i_map").parent().text().replace("上班地址：", "").replace("地图", "").replace(/(^\s*)|(\s*$)/g, "");
+				console.log(addr);
+			}
+			if (title.indexOf("智联招聘") > -1) {
+				source = "智联招聘";
+			}
+			if (title.indexOf("拉勾网") > -1) {
+				source = "拉勾网";
+				addr = $(".work_addr").text().replace(/[-| ]/ig, "").replace("查看地图", "").replace(/(^\s*)|(\s*$)/g, "");;
+
+			}
+			if (title.indexOf("猎聘网") > -1) {
+				source = "猎聘网";
+			}
+			if (title.indexOf("职友集") > -1) {
+				source = "职友集";
+			}
+			return db.collection.update({
+				_id: db.ObjectId(data._id)
+			}, {
+				$set: {
+					source: source,
+					addr: addr
+				}
+			}).then(function() {
+				return data;
+			})
+		}).then(function() {
+			db.close();
+			console.log("success");
 		})
+
+
 	}).catch(function(e) {
 		db.close(e);
 		console.log(e)

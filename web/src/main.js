@@ -25,7 +25,7 @@ var ChartMap = {
 	initChart: function() {
 
 		var colorList = [
-			'#5AB1EF', '#2EC7C9', '#B6A2DE', "#FFB980", '#D87A80', "red"
+			'#5AB1EF', '#2EC7C9', '#B6A2DE', "#FFB980", '#ED868C', "#FF0000", "#C23531"
 		];
 
 		var labels = ["面议", "<5K", "5-8K", "8-10K", "10-15K", "15-20K", ">20K"];
