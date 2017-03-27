@@ -2,7 +2,7 @@ var map = require("../../../iRobots/baidu.js")
 var loader = require('../../../iRobots/loader.js');
 var helper = require('../../../iRobots/helper.js');
 var db = require('../../../iRobots/db.js')("10.82.0.1", "kongchun");
-var pageSize = 129;
+var pageSize = 90;
 //------------------
 //start(); //抓取
 //parseHTML(); //网站解析
@@ -154,7 +154,7 @@ function jobFilter() {
 				console.log(data.job, true);
 				return true
 			}
-			if (data.job.match(/前端|全栈|微信|node|web|javascript|AngularJS|程序员|软件工程师|移动|网站开发|网页/ig)) {
+			if (data.job.match(/前端|全栈|微信|node|web|javascript|AngularJS|程序员|软件工程师|移动|网站开发|网页|html/ig)) {
 				console.log(data.job, false);
 				return false
 			}
@@ -301,7 +301,8 @@ function compareCompany() {
 							addr: i.addr,
 							position: i.position,
 							city: i.city,
-							district: i.district
+							district: i.district,
+							hasGeo: true
 						}
 					})
 				})
@@ -370,7 +371,10 @@ function loadSuggestionGeo() {
 function loadGeo(key) {
 	return db.open("jobui_company").then(function() {
 		return db.collection.find({
-			position: null
+			position: null,
+			hasGeo: {
+				$ne: true
+			}
 		}, {
 			company: 1,
 			url: 1,
@@ -427,7 +431,10 @@ function fixedGeo() {
 			position: {
 				$ne: null
 			},
-			city: null
+			city: null,
+			hasGeo: {
+				$ne: true
+			}
 		}, {
 			position: 1
 		}).toArray();
@@ -501,6 +508,9 @@ function loadCompanyAddr() {
 		return db.collection.find({
 			addr: null,
 			position: null,
+			hasGeo: {
+				$ne: true
+			}
 		}, {
 			company: 1,
 			url: 1
@@ -548,7 +558,10 @@ function loadJobCompanyAddr() {
 	return db.open("jobui_company").then(function() {
 		return db.collection.find({
 			html: null,
-			position: null
+			position: null,
+			hasGeo: {
+				$ne: true
+			}
 		}).toArray()
 	}).then(function(arr) {
 		console.log(arr.length)
@@ -590,7 +603,10 @@ function parseJobHTML() {
 			html: {
 				$ne: null
 			},
-			position: null
+			position: null,
+			hasGeo: {
+				$ne: true
+			}
 		}).toArray()
 	}).then(function(arr) {
 
@@ -729,11 +745,11 @@ function levelETL() {
 	})
 }
 
-//priceETL()
-// var data = db.jobui.group({"key":{"priceETL":true},"initial":{count:0},"reduce":(doc,prev)=> {
-//         prev.count++;
-// }})
-//console.log(data)
+priceETL()
+	// var data = db.jobui.group({"key":{"priceETL":true},"initial":{count:0},"reduce":(doc,prev)=> {
+	//         prev.count++;
+	// }})
+	//console.log(data)
 
 function priceETL() {
 	return db.open("jobui").then(function() {
@@ -756,11 +772,10 @@ function priceETL() {
 			if (price.indexOf("万") > -1) {
 				min = min * 10000;
 				max = max * 10000;
-				if (price.indexOf("月") == -1) {
+				if (price.indexOf("月") > -1 || price.indexOf("年") > -1) {} else {
 					min = parseInt(min / 12)
 					max = parseInt(max / 12)
 				}
-
 			}
 
 			if (price.indexOf("年") > -1) {
