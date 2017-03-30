@@ -3,8 +3,74 @@ var loader = require('../../../iRobots/loader.js');
 var helper = require('../../../iRobots/helper.js');
 var db = require('../../../iRobots/db.js')("10.82.0.1", "kongchun");
 var pageSize = 90;
+var city = "苏州";
+var search = "前端";
+var year = "2017.03"
+
+
+
+// start(search, city).then(function() {
+// 	console.log("parseHTML")
+// 	return parseHTML();
+// }).then(function() {
+// 	console.log("jobFilter")
+// 	return jobFilter();
+// }).then(function() {
+// 	console.log("groupCompany")
+// 	return groupCompany();
+// }).then(function() {
+// 	console.log("compareCompany")
+// 	return compareCompany();
+// }).then(function() {
+// 	console.log("loadCompanyAddr")
+// 	return loadCompanyAddr();
+// }).then(function() {
+// 	console.log("addr")
+// 	return loadGeo("addr");
+// }).then(function() {
+// 	console.log("company")
+// 	return loadGeo("company");
+// }).then(function() {
+// 	console.log("fixedGeo")
+// 	return fixedGeo();
+// }).then(function() {
+// 	console.log("filterGeo")
+// 	return filterGeo();
+// }).then(function() {
+// 	console.log("loadJobCompanyAddr")
+// 	return loadJobCompanyAddr();
+// }).then(function() {
+// 	console.log("parseJobHTML")
+// 	return parseJobHTML();
+// }).then(function() {
+// 	return loadGeo("addr");
+// }).then(function() {
+// 	return fixedGeo();
+// }).then(function() {
+// 	return filterGeo();
+// }).catch(function(e) {
+// 	console.log(e)
+// });
+
+
+// clearFilter().then(function() {
+// 	return yearETL()
+// }).then(function() {
+// 	return levelETL()
+// }).then(function() {
+// 	return priceETL()
+// }).then(function(){
+// 	return gisToJob()
+// }).then(function(){
+// 	return average()
+// }).then(function(){
+// 	return mapPoint()
+// })
+
+
+// 
 //------------------
-//start(); //抓取
+//start(search, city); //抓取
 //parseHTML(); //网站解析
 //jobFilter(); //去除不匹配的职位
 //
@@ -19,35 +85,37 @@ var pageSize = 90;
 //filterGeo(); //过滤掉非苏州坐标
 //loadJobCompanyAddr(); //根据工作找到抓取来源网站
 //parseJobHTML(); //网站解析
-//未完待续
 //
-//条件清洗
+//开始清洗
+//clearFilter();//清除过滤条件
 //yearETL();
 //levelETL()
 //priceETL()
-//
-//
-//
+//gisToJob() 
+//average()
+//mapPoint()
 //
 //------------------
 //start()
 
-function start() {
+function start(search, city) {
 	var arr = [];
 	for (let i = 1; i <= pageSize; i++) {
 		arr.push(i);
 	}
 
 	return helper.iteratorArr(arr, function(page) {
-		return pageLoad(page);
+		return pageLoad(page, search, city);
 	}).then(function() {
+		db.close();
 		console.log("success");
 	})
 }
 
-function pageLoad(page) {
-	var url = `http://www.jobui.com/jobs?jobKw=%E5%89%8D%E7%AB%AF&cityKw=%E8%8B%8F%E5%B7%9E&sortField=last&n=${page}`;
-	return loader.getDOM(url).then(function($) {
+function pageLoad(page, search, city) {
+	var url = `http://www.jobui.com/jobs?jobKw=${search}&cityKw=${city}&sortField=last&n=${page}`;
+	console.log(encodeURI(url));
+	return loader.getDOM(encodeURI(url)).then(function($) {
 		var html = $(".j-recommendJob").html();
 		return db.open("jobui_page").then(function() {
 			return db.collection.insert({
@@ -55,8 +123,7 @@ function pageLoad(page) {
 				html: html,
 				isNew: true
 			})
-		}).then(function() {
-			db.close();
+		}).then(function(data) {
 			return;
 		})
 	}).catch(function(e) {
@@ -65,9 +132,10 @@ function pageLoad(page) {
 }
 
 //------------------
-//parseHTML();
+//parseHTML()
 
 function parseHTML() {
+	db.close();
 	return db.open("jobui_page").then(function() {
 		return db.collection.findOne({
 			isNew: true
@@ -97,7 +165,7 @@ function parseHTML() {
 
 			var job = $("h2 a", item).text().replace(/(^\s*)|(\s*$)/g, "");
 			var id = $("h2 a", item).attr("href").replace(/[^0-9.]/ig, "");
-			$(".fs16 .fs12", item).remove();
+			$(".fs16 .fs14", item).remove();
 			var company = $(".fs16", item).text().replace(/(^\s*)|(\s*$)/g, "");
 			var url = $(".cfix a", item).first().attr("href").replace(/(^\s*)|(\s*$)/g, "");
 
@@ -106,6 +174,8 @@ function parseHTML() {
 			var year = tags[0].replace(/(^\s*)|(\s*$)/g, "");
 			var level = tags[1].replace(/(^\s*)|(\s*$)/g, "");
 			var price = tags[2].replace(/(^\s*)|(\s*$)/g, "");
+
+			var time = $(".cfix span.fr", item).text().replace(/(^\s*)|(\s*$)/g, "");
 			arr.push({
 				id,
 				job,
@@ -113,12 +183,14 @@ function parseHTML() {
 				url,
 				year,
 				level,
-				price
+				price,
+				time
 			})
 		})
 		return arr;
 	}).then(function(data) {
 		if (data == null) {
+			db.close();
 			console.log("success");
 			return null
 		}
@@ -130,8 +202,10 @@ function parseHTML() {
 		})
 
 	}).catch(function(e) {
-		console.log(e)
 		db.close();
+		console.log(e);
+		return;
+
 	})
 }
 
@@ -144,24 +218,25 @@ function parseHTML() {
 //console.log("WEB前端开发工程师c++".match(/java|net|php|c\+\+|"磨具"|"采购"|"销售"|"助理"|"运维"|go|"客服"|"后端"/ig))
 
 function jobFilter() {
+	db.close()
 	return db.open("jobui").then(function() {
-		return db.collection.find({
-
-		}).toArray()
+		return db.collection.find({}).toArray()
 	}).then(function(arr) {
 		return arr.filter((data) => {
-			if (data.job.match(/java|net|php|c\+\+|"磨具"|"采购"|"销售"|"助理"|"运维"|go|"客服"|"后端"/ig)) {
+			var flag = true;
+			if (data.job.match(/java|net|php|c\+\+|go|"客服"|"后端"/ig)) {
 				console.log(data.job, true);
 				return true
 			}
-			if (data.job.match(/前端|全栈|微信|node|web|javascript|AngularJS|程序员|软件工程师|移动|网站开发|网页|html/ig)) {
+			if (data.job.match(/前端|全栈|微信|node|web|javascript|AngularJS|程序员|软件工程师|移动|网站开发|网页|html|H5/ig)) {
 				console.log(data.job, false);
 				return false
 			}
+			console.log(data.job);
 			return true;
 		})
 	}).then(function(arr) {
-		helper.iteratorArr(arr, function(data) {
+		return helper.iteratorArr(arr, function(data) {
 			return db.collection.update({
 				_id: db.ObjectId(data._id)
 			}, {
@@ -249,14 +324,19 @@ function groupCompany() {
 		db.close();
 		console.log(arr)
 		return db.open("jobui_company").then(function() {
-			return db.collection.insertMany(arr);
+			return db.collection.remove({}).then(function() {
+				return db.collection.insertMany(arr);
+			})
+
 		})
 	}).then(function() {
 		db.close();
 		console.log("success")
+		return;
 	}).catch(function(e) {
 		db.close();
 		console.log(e)
+		return;
 	})
 }
 
@@ -278,7 +358,9 @@ function groupCompany() {
 // })
 
 //compareCompany()
+
 function compareCompany() {
+	db.close()
 	return db.open("suzhou_company").then(function() {
 		return db.collection.find({}).toArray();
 	}).then(function(data) {
@@ -310,9 +392,12 @@ function compareCompany() {
 		})
 	}).then(function(data) {
 		db.close()
+		return;
 	}).catch(function(e) {
 		db.close()
+
 		console.log(e)
+		return;
 	})
 }
 //------------
@@ -369,6 +454,7 @@ function loadSuggestionGeo() {
 //loadGeo()
 
 function loadGeo(key) {
+	db.close()
 	return db.open("jobui_company").then(function() {
 		return db.collection.find({
 			position: null,
@@ -400,9 +486,11 @@ function loadGeo(key) {
 	}).then(function(data) {
 		db.close();
 		console.log("success");
+		return;
 	}).catch(function(e) {
 		db.close();
 		console.log(e);
+		return;
 	})
 }
 
@@ -426,6 +514,7 @@ function bdGeo(name) {
 //fixedGeo()
 
 function fixedGeo() {
+	db.close()
 	return db.open("jobui_company").then(function() {
 		return db.collection.find({
 			position: {
@@ -455,11 +544,13 @@ function fixedGeo() {
 		}).then(function() {
 			db.close();
 			console.log("success")
+			return;
 		})
 	})
 }
 
 function filterGeo() {
+	db.close()
 	return db.open("jobui_company").then(function() {
 		return db.collection.find({
 			city: {
@@ -483,9 +574,11 @@ function filterGeo() {
 		}).then(function() {
 			db.close();
 			console.log("success")
+			return;
 		})
 	}).catch(function(e) {
 		console.log(e)
+		return;
 	})
 }
 
@@ -504,6 +597,7 @@ function filterGeo() {
 //loadCompanyAddr()
 
 function loadCompanyAddr() {
+	db.close()
 	return db.open("jobui_company").then(function() {
 		return db.collection.find({
 			addr: null,
@@ -533,9 +627,11 @@ function loadCompanyAddr() {
 	}).then(function(data) {
 		db.close();
 		console.log("success");
+		return;
 	}).catch(function(e) {
 		db.close();
 		console.log(e);
+		return;
 	})
 }
 //pageGep("/company/11356685/")
@@ -588,9 +684,11 @@ function loadJobCompanyAddr() {
 		}).then(function(data) {
 			db.close()
 			console.log("success");
+			return;
 		}).catch(function(e) {
 			db.close()
 			console.log(e);
+			return;
 		})
 	})
 }
@@ -647,12 +745,35 @@ function parseJobHTML() {
 		}).then(function() {
 			db.close();
 			console.log("success");
+			return;
 		})
 
 
 	}).catch(function(e) {
 		db.close(e);
 		console.log(e)
+		return;
+	})
+}
+
+//clearFilter()
+
+function clearFilter() {
+	db.close();
+	return db.open("jobui").then(function() {
+		return db.collection.remove({
+			filter: true
+		})
+	}).then(function() {
+		db.close();
+		return db.open("jobui_company");
+	}).then(function() {
+		return db.collection.remove({
+			hasGeo: null
+		})
+	}).then(function() {
+		db.close();
+		return;
 	})
 }
 
@@ -664,6 +785,7 @@ function parseJobHTML() {
 // }})
 // console.log(data)
 function yearETL() {
+	db.close()
 	return db.open("jobui").then(function() {
 		return db.collection.find({
 			yearETL: null
@@ -696,9 +818,11 @@ function yearETL() {
 		}).then(function() {
 			db.close();
 			console.log("success")
+			return;
 		})
 	}).catch(function(e) {
 		console.log(e)
+		return;
 	})
 }
 
@@ -708,6 +832,7 @@ function yearETL() {
 // console.log(data)
 //levelETL()
 function levelETL() {
+	db.close()
 	return db.open("jobui").then(function() {
 		return db.collection.find({
 			levelETL: null
@@ -739,19 +864,22 @@ function levelETL() {
 		}).then(function() {
 			db.close();
 			console.log("success")
+			return;
 		})
 	}).catch(function(e) {
 		console.log(e)
+		return;
 	})
 }
 
-priceETL()
-	// var data = db.jobui.group({"key":{"priceETL":true},"initial":{count:0},"reduce":(doc,prev)=> {
-	//         prev.count++;
-	// }})
-	//console.log(data)
+//priceETL()
+// var data = db.jobui.group({"key":{"priceETL":true},"initial":{count:0},"reduce":(doc,prev)=> {
+//         prev.count++;
+// }})
+//console.log(data)
 
 function priceETL() {
+	db.close()
 	return db.open("jobui").then(function() {
 		return db.collection.find({
 			//priceETL: null
@@ -821,9 +949,12 @@ function priceETL() {
 		}).then(function() {
 			db.close();
 			console.log("success")
+			return;
+
 		})
 	}).catch(function(e) {
-		console.log(e)
+		console.log(e);
+		return;
 	})
 
 	function getMinMax(price) {
@@ -907,6 +1038,187 @@ function hotMap() {
 //    db.jobui.update({company:i.company},{$set:{position:i.position}})
 // })
 // 
+// 
+//gisToJob()
+
+function gisToJob() {
+	db.close()
+	return db.open("jobui_company").then(function() {
+		return db.collection.find({
+			city: "苏州市"
+		}, {
+			position: 1,
+			company: 1,
+			_id: 0
+		}).toArray();
+	}).then(function(arr) {
+		db.close();
+		return helper.iteratorArr(arr, function(i) {
+			return db.open("jobui").then(function() {
+				return db.collection.updateMany({
+					company: i.company
+				}, {
+					$set: {
+						position: i.position
+					}
+				})
+			})
+		})
+	}).then(function() {
+		db.close();
+		console.log("success");
+		return
+	})
+}
+
+
+//average()
+
+function average() {
+	db.close();
+	return db.open("jobui").then(function() {
+		return db.collection.find({
+			filter: {
+				$ne: true
+			}
+		}, {
+			average: 1
+		}).toArray()
+	}).then(function(data) {
+		db.close()
+		var count = data.length;
+		var total = 0;
+		data.forEach((i) => {
+			total += i.average
+		});
+		var average = total / count;
+		return (average.toFixed(2))
+	}).then(function(value) {
+		db.close();
+		return db.open("year").then(function() {
+			return db.collection.findOne({
+				year: year
+			})
+		}).then(function(data) {
+			console.log(year, data)
+			if (data) {
+				return db.collection.update({
+					year: year
+				}, {
+					$set: {
+						value: value
+					}
+				})
+			} else {
+				return db.collection.insert({
+					year: year,
+					value: value
+				})
+			}
+		})
+	}).then(function() {
+		db.close();
+		console.log("success");
+		return;
+	}).catch(function(e) {
+		db.close()
+		console.log(e);
+		return;
+	})
+}
+mapPoint()
+
+function mapPoint() {
+	db.close();
+	return db.open("jobui").then(function() {
+		return db.collection.group({
+			'priceETL': true
+		}, {
+			filter: {
+				$ne: true
+			},
+			position: {
+				$ne: null
+			}
+		}, {
+			positions: [],
+			"count": 0
+		}, function(doc, prev) {
+			prev.count++;
+			var {
+				lat,
+				lng
+			} = doc.position;
+			prev.positions.push([lng, lat, 1])
+		}, true)
+	}).then(function(data) {
+		var obj = {}
+		var arr = []
+		data.forEach((i) => {
+			obj[i.priceETL] = i.positions
+			arr.push({
+				"label": i.priceETL,
+				"count": i.count
+			})
+		})
+		console.log("=========")
+		console.log(JSON.stringify(obj))
+		console.log("=========")
+		console.log(JSON.stringify(arr))
+	}).then(function() {
+		return db.collection.group({
+			'levelETL': true
+		}, {
+			filter: {
+				$ne: true
+			}
+		}, {
+
+			"count": 0
+		}, function(doc, prev) {
+			prev.count++;
+		}, true)
+	}).then(function(data) {
+		var arr = []
+		data.forEach((i) => {
+			arr.push({
+				"label": i.levelETL,
+				"count": i.count
+			})
+		})
+
+		console.log("=========")
+		console.log(JSON.stringify(arr))
+	}).then(function() {
+		return db.collection.group({
+			'yearETL': true
+		}, {
+			filter: {
+				$ne: true
+			}
+		}, {
+
+			"count": 0
+		}, function(doc, prev) {
+			prev.count++;
+		}, true)
+	}).then(function(data) {
+		db.close()
+		var arr = []
+		data.forEach((i) => {
+			arr.push({
+				"label": i.yearETL,
+				"count": i.count
+			})
+		})
+
+		console.log("=========")
+		console.log(JSON.stringify(arr))
+	}).catch(function(e) {
+		db.close()
+		console.log(e)
+	})
+}
 // 统计数据
 // var data = db.jobui.group({"key":{"priceETL":true},"cond":{filter:{$ne:true},position:{$ne:null}},"initial":{positions:[],count:0},"reduce":(doc,prev)=> {
 //         prev.count++;
