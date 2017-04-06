@@ -1,9 +1,8 @@
 var map = require("../../../iRobots/baidu.js")
-var map = require("../../../iRobots/baidu.js")
 var loader = require('../../../iRobots/loader.js');
 var helper = require('../../../iRobots/helper.js');
 var db = require('../../../iRobots/db.js')("10.82.0.1", "kongchun");
-var pageSize = 50;
+var pageSize = 35;
 var city = "苏州";
 var search = "前端";
 var year = "2017.04"
@@ -23,8 +22,8 @@ var year = "2017.04"
 // 	console.log("compareCompany")
 // 	return compareCompany();
 // }).then(function() {
-// 	console.log("loadCompanyAddr")
-// 	return loadCompanyAddr();
+// 	//console.log("loadCompanyAddr")
+// 	return ;//loadCompanyAddr();
 // }).then(function() {
 // 	console.log("addr")
 // 	return loadGeo("addr");
@@ -112,10 +111,10 @@ function start(search, city) {
 }
 
 function pageLoad(page, search, city) {
-	var url = `http://www.jobui.com/jobs?jobKw=${search}&cityKw=${city}&sortField=last&n=${page}`;
+	var url = `http://m.jobui.com/jobs?jobKw=${search}&cityKw=${city}&sortField=last&nowPage=${page}#jobList`;
 	console.log(encodeURI(url));
 	return loader.getDOM(encodeURI(url)).then(function($) {
-		var html = $(".j-recommendJob").html();
+		var html = $(".j-jobList").html();
 		return db.open("jobui_page").then(function() {
 			return db.collection.insert({
 				page: page,
@@ -161,32 +160,27 @@ function parseHTML() {
 		var $ = loader.parseHTML(html);
 		var arr = [];
 		$("li").each(function(i, item) {
-
-			var job = $(".cfix a.fl.fs18.fwb.mb5", item).text().replace(/(^\s*)|(\s*$)/g, "");
-			var id = $(".cfix a.fl.fs18.fwb.mb5", item).attr("href").replace(/[^0-9.]/ig, "");
-			var time = $("span.fr.fs14", item).text().replace(/(^\s*)|(\s*$)/g, "");
-			$(".fs16 .fs14", item).remove();
-			var company = $(".fs16", item).text().replace(/(^\s*)|(\s*$)/g, "");
-			var url = $(".cfix a", item).first().attr("href").replace(/(^\s*)|(\s*$)/g, "");
-
-			var div = $(".searchTitTxt div", item).last();
-			var tags = div.text().split("|");
-			var year = tags[0].replace(/(^\s*)|(\s*$)/g, "");
-			var level = tags[1].replace(/(^\s*)|(\s*$)/g, "");
-			var price = tags[2].replace(/(^\s*)|(\s*$)/g, "");
-
-
-			var content = $("div.gray6.mb5", item).text();
+			var id = $("a.cfix", item).attr("data-positionid").replace(/[^0-9.]/ig, "");
+			var job = $(".vertical-top .mb5", item).first().text().replace(/(^\s*)|(\s*$)/g, "");
+			var tags = $(".vertical-top .mb5", item).last().find("span");
+			var price = $(tags[0]).text().replace(/(^\s*)|(\s*$)/g, "");
+			var year = $(tags[1]).text().replace(/(^\s*)|(\s*$)/g, "");
+			var level = $(tags[2]).text().replace(/(^\s*)|(\s*$)/g, "");
+			var company = $(".relative.cfix .mb5.gray6.fl", item).text().replace(/(^\s*)|(\s*$)/g, "");
+			var time = $(".cfix .no-link-color", item).text().replace(/(^\s*)|(\s*$)/g, "");
+			var addr = $(".cfix .wsnhd", item).text().replace(/(^\s*)|(\s*$)/g, "");
+			if (addr == "") {
+				addr = null;
+			}
 			arr.push({
 				id,
 				job,
 				company,
-				url,
 				year,
 				level,
 				price,
 				time,
-				content
+				addr
 			})
 		})
 		return arr;
@@ -320,16 +314,16 @@ function jobFilter() {
 function groupCompany() {
 	return db.open("jobui").then(function() {
 		return db.collection.group({
-			"company": true,
-			"url": true
+			"company": true
 		}, {
 			filter: {
 				$ne: true
 			}
 		}, {
 			count: 0,
-			jobId: 0
-		}, "function (doc, prev) { prev.count++;prev.jobId = (prev.jobId>doc.id)?prev.jobId:doc.id}")
+			jobId: 0,
+			addr: ""
+		}, "function (doc, prev) { prev.addr=(doc.addr.length>prev.addr.length)?doc.addr:prev.addr;prev.count++;prev.jobId = (prev.jobId>doc.id)?prev.jobId:doc.id}")
 	}).then(function(arr) {
 		db.close();
 		console.log(arr)
@@ -462,6 +456,7 @@ function loadSuggestionGeo() {
 
 // db.jobui_company.find({position:{$ne:null}})
 //loadGeo()
+//loadGeo("addr")
 
 function loadGeo(key) {
 	db.close()
@@ -473,7 +468,6 @@ function loadGeo(key) {
 			}
 		}, {
 			company: 1,
-			url: 1,
 			addr: 1
 		}).toArray();
 	}).then(function(data) {
@@ -558,6 +552,7 @@ function fixedGeo() {
 		})
 	})
 }
+//filterGeo()
 
 function filterGeo() {
 	db.close()
@@ -735,6 +730,10 @@ function parseJobHTML() {
 				source = "拉勾网";
 				addr = $(".work_addr").text().replace(/[-| ]/ig, "").replace("查看地图", "").replace(/(^\s*)|(\s*$)/g, "");;
 
+			}
+			if (title.indexOf("BOSS直聘") > -1) {
+				source = "BOSS直聘";
+				addr = $(".location-address").text()
 			}
 			if (title.indexOf("猎聘网") > -1) {
 				source = "猎聘网";
