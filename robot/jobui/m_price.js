@@ -2,7 +2,9 @@ var map = require("../../../iRobots/baidu.js")
 var loader = require('../../../iRobots/loader.js');
 var helper = require('../../../iRobots/helper.js');
 var db = require('../../../iRobots/db.js')("10.82.0.1", "kongchun");
-var pageSize = 35;
+var ETL = require('../jobETL.js');
+var table = "jobui";
+var pageSize = 10;
 var city = "苏州";
 var search = "前端";
 var year = "2017.04"
@@ -23,13 +25,13 @@ var year = "2017.04"
 // 	return compareCompany();
 // }).then(function() {
 // 	//console.log("loadCompanyAddr")
-// 	return ;//loadCompanyAddr();
+// 	return; //loadCompanyAddr();
 // }).then(function() {
 // 	console.log("addr")
 // 	return loadGeo("addr");
 // }).then(function() {
-// 	console.log("company")
-// 	return loadGeo("company");
+// 	//console.log("company")
+// 	return //loadGeo("company");
 // }).then(function() {
 // 	console.log("fixedGeo")
 // 	return fixedGeo();
@@ -53,19 +55,17 @@ var year = "2017.04"
 // });
 
 
-// clearFilter().then(function() {
-// 	return yearETL()
-// }).then(function() {
-// 	return levelETL()
-// }).then(function() {
-// 	return priceETL()
-// }).then(function() {
-// 	return gisToJob()
-// }).then(function() {
-// 	return average()
-// }).then(function() {
-// 	return mapPoint()
-// })
+clearFilter().then(function() {
+	return ETL.run(table);
+}).then(function() {
+	return gisToJob()
+}).then(function() {
+	return average()
+}).then(function() {
+	return mapPoint()
+}).catch(function(e) {
+	console.log(e)
+});
 // 
 //------------------
 //start(search, city); //抓取
@@ -85,10 +85,8 @@ var year = "2017.04"
 //parseJobHTML(); //网站解析
 //
 //开始清洗
-//clearFilter();//清除过滤条件
-//yearETL();
-//levelETL();
-//priceETL();
+//clearFilter(); //清除过滤条件
+//ETL.run(table);
 //gisToJob() ;
 //average();
 //mapPoint();
@@ -257,57 +255,6 @@ function jobFilter() {
 		console.log(e)
 	})
 }
-
-
-// 平均薪资
-// db.jobui.find({}).forEach((it)=> { 
-//       var price = it.price;
-//       var limit = 0;
-//       var max = 0;
-//       if(price.indexOf("万/月")>-1){
-//           var arr = price.replace("万/月","").split("-");
-
-//            limit = (parseFloat(arr[0])*10000);
-//            max = (parseFloat(arr[1])*10000);
-//       }else
-//      if(price.indexOf("千/月")>-1){
-//           var arr = price.replace("千/月","").split("-");
-//            limit = parseFloat(arr[0])*1000;
-//            max= parseFloat(arr[1])*1000;
-//       }else
-//       if(price.indexOf("元/月")>-1){
-//           var arr = price.replace("元/月","").split("-");
-//            limit = parseFloat(arr[0]);
-//            max=parseFloat(arr[1]);
-//       }else
-//       if(price.indexOf("/月")>-1){
-//           var arr = price.replace("/月","").split("-");
-//            limit = parseFloat(arr[0]);
-//            max=parseFloat(arr[1]);
-//       }else
-//       if(price.indexOf("万/年")>-1){
-//           var arr = price.replace("万/年","").split("-");
-//            limit = parseFloat(arr[0])*10000/12;
-//            max=parseFloat(arr[1])*10000/12;
-//       }
-
-//      var average = 0;
-//      if(max>0&&limit>0){
-//          average = (max+limit)/2;
-//      }
-//      if(max==0&&limit>0){
-//          average = limit;
-//      }
-//      if(limit==0&&max>0){
-//          average = max;
-//      }
-//     db.jobui.update({_id:ObjectId(it._id)},{$set:{
-//         average:average,
-//         limit:limit,
-//         max:max
-//     }})
-// });
-
 
 //groupCompany()
 
@@ -785,199 +732,6 @@ function clearFilter() {
 		db.close();
 		return;
 	})
-}
-
-//yearETL()
-// var data = db.jobui.group({"key":{"year":true},"cond":{filter:{$ne:true}},"initial":{total: 0,count:0},"reduce":(doc,prev)=> {
-
-//         prev.count++;
-
-// }})
-// console.log(data)
-function yearETL() {
-	db.close()
-	return db.open("jobui").then(function() {
-		return db.collection.find({
-			yearETL: null
-		}, {
-			year: 1,
-			url: 1
-		}).toArray();
-	}).then(function(arr) {
-		console.log(arr.length)
-		return helper.iteratorArr(arr, function(data) {
-			var year = data.year;
-			if (year == "0-2年") {
-				year = "3年以下"
-			}
-			if (year == "8-10年") {
-				year = "5-10年"
-			}
-			if (year == "6-7年") {
-				year = "5-10年"
-			}
-
-			return db.collection.update({
-				_id: db.ObjectId(data._id)
-			}, {
-				$set: {
-					yearETL: year
-				}
-			})
-
-		}).then(function() {
-			db.close();
-			console.log("success")
-			return;
-		})
-	}).catch(function(e) {
-		console.log(e)
-		return;
-	})
-}
-
-// var data = db.jobui.group({"key":{"level":true},"cond":{filter:{$ne:true}},"initial":{count:0},"reduce":(doc,prev)=> {
-//         prev.count++;
-// }})
-// console.log(data)
-//levelETL()
-function levelETL() {
-	db.close()
-	return db.open("jobui").then(function() {
-		return db.collection.find({
-			levelETL: null
-		}, {
-			level: 1
-		}).toArray();
-	}).then(function(arr) {
-		console.log(arr.length)
-		return helper.iteratorArr(arr, function(data) {
-			var level = data.level;
-			if (level == "中专以上") {
-				level = "大专以上"
-			}
-			if (level == "中专以上") {
-				level = "大专以上"
-			}
-			if (level == "中技以上") {
-				level = "大专以上"
-			}
-
-			return db.collection.update({
-				_id: db.ObjectId(data._id)
-			}, {
-				$set: {
-					levelETL: level
-				}
-			})
-
-		}).then(function() {
-			db.close();
-			console.log("success")
-			return;
-		})
-	}).catch(function(e) {
-		console.log(e)
-		return;
-	})
-}
-
-//priceETL()
-// var data = db.jobui.group({"key":{"priceETL":true},"initial":{count:0},"reduce":(doc,prev)=> {
-//         prev.count++;
-// }})
-//console.log(data)
-
-function priceETL() {
-	db.close()
-	return db.open("jobui").then(function() {
-		return db.collection.find({
-			priceETL: null
-		}, {
-			price: 1
-		}).toArray();
-	}).then(function(arr) {
-		return helper.iteratorArr(arr, function(data) {
-			var [min, max] = [0, 0];
-			var price = data.price;
-
-			[min, max] = getMinMax(price);
-
-			if (price.indexOf("千") > -1) {
-				min = min * 1000;
-				max = max * 1000;
-			}
-			if (price.indexOf("万") > -1) {
-				min = min * 10000;
-				max = max * 10000;
-				if (price.indexOf("月") > -1 || price.indexOf("年") > -1) {} else {
-					min = parseInt(min / 12)
-					max = parseInt(max / 12)
-				}
-			}
-
-			if (price.indexOf("年") > -1) {
-				min = parseInt(min / 12)
-				max = parseInt(max / 12)
-			}
-
-			if (price == '面议') {
-				max = 0;
-			}
-
-			average = (max + min) / 2;
-
-			if (average == 0) {
-				price = '面议'
-			} else if (average <= 5000) {
-				price = "<5K";
-			} else if (average <= 8000) {
-				price = "5-8K"
-			} else if (average <= 10000) {
-				price = "8-10K"
-			} else if (average <= 15000) {
-				price = "10-15K"
-			} else if (average <= 20000) {
-				price = "15-20K"
-			} else if (average > 20000) {
-				price = ">20K"
-			}
-
-
-
-			return db.collection.update({
-				_id: db.ObjectId(data._id)
-			}, {
-				$set: {
-					priceETL: price,
-					min: min,
-					max: max,
-					average: average
-				}
-			})
-
-		}).then(function() {
-			db.close();
-			console.log("success")
-			return;
-
-		})
-	}).catch(function(e) {
-		console.log(e);
-		return;
-	})
-
-	function getMinMax(price) {
-		var arr = price.split("-");
-		if (arr.length > 1) {
-			min = parseFloat(arr[0].replace(/(^\s*)|(\s*$)/g, ""));
-			max = parseFloat(arr[1].replace(/(^\s*)|(\s*$)/g, ""));
-			return [min, max];
-		}
-
-		return [0, parseFloat(price.replace(/(^\s*)|(\s*$)/g, ""))];
-
-	}
 }
 
 //----------------
