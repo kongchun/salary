@@ -10,62 +10,67 @@ var search = "前端";
 var year = "2017.04"
 
 
+// run1();
+// run2();
 
-// start(search, city).then(function() {
-// 	console.log("parseHTML")
-// 	return parseHTML();
-// }).then(function() {
-// 	console.log("jobFilter")
-// 	return jobFilter();
-// }).then(function() {
-// 	console.log("groupCompany")
-// 	return groupCompany();
-// }).then(function() {
-// 	console.log("compareCompany")
-// 	return compareCompany();
-// }).then(function() {
-// 	//console.log("loadCompanyAddr")
-// 	return; //loadCompanyAddr();
-// }).then(function() {
-// 	console.log("addr")
-// 	return loadGeo("addr");
-// }).then(function() {
-// 	//console.log("company")
-// 	return //loadGeo("company");
-// }).then(function() {
-// 	console.log("fixedGeo")
-// 	return fixedGeo();
-// }).then(function() {
-// 	console.log("filterGeo")
-// 	return filterGeo();
-// }).then(function() {
-// 	console.log("loadJobCompanyAddr")
-// 	return loadJobCompanyAddr();
-// }).then(function() {
-// 	console.log("parseJobHTML")
-// 	return parseJobHTML();
-// }).then(function() {
-// 	return loadGeo("addr");
-// }).then(function() {
-// 	return fixedGeo();
-// }).then(function() {
-// 	return filterGeo();
-// }).catch(function(e) {
-// 	console.log(e)
-// });
+function run1() {
+	start(search, city).then(function() {
+		console.log("parseHTML")
+		return parseHTML();
+	}).then(function() {
+		console.log("jobFilter")
+		return jobFilter();
+	}).then(function() {
+		console.log("groupCompany")
+		return groupCompany();
+	}).then(function() {
+		console.log("compareCompany")
+		return compareCompany();
+	}).then(function() {
+		//console.log("loadCompanyAddr")
+		return; //loadCompanyAddr();
+	}).then(function() {
+		console.log("addr")
+		return loadGeo("addr");
+	}).then(function() {
+		//console.log("company")
+		return //loadGeo("company");
+	}).then(function() {
+		console.log("fixedGeo")
+		return fixedGeo();
+	}).then(function() {
+		console.log("filterGeo")
+		return filterGeo();
+	}).then(function() {
+		console.log("loadJobCompanyAddr")
+		return loadJobCompanyAddr();
+	}).then(function() {
+		console.log("parseJobHTML")
+		return parseJobHTML();
+	}).then(function() {
+		return loadGeo("addr");
+	}).then(function() {
+		return fixedGeo();
+	}).then(function() {
+		return filterGeo();
+	}).catch(function(e) {
+		console.log(e)
+	});
+}
 
-
-clearFilter().then(function() {
-	return ETL.run(table);
-}).then(function() {
-	return gisToJob()
-}).then(function() {
-	return average()
-}).then(function() {
-	return mapPoint()
-}).catch(function(e) {
-	console.log(e)
-});
+function run2() {
+	clearFilter().then(function() {
+		return ETL.run(table);
+	}).then(function() {
+		return gisToJob()
+	}).then(function() {
+		return average()
+	}).then(function() {
+		return mapPoint()
+	}).catch(function(e) {
+		console.log(e)
+	});
+};
 // 
 //------------------
 //start(search, city); //抓取
@@ -73,21 +78,21 @@ clearFilter().then(function() {
 //jobFilter(); //去除不匹配的职位
 //
 //地址获取
-//groupCompany(); //获取公司
-//compareCompany();
+// groupCompany(); //获取公司
+// compareCompany();
 
 //loadCompanyAddr(); //获取公司地址
 //loadGeo("addr"); //根据地址获取坐标
 //loadGeo("company"); //根据公司名获取坐标
 //fixedGeo(); //根据坐标转换地理位置信息
-//filterGeo(); //过滤掉非苏州坐标
+// filterGeo(); //过滤掉非苏州坐标
 //loadJobCompanyAddr(); //根据工作找到抓取来源网站
 //parseJobHTML(); //网站解析
 //
 //开始清洗
-//clearFilter(); //清除过滤条件
+// clearFilter(); //清除过滤条件
 //ETL.run(table);
-//gisToJob() ;
+//gisToJob();
 //average();
 //mapPoint();
 //
@@ -189,7 +194,7 @@ function parseHTML() {
 			return null
 		}
 		return db.open("jobui").then(function() {
-			return db.collection.insertMany(data);
+			return db.collection.insert(data);
 		}).then(function() {
 			db.close();
 			return parseHTML();
@@ -218,7 +223,13 @@ function jobFilter() {
 	}).then(function(arr) {
 		return arr.filter((data) => {
 			var flag = true;
-			if (data.job.match(/java|net|php|c\+\+|go|"客服"/ig)) {
+
+			if (data.job.match(/javascript|node|前端|web/ig)) {
+				console.log(data.job, false);
+				return false
+			}
+
+			if (data.job.match(/嵌入式|java|net|php|c\+\+|python|go|客服|后端|后台|测试|oracle|c#|数据|平面/ig)) {
 				console.log(data.job, true);
 				return true
 			}
@@ -227,10 +238,6 @@ function jobFilter() {
 				return false
 			}
 
-			if (data.content && data.content.match(/前端|全栈|微信|ui|node|web|javascript|Angular|js|程序员|软件|开发|移动|网站|网页|html|H5|界面/ig)) {
-				console.log(data.job, false);
-				return false
-			}
 			console.log(data.job);
 			return true;
 		})
@@ -270,7 +277,7 @@ function groupCompany() {
 			count: 0,
 			jobId: 0,
 			addr: ""
-		}, "function (doc, prev) { prev.addr=(doc.addr.length>prev.addr.length)?doc.addr:prev.addr;prev.count++;prev.jobId = (prev.jobId>doc.id)?prev.jobId:doc.id}")
+		}, "function (doc, prev) { prev.addr=(doc.addr&&doc.addr.length>prev.addr.length)?doc.addr:prev.addr;prev.count++;prev.jobId = (prev.jobId>doc.id)?prev.jobId:doc.id}")
 	}).then(function(arr) {
 		db.close();
 		console.log(arr)
@@ -315,6 +322,7 @@ function compareCompany() {
 	return db.open("suzhou_company").then(function() {
 		return db.collection.find({}).toArray();
 	}).then(function(data) {
+		//console.log(data)
 		db.close();
 		return helper.iteratorArr(data, function(i) {
 			var company = i.company;
@@ -420,15 +428,17 @@ function loadGeo(key) {
 	}).then(function(data) {
 		return helper.iteratorArr(data, function(i) {
 			var name = (i[key]);
-			console.log(name)
+			console.log(name, "loadGeo")
 			return bdGeo(name).then(function(position) {
+
 				return db.collection.update({
 					_id: db.ObjectId(i._id)
 				}, {
 					$set: {
 						position: position
 					}
-				}).then(function() {
+				}).then(function(t) {
+					//console.log(t, "111")
 					return data;
 				})
 
@@ -459,6 +469,9 @@ function bdGeo(name) {
 	}).then(function(data) {
 		console.log(data) //{ lat: 31.264978, lng: 120.737414 }
 		return data
+	}).catch(function(e) {
+		console.log(e);
+		return null;
 	})
 }
 
@@ -836,7 +849,6 @@ function gisToJob() {
 }
 
 
-//average()
 
 function average() {
 	db.close();
@@ -997,3 +1009,215 @@ function mapPoint() {
 // })
 
 // console.log(JSON.stringify(obj))
+// 
+
+
+//loadContent()
+
+function loadContent() {
+	return db.open("jobui").then(function() {
+		return db.collection.find({
+			content: null,
+			filter: {
+				$ne: true
+			}
+		}).toArray()
+	}).then(function(arr) {
+		console.log(arr.length)
+		return helper.iteratorArr(arr, function(data) {
+			var id = data.id;
+			var url = `http://m.jobui.com/job/${id}`;
+			console.log(url)
+			return loader.getDOM(url, {
+				delay: 500
+			}).then(function($) {
+
+				var html = $(".company-introduce").text();
+				console.log(html)
+				return html
+			}).catch(function(e) {
+				console.log(e)
+				return "";
+			}).then(function(t) {
+				return db.collection.update({
+					_id: db.ObjectId(data._id)
+				}, {
+					$set: {
+						content: t
+					}
+				})
+			}).catch(function(e) {
+				return "";
+			})
+		}).then(function(data) {
+			db.close()
+			console.log("success");
+			return;
+		}).catch(function(e) {
+			db.close()
+			console.log(e);
+			return;
+		})
+	})
+}
+
+
+
+var tech = {
+	javascript: "基础",
+	html: "基础",
+	css: "基础",
+	ajax: "基础",
+	json: "基础",
+	webrtc: "基础",
+	websocket: "基础",
+	js: "基础",
+	WebGL: "基础",
+
+	Flash: "图形",
+	canvas: "图形",
+	svg: "图形",
+	d3: "图形",
+	echart: "图形",
+	Three: "图形",
+	ArcGIS: "图形",
+	ChartJS: "图形",
+	Highcharts: "图形",
+	Flot: "图形",
+
+
+
+	jq: "框架和库",
+	jquery: "框架和库",
+	zepto: "框架和库",
+	prototype: "框架和库",
+
+	bootstrap: "框架和库",
+	MooTools: "框架和库",
+	Dojo: "框架和库",
+	YUI: "框架和库",
+	Ext: "框架和库",
+	Sencha: "框架和库",
+	easyui: "框架和库",
+
+
+	GWT: "MVVM",
+
+	backbone: "MVVM",
+	Knockout: "MVVM",
+
+	PhoneGap: "移动库",
+	IONIC: "移动库",
+
+
+	require: "基础",
+	sea: "基础",
+	common: "基础",
+
+	react: "MVVM",
+	vue: "MVVM",
+	ng: "MVVM",
+	angular: "MVVM",
+	Redux: "MVVM",
+
+
+	node: "node",
+	npm: "node",
+	Express: "node",
+	koa: "node",
+	Hapi: "node",
+
+
+	ECMAScript: "基础",
+	ES5: "基础",
+	ES6: "基础",
+	CoffeeScript: "基础",
+	TypeScript: "基础",
+
+
+	Grunt: "构建",
+	gulp: "构建",
+	Bower: "构建",
+	less: "构建",
+	sass: "构建",
+	webpack: "构建",
+	Yeoman: "构建",
+	fis: "构建",
+
+
+	mysql: "数据库",
+	mongodb: "数据库",
+	Oracle: "数据库",
+	Redis: "数据库",
+	Memcache: "数据库",
+	postgresql: "数据库",
+	NOSQL: "数据库"
+}
+
+//countTech();
+
+var techCount = {}
+
+function countTech() {
+	return db.open("jobui").then(function() {
+		return db.collection.find({
+			content: {
+				$ne: null
+			}
+		}, {
+			content: 1
+		}).toArray()
+	}).then(function(arr) {
+		console.log(arr.length)
+		return helper.iteratorArr(arr, function(data) {
+			var content = (data.content).toLowerCase();;
+
+
+			for (prop in tech) {
+				if (!techCount[prop]) {
+					techCount[prop] = 0;
+				}
+
+				var text = prop.toLowerCase();
+				if (content.indexOf(text) > -1) {
+					techCount[prop]++;
+				}
+			}
+			//console.log(techCount)
+
+			return Promise.resolve(data);
+		})
+	}).then(function() {
+		db.close();
+		techCount["javascript"] = techCount["javascript"] + techCount["js"] - techCount["json"];
+		techCount["jquery"] = techCount["jq"];
+		techCount["angular"] = techCount["ng"] - techCount["mongodb"]
+		delete techCount['jq'];
+		delete techCount['ng'];
+		delete techCount['js'];
+
+
+
+		var arr = [];
+		for (prop in techCount) {
+
+			arr.push({
+				tech: prop,
+				type: tech[prop],
+				count: techCount[prop]
+			});
+		}
+
+		return db.open("tech").then(function() {
+			return db.collection.remove({});
+		}).then(function() {
+			return db.collection.insertMany(arr);
+		}).then(function() {
+			db.close();
+			return;
+		})
+	}).catch(function(e) {
+		db.close();
+		console.log(e)
+	})
+}
