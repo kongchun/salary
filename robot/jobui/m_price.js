@@ -4,14 +4,16 @@ var helper = require('../../../iRobots/helper.js');
 var db = require('../../../iRobots/db.js')("10.82.0.1", "kongchun");
 var ETL = require('../jobETL.js');
 var table = "jobui";
-var pageSize = 10;
+var pageSize = 8;
 var city = "苏州";
 var search = "前端";
 var year = "2017.04"
 
-
-// run1();
-// run2();
+//http: //www.tianyancha.com
+//
+//
+//run1();
+//run2();
 
 function run1() {
 	start(search, city).then(function() {
@@ -59,9 +61,8 @@ function run1() {
 }
 
 function run2() {
-	clearFilter().then(function() {
-		return ETL.run(table);
-	}).then(function() {
+
+	ETL.run(table).then(function() {
 		return gisToJob()
 	}).then(function() {
 		return average()
@@ -75,7 +76,7 @@ function run2() {
 //------------------
 //start(search, city); //抓取
 //parseHTML(); //网站解析
-//jobFilter(); //去除不匹配的职位
+// jobFilter(); //去除不匹配的职位
 //
 //地址获取
 // groupCompany(); //获取公司
@@ -83,11 +84,11 @@ function run2() {
 
 //loadCompanyAddr(); //获取公司地址
 //loadGeo("addr"); //根据地址获取坐标
-//loadGeo("company"); //根据公司名获取坐标
+// loadGeo("company"); //根据公司名获取坐标
 //fixedGeo(); //根据坐标转换地理位置信息
-// filterGeo(); //过滤掉非苏州坐标
-//loadJobCompanyAddr(); //根据工作找到抓取来源网站
-//parseJobHTML(); //网站解析
+//filterGeo(); //过滤掉非苏州坐标
+// loadJobCompanyAddr(); //根据工作找到抓取来源网站
+// parseJobHTML(); //网站解析
 //
 //开始清洗
 // clearFilter(); //清除过滤条件
@@ -194,7 +195,7 @@ function parseHTML() {
 			return null
 		}
 		return db.open("jobui").then(function() {
-			return db.collection.insert(data);
+			return db.insertUnique(data, "id");
 		}).then(function() {
 			db.close();
 			return parseHTML();
@@ -737,14 +738,14 @@ function clearFilter() {
 	// 	db.close();
 	// 	return 
 
-	return db.open("jobui_company").then(function() {
-		return db.collection.remove({
-			hasGeo: null
-		})
-	}).then(function() {
-		db.close();
-		return;
-	})
+	// return db.open("jobui_company").then(function() {
+	// 	return db.collection.remove({
+	// 		hasGeo: null
+	// 	})
+	// }).then(function() {
+	// 	db.close();
+	// 	return;
+	// })
 }
 
 //----------------
@@ -849,7 +850,7 @@ function gisToJob() {
 }
 
 
-
+//average()
 function average() {
 	db.close();
 	return db.open("jobui").then(function() {
