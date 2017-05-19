@@ -1,19 +1,23 @@
 var map = require("../../../iRobots/baidu.js")
 var loader = require('../../../iRobots/loader.js');
 var helper = require('../../../iRobots/helper.js');
-var db = require('../../../iRobots/db.js')("10.82.0.1", "kongchun");
+var db = require('../../../iRobots/db.js')("127.0.0.1", "kongchun");
 var ETL = require('../jobETL.js');
 var table = "jobui";
-var pageSize = 8;
+var pageSize = 5;
 var city = "苏州";
 var search = "前端";
-var year = "2017.04"
+var year = "2017.05"
 
-//http: //www.tianyancha.com
+//http://www.tianyancha.com
 //
 //
 //run1();
 //run2();
+//run3()
+//countTech()
+//compareCompany();
+//reRun();
 
 function run1() {
 	start(search, city).then(function() {
@@ -60,6 +64,22 @@ function run1() {
 	});
 }
 
+function reRun() {
+
+	loadGeo("addr").then(function() {
+		//console.log("company")
+		return //loadGeo("company");
+	}).then(function() {
+		console.log("fixedGeo")
+		return fixedGeo();
+	}).then(function() {
+		console.log("filterGeo")
+		return filterGeo();
+	}).catch(function(e) {
+		console.log(e)
+	});
+}
+
 function run2() {
 
 	ETL.run(table).then(function() {
@@ -72,6 +92,12 @@ function run2() {
 		console.log(e)
 	});
 };
+
+function run3() {
+	loadContent().then(function() {
+		return countTech();
+	})
+}
 // 
 //------------------
 //start(search, city); //抓取
@@ -80,7 +106,7 @@ function run2() {
 //
 //地址获取
 // groupCompany(); //获取公司
-// compareCompany();
+//compareCompany();
 
 //loadCompanyAddr(); //获取公司地址
 //loadGeo("addr"); //根据地址获取坐标
@@ -215,7 +241,7 @@ function parseHTML() {
 //去除不匹配的职位
 
 
-//console.log("WEB前端开发工程师c++".match(/java|net|php|c\+\+|"磨具"|"采购"|"销售"|"助理"|"运维"|go|"客服"|"后端"/ig))
+//console.log("java工程师".match(/产品经理|合伙人|java|net|php|c\+\+|"磨具"|"采购"|"销售"|"助理"|"运维"|go|"客服"|"后端"/ig))
 
 function jobFilter() {
 	db.close()
@@ -230,7 +256,7 @@ function jobFilter() {
 				return false
 			}
 
-			if (data.job.match(/嵌入式|java|net|php|c\+\+|python|go|客服|后端|后台|测试|oracle|c#|数据|平面/ig)) {
+			if (data.job.match(/产品经理|合伙人|嵌入式|java|net|php|c\+\+|python|go|客服|后端|后台|测试|oracle|c#|数据|平面/ig)) {
 				console.log(data.job, true);
 				return true
 			}
@@ -1013,7 +1039,7 @@ function mapPoint() {
 // 
 
 
-//loadContent()
+// loadContent()
 
 function loadContent() {
 	return db.open("jobui").then(function() {

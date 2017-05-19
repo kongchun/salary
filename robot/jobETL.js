@@ -1,4 +1,4 @@
-var db = require('../../iRobots/db.js')("10.82.0.1", "kongchun");
+var db = require('../../iRobots/db.js')("127.0.0.1", "kongchun");
 var helper = require("../../iRobots/helper.js");
 
 
