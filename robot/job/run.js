@@ -4,4 +4,5 @@ import Main from "./main.js";
 
 var main = new Main(db);
 main.addConfig(new Lagou(2));
-main.run();
+//main.run();
+main.pageToJob();
