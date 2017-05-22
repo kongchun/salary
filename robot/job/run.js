@@ -11,4 +11,5 @@ main.addConfig(new Lagou(2));
 //main.compareCompany();
 //main.position();
 //main.loadGeo();
-main.fixedGeo();
+//main.fixedGeo();
+//main.filterGeo();

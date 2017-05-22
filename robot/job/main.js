@@ -1,7 +1,8 @@
 import helper from "../../../iRobots/helper.js";
 import Container from "./Container.js";
 import Company from "./model/Company.js";
-import {bdGeo} from "./utils/bdHelper.js";
+import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
+
 export default class Main {
     constructor(db) {
         this.db = db;
@@ -9,23 +10,22 @@ export default class Main {
     }
 
     addConfig(config) {
-        var container = new Container(this.db,config);
+        var container = new Container(this.db, config);
         this.containerList.push(container);
     }
 
-    run() {
-    	//加载列表
-    	return helper.iteratorArr(this.containerList, (item)=> {
-			return item.run();
-		}).then(function() {
-			console.log("success finish");
-			return;
-		})
+    list() {
+        //加载列表
+        return helper.iteratorArr(this.containerList, (item) => {
+            return item.list();
+        }).then(function() {
+            console.log("list finish");
+            return;
+        })
     }
 
-    pageToJob(){
-       
-        return helper.iteratorArr(this.containerList, (item)=> {
+    pageToJob() {
+        return helper.iteratorArr(this.containerList, (item) => {
             return item.pageToJob();
         }).then(function() {
             console.log("pageToJob finish");
@@ -33,8 +33,8 @@ export default class Main {
         })
     }
 
-    info(){
-        return helper.iteratorArr(this.containerList, (item)=> {
+    info() {
+        return helper.iteratorArr(this.containerList, (item) => {
             return item.info();
         }).then(function() {
             console.log("info finish");
@@ -44,29 +44,29 @@ export default class Main {
 
     groupCompany() {
         this.db.close();
-        return this.db.open("job").then(()=> {
+        return this.db.open("job").then(() => {
             return this.db.collection.group({
                 "company": true
             }, {
 
             }, {
                 count: 0,
-                source:"",
+                source: "",
             }, "function (doc, prev) {prev.count++;prev.source = doc.source}")
-        }).then((arr)=> {
+        }).then((arr) => {
             this.db.close();
             //console.log(arr);
-            return this.db.open("company").then(() =>{
-                return this.db.collection.remove({}).then(()=> {
+            return this.db.open("company").then(() => {
+                return this.db.collection.remove({}).then(() => {
                     return this.db.collection.insertMany(arr);
                 })
             })
             return
-        }).then(()=> {
+        }).then(() => {
             this.db.close();
             console.log("groupCompany Success")
             return;
-        }).catch((e)=> {
+        }).catch((e) => {
             this.db.close();
             console.log(e)
             return;
@@ -91,7 +91,7 @@ export default class Main {
                         if (t == null) {
                             return t;
                         }
-                        return this.db.updateById(t._id,{
+                        return this.db.updateById(t._id, {
                             addr: i.addr,
                             position: i.position,
                             city: i.city,
@@ -115,8 +115,8 @@ export default class Main {
     }
 
 
-    position(){
-        return helper.iteratorArr(this.containerList, (item)=> {
+    position() {
+        return helper.iteratorArr(this.containerList, (item) => {
             return item.position();
         }).then(function() {
             console.log("position finish");
@@ -124,9 +124,9 @@ export default class Main {
         })
     }
 
-    loadGeo(key="addr") {
+    loadGeo(key = "addr") {
         this.db.close()
-        return this.db.open("company").then(()=> {
+        return this.db.open("company").then(() => {
             return this.db.collection.find({
                 position: null,
                 noLoad: null
@@ -134,31 +134,83 @@ export default class Main {
                 company: 1,
                 addr: 1
             }).toArray();
-        }).then((data)=> {
-            return helper.iteratorArr(data, (i)=> {
+        }).then((data) => {
+            return helper.iteratorArr(data, (i) => {
                 var name = (i[key]);
-                return bdGeo(name).then((position)=> {
-
-                    return this.db.updateById(i._id,{position:position}).then(function(t) {
+                return addrToGeo(name).then((position) => {
+                    return this.db.updateById(i._id, { position: position }).then(function(t) {
                         return data;
                     })
 
                 })
             })
-        }).then((data)=> {
+        }).then((data) => {
             this.db.close();
-            console.log("success");
+            console.log("loadGeo success");
             return;
-        }).catch((e)=> {
+        }).catch((e) => {
             this.db.close();
             console.log(e);
             return;
         })
     }
 
-    fixedGeo(){
-        console.log(1)
+    fixedGeo() {
+        this.db.close()
+        return this.db.open("company").then(() => {
+            return this.db.collection.find({
+                position: {
+                    $ne: null
+                },
+                city: null,
+                noLoad: null
+            }, {
+                position: 1
+            }).toArray();
+        }).then((arr) => {
+            return helper.iteratorArr(arr, (data) => {
+                return geoToCityAndDistrict(data.position).then((cityAndDistrict) => {
+                    return this.db.updateById(data._id, cityAndDistrict);
+                })
+            }).then(() => {
+                this.db.close();
+                console.log("fixedGeo success")
+                return;
+            })
+        }).catch((e) => {
+            this.db.close();
+            console.log(e);
+            return;
+        })
     }
 
-  
+    filterGeo() {
+        this.db.close()
+        return this.db.open("company").then(() => {
+            return this.db.collection.find({
+                city: {
+                    $ne: "苏州市"
+                }
+            }).toArray();
+        }).then((arr) => {
+            return helper.iteratorArr(arr, (data) => {
+                return this.db.updateById(data._id, {
+                    position: null,
+                    city: null,
+                    district: null
+                });
+
+
+            }).then(() => {
+                this.db.close();
+                console.log("filterGeo success")
+                return;
+            })
+        }).catch((e) => {
+            this.db.close();
+            console.log(e);
+            return;
+        })
+    }
+
 }

@@ -1,7 +1,7 @@
 'use strict';
 var map = require("../../../../iRobots/baidu.js")
 
-function bdGeo(name) {
+function addrToGeo (name) {
 	return map.loadPlaceAPI(name, "苏州").then(function(data) {
 		if (data.status == 0 && data.total >= 0 && data.results.length > 0) {
 			var position = data.results[0];
@@ -21,5 +21,11 @@ function bdGeo(name) {
 	})
 }
 
+function geoToCityAndDistrict(position){
+	return map.loadGeocoderGPSAPI([position.lng, position.lat]).then((t)=> {
+          return  {city: t.result.addressComponent.city, district: t.result.addressComponent.district}
+     })
+}
 
-export {bdGeo}
+
+export {addrToGeo,geoToCityAndDistrict}
