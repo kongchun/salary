@@ -1,4 +1,4 @@
-
+import gps from "../../../../../iRobots/gps.js";
 import Job from "../../model/job";
 export default class Parse {
 	constructor() {}
@@ -36,5 +36,21 @@ export default class Parse {
 		return arr;
 
 	}
-}
 
+	info($){
+		var content = $.html();
+		var info = $(".job_bt").text().replace(/(^\s*)|(\s*$)/g, "");
+		return {info,content};
+	}
+
+	position($){
+		var lng = $("[name='positionLng']").val();
+		var lat = $("[name='positionLat']").val();
+		var addr = $("[name='positionAddress']").val();
+		var position = gps.bd_encrypt(lat,lng);
+		if(lat == 0 && lng ==0){
+			position = null;
+		}
+		return ({addr,position});
+	}
+}

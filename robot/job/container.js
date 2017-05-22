@@ -20,11 +20,7 @@ export default class Container {
         })
     }
 
-    run() {
-        return this.list().then(() => {
-            return this.pageToJob();
-        })
-    }
+
 
     list() {
         return this.getMaxSize(this.maxSize).then((maxSize) => {
@@ -63,7 +59,7 @@ export default class Container {
     }
 
     pageToJob() {
-        console.log(1111);
+        //console.log(1111);
         this.db.close();
         return this.db.open("page").then(() => {
             return this.db.findToArray({ isNew: false, source: this.source }, { content: 1 })
@@ -90,9 +86,68 @@ export default class Container {
             console.log(this.source + " page Loaded");
             return;
         }).catch((e) => {
-            db.close();
+            this.db.close();
             console.log(e, this.source);
             return;
         })
     }
+
+    info(){
+        this.db.close();
+        return this.db.open("job").then(() => {
+            return this.db.findToArray({ content: null, source: this.source })
+        }).then((arr)=>{
+            return helper.iteratorArr(arr, (job) => {
+                return this.loader.info(job.jobId).then((data) => {
+                   // var html = ($.html());
+                    return this.db.open("job").then(() => {
+                        return this.db.updateById(job._id,this.parse.info(data));
+                    })
+                });
+            })
+        }).then(() => {
+            this.db.close();
+            console.log(this.source + " info Loaded");
+            return;
+        }).catch((e) => {
+            this.db.close();
+            console.log(e, this.source);
+            return;
+        })
+    }
+
+
+    position(){
+        this.db.close();
+        return this.db.open("company").then(() => {
+            return this.db.findToArray({ noLoad: null, source: this.source })
+        }).then((arr)=>{
+            this.db.close();
+            return helper.iteratorArr(arr, (cp) => {
+                 return this.db.open("job").then(() => {
+                    return this.db.collection.findOne({company:cp.company,source: this.source})
+                 }).then((job)=>{
+                    this.db.close();
+                    return this.loader.position(job)
+                 }).then((data)=>{
+                    return this.db.open("company").then(() => {
+                        return this.db.updateById(cp._id,this.parse.position(data));
+                    }).then(()=>{
+                        this.db.close();
+                        return null;
+                    })
+                 })
+
+            })
+        }).then(() => {
+            this.db.close();
+            console.log(this.source + " position Loaded");
+            return;
+        }).catch((e) => {
+            this.db.close();
+            console.log(e, this.source);
+            return;
+        })
+    }
+   
 }

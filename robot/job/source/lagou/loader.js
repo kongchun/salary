@@ -22,5 +22,14 @@ export default class Loader {
 			return json;
 		})
 	}
+
+	info (jobId){
+		let url = `https://www.lagou.com/jobs/${jobId}.html`;
+		return loader.getDOM(url,{delay:100});
+	}
+
+	position(job){
+		return Promise.resolve(loader.parseHTML(job.content));
+	}
 }
 

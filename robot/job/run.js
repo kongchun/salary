@@ -4,5 +4,11 @@ import Main from "./main.js";
 
 var main = new Main(db);
 main.addConfig(new Lagou(2));
-//main.run();
-main.pageToJob();
+//main.list();
+//main.pageToJob();
+//main.info();
+//main.groupCompany();
+//main.compareCompany();
+//main.position();
+//main.loadGeo();
+main.fixedGeo();
