@@ -1,4 +1,4 @@
-import helper from "../../../iRobots/helper.js";
+import helper from "../../iRobots/helper.js";
 import Container from "./Container.js";
 import Company from "./model/Company.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";

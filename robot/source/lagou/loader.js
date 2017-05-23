@@ -1,5 +1,5 @@
 import Parse from "./parse.js";
-import loader from "../../../../../iRobots/loader.js";
+import loader from "../../../../iRobots/loader.js";
 const LIST_URL =　"http://www.lagou.com/jobs/positionAjax.json";
 
 export default class Loader {

@@ -12,7 +12,6 @@ export default class ETL {
 	}
 
 	education(){
-		return this.job.education;
 
 		let education =  this.job.education;
 		if (education == "高中以上") {

@@ -1,5 +1,5 @@
-var db = require('../../iRobots/db.js')("127.0.0.1", "kongchun");
-var helper = require("../../iRobots/helper.js");
+var db = require('../../../iRobots/db.js')("127.0.0.1", "kongchun");
+var helper = require("../../../iRobots/helper.js");
 
 
 function yearETL(year) {

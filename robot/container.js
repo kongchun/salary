@@ -1,4 +1,4 @@
-import helper from "../../../iRobots/helper.js";
+import helper from "../../iRobots/helper.js";
 import Page from "./model/page.js"
 import { filter as  jobFilter} from "./utils/jobFilter.js"
 export default class Container {
@@ -105,7 +105,6 @@ export default class Container {
         }).then((arr)=>{
             return helper.iteratorArr(arr, (job) => {
                 return this.loader.info(job.jobId).then((data) => {
-                   // var html = ($.html());
                     return this.db.open(this.table.job).then(() => {
                         return this.db.updateById(job._id,this.parse.info(data));
                     })

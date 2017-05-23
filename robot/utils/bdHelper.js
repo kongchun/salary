@@ -1,5 +1,5 @@
 'use strict';
-var map = require("../../../../iRobots/baidu.js")
+var map = require("../../../iRobots/baidu.js")
 
 function addrToGeo (name,city="苏州") {
 	return map.loadPlaceAPI(name, city).then(function(data) {

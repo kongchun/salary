@@ -2,9 +2,9 @@ var map = require("../../../iRobots/baidu.js")
 var loader = require('../../../iRobots/loader.js');
 var helper = require('../../../iRobots/helper.js');
 var db = require('../../../iRobots/db.js')("127.0.0.1", "kongchun");
-var ETL = require('../jobETL.js');
+var ETL = require('./jobETL.js');
 var table = "jobui";
-var pageSize = 5;
+var pageSize = 1;
 var city = "苏州";
 var search = "前端";
 var year = "2017.05"
@@ -12,8 +12,8 @@ var year = "2017.05"
 //http://www.tianyancha.com
 //
 //
-//run1();
-run2();
+run1();
+//run2();
 //run3()
 //countTech()
 //compareCompany();
@@ -346,7 +346,7 @@ function groupCompany() {
 
 function compareCompany() {
 	db.close()
-	return db.open("suzhou_company").then(function() {
+	return db.open("repertory_company").then(function() {
 		return db.collection.find({}).toArray();
 	}).then(function(data) {
 		//console.log(data)

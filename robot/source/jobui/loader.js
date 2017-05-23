@@ -1,5 +1,5 @@
 import Parse from "./parse.js";
-import loader from "../../../../../iRobots/loader.js";
+import loader from "../../../../iRobots/loader.js";
 
 
 export default class Loader {

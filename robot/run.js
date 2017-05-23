@@ -1,4 +1,4 @@
-var db = require('../../../iRobots/db.js')("127.0.0.1", "kongchun");
+var db = require('../../iRobots/db.js')("127.0.0.1", "kongchun");
 import Lagou from "./source/lagou/config.js";
 import Jobui from "./source/jobui/config.js";
 
@@ -29,7 +29,7 @@ main.addConfig(new Lagou(1));
 //main.transform();
 
 var view = new ViewData(db,table,year);
-//view.show();
+view.show();
 //view.average();
 //view.chart();
 //view.tech();

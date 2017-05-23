@@ -1,5 +1,5 @@
-import gps from "../../../../../iRobots/gps.js";
-import loader from "../../../../../iRobots/loader.js";
+import gps from "../../../../iRobots/gps.js";
+import loader from "../../../../iRobots/loader.js";
 import Job from "../../model/job";
 
 export default class Parse {
