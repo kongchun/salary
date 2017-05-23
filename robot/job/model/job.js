@@ -1,7 +1,7 @@
 'use strict';
 import mongodb from "mongodb";
 export default class Job{
-    constructor({_id,jobId=null,job=null,companyId=null,company=null,addr=null,info=null,workYear=null,education=null,salary=null,time=null,content=null,source=null}) {
+    constructor({_id,jobId=null,job=null,companyId=null,company=null,addr=null,info=null,workYear=null,education=null,salary=null,time=null,content=null,source=null,city=null,kd=null}) {
        this._id = _id?mongodb.ObjectId(_id):new mongodb.ObjectId();
        this.id = jobId+source;
        this.jobId = jobId;
@@ -16,5 +16,7 @@ export default class Job{
        this.info = info;
        this.content = content;
        this.source = source;
+       this.city = city;
+       this.kd = kd;
     }
 }

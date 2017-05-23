@@ -26,4 +26,4 @@ main.addConfig(new Lagou(1));
 var view = new ViewData(db,table,year);
 //view.average();
 //view.chart();
- view.tech();
+// view.tech();

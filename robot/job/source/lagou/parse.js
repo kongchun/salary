@@ -1,7 +1,10 @@
 import gps from "../../../../../iRobots/gps.js";
 import Job from "../../model/job";
 export default class Parse {
-	constructor() {}
+	constructor(city,kd) {
+		this.city = city;
+		this.kd = kd;
+	}
 
 	//根据返回的数据看是否自动停止解析
 	maxPageSize(maxSize,json){
@@ -28,6 +31,8 @@ export default class Parse {
 				       education: it.education,
 				       salary:it.salary,
 				       time:it.createTime,
+				       city:this.city,
+				       kd:this.kd,
 				       source:"lagou"
 			})
 			//console.log(job,333333333)

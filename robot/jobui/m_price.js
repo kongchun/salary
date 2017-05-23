@@ -13,7 +13,7 @@ var year = "2017.05"
 //
 //
 //run1();
-//run2();
+run2();
 //run3()
 //countTech()
 //compareCompany();
@@ -1200,7 +1200,7 @@ function countTech() {
 			var content = (data.content).toLowerCase();;
 
 
-			for (prop in tech) {
+			for (let prop in tech) {
 				if (!techCount[prop]) {
 					techCount[prop] = 0;
 				}
@@ -1226,7 +1226,7 @@ function countTech() {
 
 
 		var arr = [];
-		for (prop in techCount) {
+		for (let prop in techCount) {
 
 			arr.push({
 				tech: prop,

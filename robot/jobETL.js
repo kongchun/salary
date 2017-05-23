@@ -47,7 +47,7 @@ function priceETL(price) {
 		max = 0;
 	}
 
-	average = (max + min) / 2;
+	var average = (max + min) / 2;
 
 	if (average == 0) {
 		price = '面议'
@@ -76,8 +76,8 @@ function priceETL(price) {
 function getMinMax(price) {
 	var arr = price.split("-");
 	if (arr.length > 1) {
-		min = parseFloat(arr[0].replace(/(^\s*)|(\s*$)/g, ""));
-		max = parseFloat(arr[1].replace(/(^\s*)|(\s*$)/g, ""));
+		let min = parseFloat(arr[0].replace(/(^\s*)|(\s*$)/g, ""));
+		let max = parseFloat(arr[1].replace(/(^\s*)|(\s*$)/g, ""));
 		return [min, max];
 	}
 	return [0, parseFloat(price.replace(/(^\s*)|(\s*$)/g, ""))];

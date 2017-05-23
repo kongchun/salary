@@ -8,6 +8,8 @@ export default class Container {
         this.parse = config.parse;
         this.source = config.source;
         this.maxSize = config.pageSize;
+        this.city = config.city;
+        this.kd = config.kd;
         this.etl = config.etl;
         this.table = table;
     }
@@ -38,6 +40,8 @@ export default class Container {
                     var db_page = new Page({
                         url: page,
                         content: data,
+                        city:this.city,
+                        kd:this.kd,
                         source: this.source
                     })
                     return db_page;
@@ -63,20 +67,20 @@ export default class Container {
     pageToJob() {
         //console.log(1111);
         this.db.close();
-        return this.db.open(this.table.page).then(() => {
-            return this.db.findToArray({ isNew: false, source: this.source }, { content: 1 })
+        return this.db.open(this.table.page).then(() => { 
+            return this.db.findToArray({ isNew: true, source: this.source,city:this.city, kd:this.kd }, { content: 1 })
         }).then((arr) => {
-
-            return this.db.collection.updateMany({ isNew: true, source: this.source }, { $set: { isNew: false } }).then((t) => {
+            return this.db.collection.updateMany({ isNew: true, source: this.source,city:this.city, kd:this.kd }, { $set: { isNew: false } }).then((t) => {
                 this.db.close();
                 return arr;
             })
         }).then((arr) => {
+            //console.log(arr);
             var arrAll = [];
             arr.forEach((it) => {
                 arrAll.push(...this.parse.list(it.content));
             })
-            console.log(jobFilter)
+            //console.log(jobFilter)
             return jobFilter(arrAll);
         }).then((data) => {
             this.db.close();
@@ -97,7 +101,7 @@ export default class Container {
     info(){
         this.db.close();
         return this.db.open(this.table.job).then(() => {
-            return this.db.findToArray({ content: null, source: this.source })
+            return this.db.findToArray({ content: null, source: this.source,city:this.city, kd:this.kd  })
         }).then((arr)=>{
             return helper.iteratorArr(arr, (job) => {
                 return this.loader.info(job.jobId).then((data) => {
@@ -122,12 +126,12 @@ export default class Container {
     position(){
         this.db.close();
         return this.db.open(this.table.company).then(() => {
-            return this.db.findToArray({ noLoad: null, source: this.source })
+            return this.db.findToArray({ noLoad: null, source: this.source ,city:this.city, kd:this.kd })
         }).then((arr)=>{
             this.db.close();
             return helper.iteratorArr(arr, (cp) => {
                  return this.db.open(this.table.job).then(() => {
-                    return this.db.collection.findOne({company:cp.company,source: this.source})
+                    return this.db.collection.findOne({company:cp.company,source: this.source,city:this.city, kd:this.kd })
                  }).then((job)=>{
                     this.db.close();
                     return this.loader.position(job)
@@ -155,7 +159,7 @@ export default class Container {
     transform(){
         this.db.close();
         return this.db.open(this.table.job).then(() =>{
-            return this.db.updateIterator({source:this.source},{workYear:1,education:1,salary:1} ,(job) =>{
+            return this.db.updateIterator({source:this.source,city:this.city, kd:this.kd },{workYear:1,education:1,salary:1} ,(job) =>{
                 this.etl.setJob(job);
                 return this.etl.all();
             })
