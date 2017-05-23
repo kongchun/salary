@@ -8,6 +8,7 @@ export default class Container {
         this.parse = config.parse;
         this.source = config.source;
         this.maxSize = config.pageSize;
+        this.etl = config.etl;
     }
 
 
@@ -143,6 +144,25 @@ export default class Container {
             this.db.close();
             console.log(this.source + " position Loaded");
             return;
+        }).catch((e) => {
+            this.db.close();
+            console.log(e, this.source);
+            return;
+        })
+    }
+
+    transform(){
+        this.db.close();
+        return this.db.open("job").then(() =>{
+            return this.db.updateIterator({source:this.source},{workYear:1,education:1,salary:1} ,(job) =>{
+                console.log(job)
+                this.etl.setJob(job);
+                console.log(this.etl.all());
+                return this.etl.all();
+            })
+        }).then(() =>{
+            this.db.close()
+            return ;
         }).catch((e) => {
             this.db.close();
             console.log(e, this.source);

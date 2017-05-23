@@ -184,12 +184,12 @@ export default class Main {
         })
     }
 
-    filterGeo() {
+    filterGeo(city= "苏州市") {
         this.db.close()
         return this.db.open("company").then(() => {
             return this.db.collection.find({
                 city: {
-                    $ne: "苏州市"
+                    $ne: city
                 }
             }).toArray();
         }).then((arr) => {
@@ -213,4 +213,44 @@ export default class Main {
         })
     }
 
+    positionToJob() {
+       this.db.close()
+       return this.db.open("company").then(() => {
+           return this.db.collection.find({}, {
+               position: 1,
+               company: 1,
+               _id: 0
+           }).toArray();
+       }).then((arr) => {
+           this.db.close();
+           return helper.iteratorArr(arr, (i) => {
+               return this.db.open("job").then(() => {
+                   return this.db.collection.updateMany({
+                       company: i.company
+                   }, {
+                       $set: {
+                           position: i.position
+                       }
+                   })
+               })
+           })
+       }).then(() => {
+           this.db.close();
+           console.log("positionToJob success");
+           return
+       }).catch((e) => {
+           this.db.close();
+           console.log(e);
+           return;
+       })
+   }
+
+   transform(){
+        return helper.iteratorArr(this.containerList, (item) => {
+            return item.transform();
+        }).then(function() {
+            console.log("ETL finish");
+            return;
+        })
+   }
 }
