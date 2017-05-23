@@ -13,8 +13,8 @@ const year = "2017.05"
 var table = new Table({});
 var main = new Main(db,table);
 main.addConfig(new Jobui(1));
-
-//main.addConfig(new Lagou(1));
+main.addConfig(new Lagou(1));
+//main.start()
 //
 //main.list();
 //main.pageToJob();
@@ -29,6 +29,7 @@ main.addConfig(new Jobui(1));
 //main.transform();
 
 var view = new ViewData(db,table,year);
+//view.show();
 //view.average();
 //view.chart();
- view.tech();
+//view.tech();

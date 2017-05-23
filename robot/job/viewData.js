@@ -11,7 +11,13 @@ export default class ViewData {
         this.year = year;
         this.table = table;
     }
-
+    show(){
+        return this.average().then(()=>{
+            return this.chart();
+        }).then(()=>{
+            return this.tech();
+        })
+    }
     average() {
         this.db.close();
         return this.db.open(this.table.job).then(() => {

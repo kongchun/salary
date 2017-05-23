@@ -15,6 +15,31 @@ export default class Main {
         this.containerList.push(container);
     }
 
+    start(){
+
+        return this.list().then(()=>{
+            return this.pageToJob();
+        }).then(()=>{
+            return this.info();
+        }).then(()=>{
+            return this.groupCompany();
+        }).then(()=>{
+            return this.compareCompany();
+        }).then(()=>{
+            return this.position();
+        }).then(()=>{
+            return this.loadGeo();
+        }).then(()=>{
+            return this.fixedGeo();
+        }).then(()=>{
+            return this.filterGeo();
+        }).then(()=>{
+            return this.positionToJob();
+        }).then(()=>{
+            return this.transform();
+        })
+    }
+
     list() {
         //加载列表
         return helper.iteratorArr(this.containerList, (item) => {
