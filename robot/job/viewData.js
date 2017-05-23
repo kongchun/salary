@@ -6,14 +6,15 @@ import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
 
 
 export default class ViewData {
-    constructor(db, year) {
+    constructor(db, table,year) {
         this.db = db;
         this.year = year;
+        this.table = table;
     }
 
     average() {
         this.db.close();
-        return this.db.open("job").then(() => {
+        return this.db.open(this.table.job).then(() => {
             return this.db.findToArray({}, { average: 1 })
         }).then((data) => {
             this.db.close()
@@ -28,7 +29,7 @@ export default class ViewData {
             return (average.toFixed(2))
         }).then((value) => {
             this.db.close();
-            return this.db.open("year").then(() => {
+            return this.db.open(this.table.year).then(() => {
                 return this.db.collection.findOne({
                     year: this.year
                 })
@@ -62,7 +63,7 @@ export default class ViewData {
 
     chart() {
         this.db.close();
-        return this.db.open("job").then(() => {
+        return this.db.open(this.table.job).then(() => {
             return this.db.collection.group({
                 'salaryRange': true
             }, {
@@ -155,7 +156,7 @@ export default class ViewData {
 
     tech() {
         let techCount ={};
-        return this.db.open("job").then(() => {
+        return this.db.open(this.table.job).then(() => {
             return this.db.collection.find({
                 content: {
                     $ne: null
@@ -202,7 +203,7 @@ export default class ViewData {
                 });
             }
 
-            return this.db.open("tech").then(() => {
+            return this.db.open(this.table.tech).then(() => {
                 return this.db.collection.remove({});
             }).then(() => {
                 return this.db.collection.insertMany(arr);

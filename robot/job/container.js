@@ -2,13 +2,14 @@ import helper from "../../../iRobots/helper.js";
 import Page from "./model/page.js"
 import { filter as  jobFilter} from "./utils/jobFilter.js"
 export default class Container {
-    constructor(db, config) {
+    constructor(db, table,config) {
         this.db = db;
         this.loader = config.loader;
         this.parse = config.parse;
         this.source = config.source;
         this.maxSize = config.pageSize;
         this.etl = config.etl;
+        this.table = table;
     }
 
 
@@ -43,7 +44,7 @@ export default class Container {
                 });
             }).then((data) => {
                 this.db.close();
-                return this.db.open("page").then(() => {
+                return this.db.open(this.table.page).then(() => {
                     return this.db.collection.insertMany(data)
                 })
             }).then(() => {
@@ -62,7 +63,7 @@ export default class Container {
     pageToJob() {
         //console.log(1111);
         this.db.close();
-        return this.db.open("page").then(() => {
+        return this.db.open(this.table.page).then(() => {
             return this.db.findToArray({ isNew: false, source: this.source }, { content: 1 })
         }).then((arr) => {
 
@@ -79,12 +80,12 @@ export default class Container {
             return jobFilter(arrAll);
         }).then((data) => {
             this.db.close();
-            return this.db.open("job").then(() => {
+            return this.db.open(this.table.job).then(() => {
                 return this.db.insertUnique(data,"id")
             })
         }).then(() => {
             this.db.close();
-            console.log(this.source + " page Loaded");
+            console.log(this.source + " pageToJob Loaded");
             return;
         }).catch((e) => {
             this.db.close();
@@ -95,13 +96,13 @@ export default class Container {
 
     info(){
         this.db.close();
-        return this.db.open("job").then(() => {
+        return this.db.open(this.table.job).then(() => {
             return this.db.findToArray({ content: null, source: this.source })
         }).then((arr)=>{
             return helper.iteratorArr(arr, (job) => {
                 return this.loader.info(job.jobId).then((data) => {
                    // var html = ($.html());
-                    return this.db.open("job").then(() => {
+                    return this.db.open(this.table.job).then(() => {
                         return this.db.updateById(job._id,this.parse.info(data));
                     })
                 });
@@ -120,18 +121,18 @@ export default class Container {
 
     position(){
         this.db.close();
-        return this.db.open("company").then(() => {
+        return this.db.open(this.table.company).then(() => {
             return this.db.findToArray({ noLoad: null, source: this.source })
         }).then((arr)=>{
             this.db.close();
             return helper.iteratorArr(arr, (cp) => {
-                 return this.db.open("job").then(() => {
+                 return this.db.open(this.table.job).then(() => {
                     return this.db.collection.findOne({company:cp.company,source: this.source})
                  }).then((job)=>{
                     this.db.close();
                     return this.loader.position(job)
                  }).then((data)=>{
-                    return this.db.open("company").then(() => {
+                    return this.db.open(this.table.company).then(() => {
                         return this.db.updateById(cp._id,this.parse.position(data));
                     }).then(()=>{
                         this.db.close();
@@ -153,11 +154,9 @@ export default class Container {
 
     transform(){
         this.db.close();
-        return this.db.open("job").then(() =>{
+        return this.db.open(this.table.job).then(() =>{
             return this.db.updateIterator({source:this.source},{workYear:1,education:1,salary:1} ,(job) =>{
-                console.log(job)
                 this.etl.setJob(job);
-                console.log(this.etl.all());
                 return this.etl.all();
             })
         }).then(() =>{

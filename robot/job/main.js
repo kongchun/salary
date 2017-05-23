@@ -4,13 +4,14 @@ import Company from "./model/Company.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
 
 export default class Main {
-    constructor(db) {
+    constructor(db,table) {
         this.db = db;
+        this.table = table;
         this.containerList = [];
     }
 
     addConfig(config) {
-        var container = new Container(this.db, config);
+        var container = new Container(this.db,this.table,config);
         this.containerList.push(container);
     }
 
@@ -44,7 +45,7 @@ export default class Main {
 
     groupCompany() {
         this.db.close();
-        return this.db.open("job").then(() => {
+        return this.db.open(this.table.job).then(() => {
             return this.db.collection.group({
                 "company": true
             }, {
@@ -56,7 +57,7 @@ export default class Main {
         }).then((arr) => {
             this.db.close();
             //console.log(arr);
-            return this.db.open("company").then(() => {
+            return this.db.open(this.table.company).then(() => {
                 return this.db.collection.remove({}).then(() => {
                     return this.db.collection.insertMany(arr);
                 })
@@ -76,7 +77,7 @@ export default class Main {
 
     compareCompany() {
         this.db.close()
-        return this.db.open("suzhou_company").then(() => {
+        return this.db.open(this.table.repertoryCompany).then(() => {
             return this.db.collection.find({}).toArray();
         }).then((data) => {
             //console.log(data)
@@ -84,7 +85,7 @@ export default class Main {
             return helper.iteratorArr(data, (i) => {
                 var company = i.company;
                 //console.log(company)
-                return this.db.open("company").then(() => {
+                return this.db.open(this.table.company).then(() => {
                     return this.db.collection.findOne({
                         company: company
                     }).then((t) => {
@@ -126,7 +127,7 @@ export default class Main {
 
     loadGeo(key = "addr") {
         this.db.close()
-        return this.db.open("company").then(() => {
+        return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
                 position: null,
                 noLoad: null
@@ -157,7 +158,7 @@ export default class Main {
 
     fixedGeo() {
         this.db.close()
-        return this.db.open("company").then(() => {
+        return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
                 position: {
                     $ne: null
@@ -186,7 +187,7 @@ export default class Main {
 
     filterGeo(city= "苏州市") {
         this.db.close()
-        return this.db.open("company").then(() => {
+        return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
                 city: {
                     $ne: city
@@ -215,7 +216,7 @@ export default class Main {
 
     positionToJob() {
        this.db.close()
-       return this.db.open("company").then(() => {
+       return this.db.open(this.table.company).then(() => {
            return this.db.collection.find({}, {
                position: 1,
                company: 1,
@@ -224,7 +225,7 @@ export default class Main {
        }).then((arr) => {
            this.db.close();
            return helper.iteratorArr(arr, (i) => {
-               return this.db.open("job").then(() => {
+               return this.db.open(this.table.job).then(() => {
                    return this.db.collection.updateMany({
                        company: i.company
                    }, {
