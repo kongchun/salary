@@ -126,12 +126,12 @@ export default class Container {
     position(){
         this.db.close();
         return this.db.open(this.table.company).then(() => {
-            return this.db.findToArray({ noLoad: null, source: this.source ,city:this.city, kd:this.kd })
+            return this.db.findToArray({ noLoad: null, source: this.source  })
         }).then((arr)=>{
             this.db.close();
             return helper.iteratorArr(arr, (cp) => {
                  return this.db.open(this.table.job).then(() => {
-                    return this.db.collection.findOne({company:cp.company,source: this.source,city:this.city, kd:this.kd })
+                    return this.db.collection.findOne({company:cp.company,source: this.source })
                  }).then((job)=>{
                     this.db.close();
                     return this.loader.position(job)

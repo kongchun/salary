@@ -24,7 +24,7 @@ export default class ETL {
 			return "3-5年"
 		}
 		if(year == "5-10年"){
-			return "5年以上"
+			return "5-10年"
 		}
 		return year;
 	}

@@ -1,5 +1,7 @@
 'use strict';
 
+const eduRange = ["大专","本科","不限"];
+const yearRange = ["3年以下","3-5年","5-10年","不限"];
 
 function getMinMax(price) {
 	var arr = price.split("-");

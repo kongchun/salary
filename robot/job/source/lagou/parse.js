@@ -1,5 +1,6 @@
 import gps from "../../../../../iRobots/gps.js";
 import Job from "../../model/job";
+
 export default class Parse {
 	constructor(city,kd) {
 		this.city = city;
