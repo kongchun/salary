@@ -53,10 +53,18 @@ export default class Parse {
 		var lng = $("[name='positionLng']").val();
 		var lat = $("[name='positionLat']").val();
 		var addr = $("[name='positionAddress']").val();
+
+
 		var position = gps.bd_encrypt(lat,lng);
 		if(lat == 0 && lng ==0){
 			position = null;
 		}
+
+		if(addr==null){
+			addr = "苏州"
+			position = null;
+		}
+		
 		return ({addr,position});
 	}
 }

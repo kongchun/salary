@@ -3,7 +3,7 @@ import Lagou from "./source/lagou/config.js";
 import Jobui from "./source/jobui/config.js";
 import FiveOneJob from "./source/51job/config.js";
 import ZhaoPin from "./source/zhaopin/config.js";
-
+import ZhiPin from "./source/zhipin/config.js";
 
 import Main from "./main.js";
 import ViewData from "./viewData.js";
@@ -16,9 +16,10 @@ const year = "2017.06"
 var table = new Table({});
 var main = new Main(db,table);
 //main.addConfig(new Jobui(1));
-//main.addConfig(new Lagou(2));
-main.addConfig(new ZhaoPin(1));
-//main.addConfig(new FiveOneJob(2));
+//main.addConfig(new Lagou(2)); //拉钩
+main.addConfig(new ZhaoPin(2)); //智联招聘
+//main.addConfig(new FiveOneJob(2)); //51Job
+//main.addConfig(new ZhiPin(2)); //BOSS直聘
 
 //main.start()
 //
@@ -35,7 +36,7 @@ main.addConfig(new ZhaoPin(1));
 //main.transform();
 
 var view = new ViewData(db,table,year);
-//view.show();
+view.show();
 //view.average();
 //view.chart();
 //view.tech();
