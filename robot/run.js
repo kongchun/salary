@@ -16,10 +16,10 @@ const year = "2017.06"
 var table = new Table({});
 var main = new Main(db,table);
 //main.addConfig(new Jobui(1));
-//main.addConfig(new Lagou(2)); //拉钩
-main.addConfig(new ZhaoPin(2)); //智联招聘
-//main.addConfig(new FiveOneJob(2)); //51Job
-//main.addConfig(new ZhiPin(2)); //BOSS直聘
+main.addConfig(new Lagou(1)); //拉钩
+main.addConfig(new ZhaoPin(1)); //智联招聘
+main.addConfig(new FiveOneJob(1)); //51Job
+main.addConfig(new ZhiPin(1)); //BOSS直聘
 
 //main.start()
 //
@@ -34,6 +34,8 @@ main.addConfig(new ZhaoPin(2)); //智联招聘
 //main.filterGeo();
 //main.positionToJob();
 //main.transform();
+//
+//main.reInfo();
 
 var view = new ViewData(db,table,year);
 view.show();

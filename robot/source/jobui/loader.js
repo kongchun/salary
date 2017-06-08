@@ -20,7 +20,7 @@ export default class Loader {
 
 	info (jobId){
 		let url = `http://m.jobui.com/job/${jobId}`;
-		return loader.getDOM(url,{delay:100});
+		return loader.getDOM(url,{delay:500});
 	}
 
 	position(job){

@@ -230,14 +230,15 @@ export default class ViewData {
 const TECH = {
     javascript: "基础",
     html: "基础",
+    H5:"基础",
     css: "基础",
     ajax: "基础",
     json: "基础",
     webrtc: "基础",
     websocket: "基础",
     js: "基础",
-    WebGL: "基础",
 
+    WebGL: "图形",
     Flash: "图形",
     canvas: "图形",
     svg: "图形",
@@ -253,6 +254,9 @@ const TECH = {
     jquery: "框架和库",
     zepto: "框架和库",
     prototype: "框架和库",
+    handlebars:"框架和库",
+    undersorce:"框架和库",
+    lodash:"框架和库",
 
     bootstrap: "框架和库",
     MooTools: "框架和库",
@@ -279,6 +283,8 @@ const TECH = {
     ng: "MVVM",
     angular: "MVVM",
     Redux: "MVVM",
+    canJS:"MVVM",
+    Ractive:"MVVM",
 
     node: "node",
     npm: "node",
@@ -307,5 +313,9 @@ const TECH = {
     Redis: "数据库",
     Memcache: "数据库",
     postgresql: "数据库",
-    NOSQL: "数据库"
+    NOSQL: "数据库",
+
+    karma:"测试",
+    jasmine:"测试",
+    protractor:"测试"
 }

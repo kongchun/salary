@@ -25,7 +25,7 @@ export default class Loader {
 
 	info (jobId){
 		let url = `https://www.lagou.com/jobs/${jobId}.html`;
-		return loader.getDOM(url,{delay:100});
+		return loader.getDOM(url,{delay:500});
 	}
 
 	position(job){

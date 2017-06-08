@@ -279,4 +279,13 @@ export default class Main {
             return;
         })
    }
+
+   reInfo() {
+        return helper.iteratorArr(this.containerList, (item) => {
+            return item.parseInfo();
+        }).then(function() {
+            console.log("info finish");
+            return;
+        })
+    }
 }

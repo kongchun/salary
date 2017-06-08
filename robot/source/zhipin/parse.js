@@ -53,7 +53,7 @@ export default class Parse {
                         kd: this.kd,
                         source: this.source
                     })
-                    console.log(job);
+                    //console.log(job);
                     arr.push(job);
                 
             
@@ -67,8 +67,8 @@ export default class Parse {
         var content = $.html();
         var info = $(".detail-content .job-sec").first().text().replace(/(^\s*)|(\s*$)/g, "");
         var companyId = $(".info-company a").attr("href").replace("/gongsi/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
-
-        return { info, content,companyId};
+        var company = $(".info-company h3").next().text().replace(/(^\s*)|(\s*$)/g, "");
+        return { info, content,companyId,company};
     }
 
     position($) {
@@ -80,9 +80,9 @@ export default class Parse {
             var sp = map.split(",");
             position = gps.bd_encrypt(sp[1],sp[0]);
         }
-
+        var company = $(".info-company h3").next().text().replace(/(^\s*)|(\s*$)/g, "");
  		
         //console.log({ addr, position })
-        return ({ addr, position });
+        return ({ addr, position,company });
     }
 }

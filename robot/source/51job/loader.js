@@ -31,7 +31,7 @@ export default class Loader {
 
 	info (jobId){
 		let url = `http://jobs.51job.com/all/${jobId}.html`;
-		return loader.getDOM(url,{delay:2000});
+		return loader.getDOM(url,{delay:500});
 	}
 
 	position(job){

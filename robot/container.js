@@ -1,6 +1,9 @@
 import helper from "../../iRobots/helper.js";
+import loader from "../../iRobots/loader.js";
 import Page from "./model/page.js"
 import { filter as  jobFilter} from "./utils/jobFilter.js"
+
+
 export default class Container {
     constructor(db, table,config) {
         this.db = db;
@@ -109,6 +112,24 @@ export default class Container {
                         return this.db.updateById(job._id,this.parse.info(data));
                     })
                 });
+            })
+        }).then(() => {
+            this.db.close();
+            console.log(this.source + " info Loaded");
+            return;
+        }).catch((e) => {
+            this.db.close();
+            console.log(e, this.source);
+            return;
+        })
+    }
+
+    parseInfo(){
+         return this.db.open(this.table.job).then(() => {
+            return this.db.findToArray({ source: this.source,city:this.city, kd:this.kd  })
+        }).then((arr)=>{
+            return helper.iteratorArr(arr, (job) => {
+                return this.db.updateById(job._id,this.parse.info(loader.parseHTML(job.content)));
             })
         }).then(() => {
             this.db.close();
