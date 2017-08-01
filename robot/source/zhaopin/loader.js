@@ -19,7 +19,7 @@ export default class Loader {
 		var code = CITY_CODE[this.city];
 
 		let url = encodeURI(`https://m.zhaopin.com/${code}/?keyword=${this.kd}&pageindex=${pageSize}&maprange=3&islocation=0`);
-		return loader.getDOM(url,{delay:100}).then(($)=>{
+		return loader.getDOM(url,{delay:1000}).then(($)=>{
 			return $.html();
 		})
 	}

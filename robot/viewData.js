@@ -164,16 +164,16 @@ export default class ViewData {
         let techCount ={};
         return this.db.open(this.table.job).then(() => {
             return this.db.collection.find({
-                content: {
+                info: {
                     $ne: null
                 }
             }, {
-                content: 1
+                info: 1
             }).toArray()
         }).then(function(arr) {
             console.log(arr.length)
             return helper.iteratorArr(arr, (data) => {
-                var content = (data.content).toLowerCase();
+                var content = (data.info).toLowerCase();
 
 
                 for (let prop in TECH) {
@@ -194,7 +194,7 @@ export default class ViewData {
             this.db.close();
             techCount["javascript"] = techCount["javascript"] + techCount["js"] - techCount["json"];
             techCount["jquery"] = techCount["jq"];
-            techCount["angular"] = techCount["ng"] - techCount["mongothis.db"]
+            techCount["angular"] = techCount["ng"] - techCount["mongodb"]
             delete techCount['jq'];
             delete techCount['ng'];
             delete techCount['js'];

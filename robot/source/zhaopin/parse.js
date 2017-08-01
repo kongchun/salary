@@ -17,13 +17,13 @@ export default class Parse {
     }
 
     list(html) {
+   
         var $ = loader.parseHTML(html);
         var arr = [];
+        console.log( $(".job-list").html())
         $(".job-list").each((i, item) => {
-
-                var jobId = $("a", item).attr("href").replace("/job/", "").replace("/", "").replace(/(^\s*)|(\s*$)/g, "");
                 
-
+                var jobId = $(item).attr("data-number");
                 var jobName = $(".job-name", item).text().replace(/(^\s*)|(\s*$)/g, "");
                 var companyId = jobId.split("j")[0];
                 var company = $(".comp-name", item).text().replace(/(^\s*)|(\s*$)/g, "");
@@ -46,10 +46,10 @@ export default class Parse {
                         source: this.source
                     })
 
+                    //console.log(job)
+
                     arr.push(job);
                 
-            
-
         })
         return arr;
 
@@ -74,4 +74,5 @@ export default class Parse {
         return ({ addr, position });
     }
 }
+
 

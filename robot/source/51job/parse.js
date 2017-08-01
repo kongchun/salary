@@ -65,10 +65,11 @@ export default class Parse {
 
     position($) {
 
- 		var workYear = $(".jtag.inbox .i1").parent().text().replace(/(^\s*)|(\s*$)/g, "");
- 		var education = $(".jtag.inbox .i2").parent().text().replace(/(^\s*)|(\s*$)/g, "");
  		var addr = $(".i_map").parent().text().replace("上班地址：","").replace("地图","").replace(/(^\s*)|(\s*$)/g, "");
  		var position = null; 	
-        return ({ addr, position,workYear,education });
+
+        console.log({addr});
+       // console.log({ addr, position,workYear,education })
+        return ({ addr, position});
     }
 }
