@@ -66,6 +66,7 @@ export default class Parse {
     }
 
     position($) {
+
  		var addr = $(".add").text().replace(/(^\s*)|(\s*$)/g, "");
         if(addr.indexOf("不限")>-1){
             addr = ""

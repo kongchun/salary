@@ -45,6 +45,11 @@ export default class ETL {
 		if(year == "1年以内"){
 			return "3年以下"
 		}
+
+		if(year == "应届生"){
+			return "3年以下"
+		}
+
 		return year;
 	}
 	salary(){

@@ -26,19 +26,23 @@ export default class Parse {
                 var salary = red.text().replace(/(^\s*)|(\s*$)/g, "");
                 red.remove();
 
+
+
                 $(".info-company p",item).remove();
 
-                var jobName = $(".info-primary .name", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                var jobName = $(".info-primary .name .job-title", item).text().replace(/(^\s*)|(\s*$)/g, "");
                 var companyId = null;
                 var company = $(".info-company .name", item).text().replace(/(^\s*)|(\s*$)/g, "");
                
-                var time = $(".time", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                var time = $(".info-publis p", item).text().replace(/(^\s*)|(\s*$)/g, "");
+
+                $(".info-primary h3",item).remove();
 
                 var sp = $(".info-primary p",item).html().split('<em class="vline"></em>');
+
                 var workYear = sp[1].replace(/(^\s*)|(\s*$)/g, "");;
                 var education = sp[2].replace(/(^\s*)|(\s*$)/g, "");;
           
-
                     var job = new Job({
                         jobId: jobId,
                         job: jobName,
@@ -66,9 +70,9 @@ export default class Parse {
     info($) {
         var content = $.html();
         var info = $(".detail-content .job-sec").first().text().replace(/(^\s*)|(\s*$)/g, "");
-        var companyId = $(".info-company a").attr("href").replace("/gongsi/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
+        //var companyId = $(".info-company a").attr("href").replace("/gongsi/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
         //var company = $(".info-company h3").next().text().replace(/(^\s*)|(\s*$)/g, "");
-        return { info, content,companyId};
+        return { info, content};
     }
 
     position($) {
@@ -85,3 +89,5 @@ export default class Parse {
         return ({ addr, position });
     }
 }
+
+

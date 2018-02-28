@@ -11,15 +11,15 @@ import Table from "./model/table.js";
 
 const city = "苏州";
 const kd = "前端";
-const year = "2017.08"
+const year = "2018.02"
 
 var table = new Table({});
 var main = new Main(db,table);
 //main.addConfig(new Jobui(1));
-//main.addConfig(new Lagou(1)); //拉钩
-//main.addConfig(new ZhaoPin(1)); //智联招聘
-//main.addConfig(new FiveOneJob(1)); //51Job
-main.addConfig(new ZhiPin(1)); //BOSS直聘
+main.addConfig(new Lagou(10)); //拉钩
+main.addConfig(new ZhaoPin(10)); //智联招聘
+main.addConfig(new FiveOneJob(10)); //51Job
+main.addConfig(new ZhiPin(3)); //BOSS直聘 参数不要大于3
 
 // main.start().catch(function(e){
 // 	console.log(e);
@@ -41,8 +41,8 @@ main.addConfig(new ZhiPin(1)); //BOSS直聘
 //
 //main.reInfo();
 
-//var view = new ViewData(db,table,year);
-//view.show();
+var view = new ViewData(db,table,year);
+view.show();
 // view.average();
 // view.chart();
 // view.tech();

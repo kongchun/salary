@@ -19,7 +19,9 @@ export default class ETL {
 		if (education == "中专") {
 			education = "大专"
 		}
-
+		if (education == "中技") {
+			education = "大专"
+		}
 		if(education == "高中"){
 			education = "大专"
 		}
@@ -53,6 +55,10 @@ export default class ETL {
 
 		if(year == "8-9年经验"){
 			return "5-10年"
+		}
+
+		if(year == ""){
+			return "不限"
 		}
 		return year;
 	}

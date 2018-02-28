@@ -26,6 +26,7 @@ export default class Loader {
 
 	info (jobId){
 		let url = `https://m.zhaopin.com/job/${jobId}`;
+		console.log(url);
 		return loader.getDOM(url,{delay:500});
 	}
 

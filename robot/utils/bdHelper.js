@@ -3,6 +3,7 @@ var map = require("../../../iRobots/baidu.js")
 
 function addrToGeo (name,city="苏州") {
 	return map.loadPlaceAPI(name, city).then(function(data) {
+		console.log(data)
 		if (data.status == 0 && data.total >= 0 && data.results.length > 0) {
 			var position = data.results[0];
 			if (position.location) {

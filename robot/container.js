@@ -59,7 +59,7 @@ export default class Container {
                 console.log(this.source + " page Loaded");
                 return;
             }).catch((e) => {
-                db.close();
+                this.db.close();
                 console.log(e, this.source);
                 return;
             })
@@ -154,6 +154,7 @@ export default class Container {
                     return this.db.collection.findOne({company:cp.company,source: this.source })
                  }).then((job)=>{
                     this.db.close();
+                    console.log(job)
                     return this.loader.position(job)
                  }).then((data)=>{
                     return this.db.open(this.table.company).then(() => {

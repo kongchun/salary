@@ -23,6 +23,9 @@ export default class ETL {
 		if(education == "高中"){
 			education = "大专"
 		}
+		if(education == "学历不限"){
+			education = "不限"
+		}
 		if(education == ""){
 			education = "不限"
 		}
@@ -32,12 +35,19 @@ export default class ETL {
 
 	workYear(){
 		let year =  this.job.workYear;
+		
 		if(year == "经验不限"){
 			return "不限"
 		}
 		if(year == "无经验"){
 			return "3年以下"
 		}
+		if(year == "应届生"){
+			return "3年以下"
+		}
+
+
+
 
 		if(year == "1-3年"){
 			return "3年以下"

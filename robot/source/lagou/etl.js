@@ -11,18 +11,49 @@ export default class ETL {
 		this.job = job;
 	}
 
+
 	education(){
-		return this.job.education;
+		let education =  this.job.education;
+		if (education == "本科及以上") {
+			education = "本科"
+		}
+		if (education == "大专及以上") {
+			education = "大专"
+		}
+		if (education == "学历不限") {
+			education = "不限"
+		}
+
+		
+
+		return education
 	}
+
+
 
 	workYear(){
 		let year =  this.job.workYear;
 		if(year == "1-3年"){
 			return "3年以下"
 		}
+		if(year == "经验1-3年"){
+			return "3年以下"
+		}
+
+		
 		if(year == "3-5年"){
 			return "3-5年"
 		}
+		if(year == "经验3-5年"){
+			return "3-5年"
+		}
+		if(year == "经验不限"){
+			return "不限"
+		}
+				if(year == ""){
+			return "不限"
+		}
+
 		if(year == "5-10年"){
 			return "5-10年"
 		}

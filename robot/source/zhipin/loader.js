@@ -26,6 +26,7 @@ export default class Loader {
 
 	info (jobId){
 		let url = `http://www.zhipin.com/job_detail/${jobId}.html`;
+		console.log(url)
 		return loader.getDOM(url,{delay:500});
 	}
 
