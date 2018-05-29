@@ -88,7 +88,7 @@ var ChartMap = {
 				}
 			},
 			title: {
-				text: "苏州前端招聘分布(2018.02)",
+				text: "苏州前端招聘分布(2018.05)",
 				subtext: "来源:招聘网站 | 作者:天堂龙 | 公众号:苏州前端",
 				left: 'center',
 				top: 5,

@@ -270,6 +270,7 @@ const TECH = {
 
     backbone: "MVVM",
     Knockout: "MVVM",
+    riotjs:"MVVM",
 
     PhoneGap: "移动库",
     IONIC: "移动库",

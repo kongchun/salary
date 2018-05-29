@@ -11,7 +11,7 @@ import Table from "./model/table.js";
 
 const city = "苏州";
 const kd = "前端";
-const year = "2018.02"
+const year = "2018.05"
 
 var table = new Table({});
 var main = new Main(db,table);
@@ -46,6 +46,6 @@ view.show();
 // view.average();
 // view.chart();
 // view.tech();
-//
+// //
 //
 

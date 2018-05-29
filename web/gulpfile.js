@@ -93,9 +93,9 @@ gulp.task('watch', ['build'], function() {
 
 
 //执行gulp server开启服务器
-gulp.task('server', ['connect', 'watch']);
+gulp.task('server', ['start', 'watch']);
 
-gulp.task('connect', function() {
+gulp.task('start', function() {
 	connect.server({
 		host: '127.0.0.1', //地址，可不写，不写的话，默认localhost
 		port: 3000, //端口号，可不写，默认8000
