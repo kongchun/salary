@@ -11,6 +11,8 @@ var cssmin = require('gulp-cssmin');
 var uglify = require('gulp-uglify');
 var streamify = require('gulp-streamify');
 
+var server = require('gulp-express');
+
 gulp.task('vendor-css', function() {
 	gulp.src('node_modules/bootstrap/dist/fonts/*.*')
 		.pipe(gulp.dest('public/fonts'));
@@ -52,7 +54,7 @@ gulp.task('vendor', ['vendor-css'], function() {
  */
 
 gulp.task('browserify', function() {
-	gulp.src('src/data.js').pipe(uglify()).pipe(gulp.dest('dist/js'));
+	//gulp.src('src/data.js').pipe(uglify()).pipe(gulp.dest('dist/js'));
 
 	return browserify(['src/main.js'])
 		.transform(babelify, {
@@ -88,25 +90,41 @@ gulp.task('build', ['html', 'styles', 'vendor', 'browserify']);
 
 gulp.task('watch', ['build'], function() {
 	gulp.watch('src/**/*.*', ['build']);
-	gulp.watch('dist/**/*.*', ['reload']);
+	//gulp.watch('dist/**/*.*', ['reload']);
 });
 
+
+gulp.task('server', ['watch'], function() {
+	process.env.NODE_ENV = 'development';
+	process.env.debug = 'salary:*';
+	// Start the server at the beginning of the task
+	server.run(['./bin/www']);
+	gulp.watch('public/**/bundle.js', server.notify);
+	gulp.watch('public/**/m_bundle.js', server.notify);
+	gulp.watch('public/**/*.css', server.notify);
+	gulp.watch(['app.js', 'routes/**/*.js'], server.run);
+});
+
+gulp.task('run', ['watch'], function() {
+	// Start the server at the beginning of the task
+	server.run(['./bin/www']);
+});
 
 //执行gulp server开启服务器
-gulp.task('server', ['start', 'watch']);
+// gulp.task('server', ['start', 'watch']);
 
-gulp.task('start', function() {
-	connect.server({
-		host: '127.0.0.1', //地址，可不写，不写的话，默认localhost
-		port: 3000, //端口号，可不写，默认8000
-		root: './', //当前项目主目录
-		livereload: true //自npm ins动刷新
-	});
-});
-gulp.task('reload', function() {
-	return gulp.src('*').pipe(connect.reload());
-});
+// gulp.task('start', function() {
+// 	connect.server({
+// 		host: '127.0.0.1', //地址，可不写，不写的话，默认localhost
+// 		port: 3000, //端口号，可不写，默认8000
+// 		root: './', //当前项目主目录
+// 		livereload: true //自npm ins动刷新
+// 	});
+// });
+// gulp.task('reload', function() {
+// 	return gulp.src('*').pipe(connect.reload());
+// });
 
-gulp.task('default', function() {
-	gulp.start('server');
-});
+// gulp.task('default', function() {
+// 	gulp.start('server');
+// });

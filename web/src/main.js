@@ -9,12 +9,58 @@ function initSize() {
 	$("#map").height($(window).height())
 }
 
+function getQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]);
+    return null;
+}
+
+var points = [];
+var timeStr = "xxxx.xx";
 var ChartMap = {
 	chart: null,
 	map: null,
 	init: function() {
-		this.initChart();
-		this.initMap();
+		const now = new Date();
+		let year = now.getFullYear();
+		let month = (now.getMonth()+1);
+		if(month>1){
+			month--;
+		}else{
+			year--;
+			month = 12;
+		}
+		let time = getQueryString("time");
+		if(!!time){
+			let timeArr = time.split('.');
+			if(!!timeArr && timeArr.length>1){
+				year = timeArr[0];
+				month = timeArr[1];
+			}
+		}else{
+			year = '';
+			month = '';
+		}
+		let that = this;
+		$.ajax({
+			url: '/api/getAverageSalary',
+			type: 'get',
+			data: {year,month}
+		}).done(function (data) {
+			if(!!data){
+				if(!!data.year && !!data.month){
+					timeStr = data.year+'.'+data.month;
+				}
+				if(!!data.points){
+					points = data.points;
+				}
+				that.initChart();
+			}
+			that.initMap();
+		}).fail(function (e) {
+			console.error("数据查询超时");
+		});
 	},
 
 	create: function(id) {
@@ -88,7 +134,7 @@ var ChartMap = {
 				}
 			},
 			title: {
-				text: "苏州前端招聘分布(2018.05)",
+				text: "苏州前端招聘分布("+timeStr+")",
 				subtext: "来源:招聘网站 | 作者:天堂龙 | 公众号:苏州前端",
 				left: 'center',
 				top: 5,
