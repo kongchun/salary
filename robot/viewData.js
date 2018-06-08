@@ -6,9 +6,10 @@ import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
 
 
 export default class ViewData {
-    constructor(db, table,year) {
+    constructor(db, table,year,month) {
         this.db = db;
         this.year = year;
+        this.month = month;
         this.table = table;
     }
     show(){
@@ -27,32 +28,40 @@ export default class ViewData {
             var count = data.length;
             var total = 0;
             data.forEach((i) => {
+                if(i.average>0)
                 total += i.average
             });
             console.log(total, count)
             var average = total / count;
-            //console.log(average.toFixed(2))
             return (average.toFixed(2))
         }).then((value) => {
+
             this.db.close();
-            return this.db.open(this.table.year).then(() => {
+            return this.db.open(this.table.board).then(() => {
                 return this.db.collection.findOne({
-                    year: this.year
+                    year: this.year,
+                    month:this.month
                 })
             }).then((data) => {
-                console.log(this.year, value)
+                console.log(this.year+this.month, value)
                 if (data) {
                     return this.db.collection.update({
-                        year: this.year
+                        year: this.year,
+                        month:this.month
                     }, {
                         $set: {
-                            value: value
+                            average: value,
+                            time:new Date(),
+                            publish:false
                         }
                     })
                 } else {
                     return this.db.collection.insert({
                         year: this.year,
-                        value: value
+                        month:this.month,
+                        average: value,
+                        time:new Date(),
+                        publish:false
                     })
                 }
             })
@@ -66,6 +75,7 @@ export default class ViewData {
             return;
         })
     }
+
 
     chart() {
         this.db.close();
@@ -100,11 +110,9 @@ export default class ViewData {
                     "count": i.count
                 })
             })
-            console.log("=========")
-            console.log(JSON.stringify(obj))
-            console.log("=========")
-            console.log(JSON.stringify(arr))
-        }).then(() => {
+
+            return {points:obj,salaryRange:arr}
+        }).then(({points,salaryRange}) => {
             return this.db.collection.group({
                 'eduRange': true
             }, {
@@ -116,19 +124,19 @@ export default class ViewData {
                 "count": 0
             }, function(doc, prev) {
                 prev.count++;
-            }, true)
-        }).then((data) => {
-            var arr = []
-            data.forEach((i) => {
-                arr.push({
-                    "label": i.eduRange,
-                    "count": i.count
+            }, true).then((data) => {
+                var eduRange = []
+                data.forEach((i) => {
+                    eduRange.push({
+                        "label": i.eduRange,
+                        "count": i.count
+                    })
                 })
+    
+                return {points,salaryRange,eduRange};
             })
 
-            console.log("=========")
-            console.log(JSON.stringify(arr))
-        }).then(() => {
+        }).then(({points,salaryRange,eduRange}) => {
             return this.db.collection.group({
                 'yearRange': true
             }, {
@@ -140,19 +148,52 @@ export default class ViewData {
                 "count": 0
             }, function(doc, prev) {
                 prev.count++;
-            }, true)
-        }).then((data) => {
-            this.db.close()
-            var arr = []
-            data.forEach((i) => {
-                arr.push({
-                    "label": i.yearRange,
-                    "count": i.count
+            }, true).then((data) => {
+                this.db.close()
+                var yearRange = []
+                data.forEach((i) => {
+                    yearRange.push({
+                        "label": i.yearRange,
+                        "count": i.count
+                    })
                 })
+
+
+                return {points,salaryRange,eduRange,yearRange};
+            })
+        }).then(({points,salaryRange,eduRange,yearRange})=>{
+
+            this.db.close();
+            return this.db.open(this.table.board).then(() => {
+                return this.db.collection.findOne({
+                    year: this.year,
+                    month:this.month
+                })
+            }).then((data) => {
+                console.log(points)
+                console.log(salaryRange)
+                console.log(eduRange)
+                console.log(yearRange)
+            
+                return this.db.collection.update({
+                    year: this.year,
+                    month:this.month
+                }, {
+                    $set: {
+                        points: points,
+                        salaryRange:salaryRange,
+                        eduRange:eduRange,
+                        yearRange:yearRange,
+                        time:new Date(),
+                        publish:false
+                    }
+                })
+                
             })
 
-            console.log("=========")
-            console.log(JSON.stringify(arr))
+        }).then(()=>{
+            this.db.close();
+            console.log("chart success");
             return;
         }).catch(function(e) {
             this.db.close()
@@ -203,6 +244,8 @@ export default class ViewData {
             for (let prop in techCount) {
 
                 arr.push({
+                    year:this.year,
+                    month:this.month,
                     tech: prop,
                     type: TECH[prop],
                     count: techCount[prop]

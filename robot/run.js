@@ -11,7 +11,7 @@ import Table from "./model/table.js";
 
 const city = "苏州";
 const kd = "前端";
-const yearMonth = "2018.05";
+
 
 var table = new Table({});
 var main = new Main(db,table);
@@ -39,11 +39,16 @@ main.addConfig(new ZhaoPin(1)); //智联招聘 10
 //main.transform();
 //
 //main.reInfo();
-//var view = new ViewData(db,table,yearMonth);
+//
+//============================
+const year = "2018";
+const month = "6";
+
+var view = new ViewData(db,table,year,month);
 //view.show();
-// view.average();
-// view.chart();
-// view.tech();
+//view.average();
+//view.chart();
+view.tech();
 // //
 //
 

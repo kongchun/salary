@@ -145,13 +145,14 @@ export default class Main {
         this.db.close()
         return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
-                position: null,
+                position: "",
                 noLoad: null
             }, {
                 company: 1,
                 addr: 1
             }).toArray();
         }).then((data) => {
+            console.log(data);
             return helper.iteratorArr(data, (i) => {
                 var name = (i[key]);
                 return addrToGeo(name).then((position) => {
@@ -243,7 +244,7 @@ export default class Main {
            return helper.iteratorArr(arr, (i) => {
                return this.db.open(this.table.job).then(() => {
                    return this.db.collection.updateMany({
-                       alias: i.alias
+                       companyAlias: i.alias
                    }, {
                        $set: {
                            position: i.position
