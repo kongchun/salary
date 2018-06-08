@@ -19,7 +19,7 @@ export default class Loader {
 		var code = CITY_CODE[this.city];
 
 		let url = encodeURI(`http://www.zhipin.com/job_detail/?query=${this.kd}&scity=${code}&source=2&page=${pageSize}`);
-		return loader.getDOM(url,{delay:100}).then(($)=>{
+		return loader.getDOM(url,{delay:200}).then(($)=>{
 			return $.html();
 		})
 	}

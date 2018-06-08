@@ -107,9 +107,12 @@ export default class Container {
             return this.db.findToArray({ content: null, source: this.source,city:this.city, kd:this.kd  })
         }).then((arr)=>{
             return helper.iteratorArr(arr, (job) => {
+                console.log("job"+job.jobId)
                 return this.loader.info(job.jobId).then((data) => {
                     return this.db.open(this.table.job).then(() => {
                         return this.db.updateById(job._id,this.parse.info(data));
+                    }).then(() => {
+                        return this.db.updateById(job._id,this.parse.position(data));
                     })
                 });
             })
@@ -126,14 +129,14 @@ export default class Container {
 
     parseInfo(){
          return this.db.open(this.table.job).then(() => {
-            return this.db.findToArray({ source: this.source,city:this.city, kd:this.kd  })
+            return this.db.findToArray({source: this.source,city:this.city, kd:this.kd  })
         }).then((arr)=>{
             return helper.iteratorArr(arr, (job) => {
                 return this.db.updateById(job._id,this.parse.info(loader.parseHTML(job.content)));
             })
         }).then(() => {
             this.db.close();
-            console.log(this.source + " info Loaded");
+            console.log(this.source + " parseInfo Loaded");
             return;
         }).catch((e) => {
             this.db.close();
@@ -143,40 +146,7 @@ export default class Container {
     }
 
 
-    position(){
-        this.db.close();
-        return this.db.open(this.table.company).then(() => {
-            return this.db.findToArray({ noLoad: null, source: this.source  })
-        }).then((arr)=>{
-            this.db.close();
-            return helper.iteratorArr(arr, (cp) => {
-                 return this.db.open(this.table.job).then(() => {
-                    return this.db.collection.findOne({company:cp.company,source: this.source })
-                 }).then((job)=>{
-                    this.db.close();
-                    console.log(job)
-                    return this.loader.position(job)
-                 }).then((data)=>{
-                    return this.db.open(this.table.company).then(() => {
-                        return this.db.updateById(cp._id,this.parse.position(data));
-                    }).then(()=>{
-                        this.db.close();
-                        return null;
-                    })
-                 })
-
-            })
-        }).then(() => {
-            this.db.close();
-            console.log(this.source + " position Loaded");
-            return;
-        }).catch((e) => {
-            this.db.close();
-            console.log(e, this.source);
-            return;
-        })
-    }
-
+   
     transform(){
         this.db.close();
         return this.db.open(this.table.job).then(() =>{

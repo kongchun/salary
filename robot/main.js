@@ -26,8 +26,6 @@ export default class Main {
         }).then(()=>{
             return this.compareCompany();
         }).then(()=>{
-            return this.position();
-        }).then(()=>{
             return this.loadGeo();
         }).then(()=>{
             return this.fixedGeo();
@@ -72,13 +70,15 @@ export default class Main {
         this.db.close();
         return this.db.open(this.table.job).then(() => {
             return this.db.collection.group({
-                "company": true
+                "companyAlias": true
             }, {
-
+                
             }, {
                 count: 0,
                 source: "",
-            }, "function (doc, prev) {prev.count++;prev.source = doc.source}")
+                addr:"",
+                position:""
+            }, "function (doc, prev) {prev.count++;prev.source = doc.source;prev.alias = doc.companyAlias;prev.company = doc.company;if(prev.addr==null){prev.addr = doc.addr;}else if(doc.addr !=null){if(prev.addr.length<doc.addr.length){prev.addr = doc.addr;}};if(doc.position != null){prev.position = doc.position}}")
         }).then((arr) => {
             this.db.close();
             //console.log(arr);
@@ -108,11 +108,11 @@ export default class Main {
             //console.log(data)
             this.db.close();
             return helper.iteratorArr(data, (i) => {
-                var company = i.company;
+                var alias = i.alias;
                 //console.log(company)
                 return this.db.open(this.table.company).then(() => {
                     return this.db.collection.findOne({
-                        company: company
+                        alias: alias
                     }).then((t) => {
                         if (t == null) {
                             return t;
@@ -140,15 +140,6 @@ export default class Main {
 
     }
 
-
-    position() {
-        return helper.iteratorArr(this.containerList, (item) => {
-            return item.position();
-        }).then(function() {
-            console.log("position finish");
-            return;
-        })
-    }
 
     loadGeo(key = "addr") {
         this.db.close()
@@ -244,7 +235,7 @@ export default class Main {
        return this.db.open(this.table.company).then(() => {
            return this.db.collection.find({}, {
                position: 1,
-               company: 1,
+               alias: 1,
                _id: 0
            }).toArray();
        }).then((arr) => {
@@ -252,7 +243,7 @@ export default class Main {
            return helper.iteratorArr(arr, (i) => {
                return this.db.open(this.table.job).then(() => {
                    return this.db.collection.updateMany({
-                       company: i.company
+                       alias: i.alias
                    }, {
                        $set: {
                            position: i.position
