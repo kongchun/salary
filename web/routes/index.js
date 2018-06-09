@@ -11,4 +11,12 @@ router.get('/', function(req, res, next) {
     res.send(page);
 });
 
+router.get('/welcome', function(req, res, next) {
+    var page ;
+    page = swig.renderFile('dist/index.html', {
+        html: ""
+    });
+    res.send(page);
+});
+
 module.exports = router;

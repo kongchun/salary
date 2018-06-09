@@ -34,13 +34,33 @@ gulp.task('vendor-css', function() {
  */
 
 gulp.task('vendor', ['vendor-css'], function() {
+	gulp.src(['node_modules/layui-src/dist/lay/modules/*.js'
+	]).pipe(gulp.dest("dist/jlib/lay/lay/modules"));
+
+	gulp.src(['node_modules/layui-src/dist/layui.js',
+	'node_modules/layui-src/dist/css/layui.css'
+	]).pipe(gulp.dest("dist/jlib/lay"));
+
+	gulp.src(['node_modules/layui-src/dist/font/*'
+	]).pipe(gulp.dest("dist/jlib/font"));
+
+	gulp.src(['src/lib/layui/*.js'
+	]).pipe(gulp.dest("dist/js/layui"));
+
+	gulp.src([
+			'src/echarts.min.js', "src/macarons.js", "src/bmap.min.js" //echart
+		]).pipe(concat('vendor-echart.js'))
+		.pipe(uglify())
+		//.pipe(gulpif(production, uglify({mangle: false})))
+		.pipe(gulp.dest('dist/js'));
+
 	return gulp.src([
 			'node_modules/jquery/dist/jquery.js',
 			'node_modules/bootstrap/dist/js/bootstrap.js',
 			//'node_modules/headroom.js/dist/headroom.js',
 			//'node_modules/headroom.js/dist/jQuery.headroom.js'
 			//'src/echarts.min.js', "src/macarons.js", //echart
-			'src/echarts.min.js', "src/macarons.js", "src/bmap.min.js" //echart
+			//'src/echarts.min.js', "src/macarons.js", "src/bmap.min.js" //echart
 		]).pipe(concat('vendor.js'))
 		.pipe(uglify())
 		//.pipe(gulpif(production, uglify({mangle: false})))
@@ -55,6 +75,15 @@ gulp.task('vendor', ['vendor-css'], function() {
 
 gulp.task('browserify', function() {
 	//gulp.src('src/data.js').pipe(uglify()).pipe(gulp.dest('dist/js'));
+	browserify(['src/manage/company.js'])
+		.transform(babelify, {
+			presets: ['es2015', 'react', 'stage-0']
+		})
+		.bundle()
+		.pipe(source('bundle-company.js'))
+		.pipe(streamify(uglify()))
+		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
+		.pipe(gulp.dest('dist/js'));
 
 	return browserify(['src/main.js'])
 		.transform(babelify, {
@@ -69,7 +98,16 @@ gulp.task('browserify', function() {
 
 
 gulp.task('styles', function() {
-	return gulp.src('src/css/style.css')
+	gulp.src(['node_modules/layui-src/dist/css/modules/layer/default/*',
+	]).pipe(gulp.dest("dist/jlib/lay/css/modules/layer/default"));
+
+	gulp.src(['src/lib/layui/*.css'
+	]).pipe(gulp.dest("dist/css/layui"));
+
+	gulp.src(['src/images/*'
+	]).pipe(gulp.dest("dist/images"));
+
+	return gulp.src(['src/css/style.css'])
 		.pipe(plumber())
 		.pipe(less())
 		.pipe(autoprefixer())
@@ -79,6 +117,9 @@ gulp.task('styles', function() {
 });
 
 gulp.task('html', function() {
+	gulp.src(['src/manage/*.html'])
+		//.pipe(revCollector())
+		.pipe(gulp.dest("dist/manage"));
 	return gulp.src(['src/*.html'])
 		//.pipe(revCollector())
 		.pipe(gulp.dest("dist"));
