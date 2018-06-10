@@ -11,7 +11,19 @@
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-
+<div class="layui-form">
+    <div class="layui-inline" style="padding-top: 9px;">
+          <label class="layui-form-label" style="width:86px;">状态</label>
+          <div class="layui-input-inline">
+            <select name="positionStatus"  lay-filter="positionStatus">
+              <option value=""></option>
+              <option value="0">自动识别</option>
+              <option value="1">人工审核</option>
+            </select>
+          </div>
+      <div class="layui-btn" id="searchBtn">查询</div>
+  </div>
+</div>
 <table class="layui-hide" id="compnayList" lay-filter="company"></table>
 <script src="/js/vendor.js"></script>
 <!--<script src="js/vendor.bundle.js"></script>-->

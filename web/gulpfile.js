@@ -85,6 +85,16 @@ gulp.task('browserify', function() {
 		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
 		.pipe(gulp.dest('dist/js'));
 
+	browserify(['src/manage/companyposition.js'])
+		.transform(babelify, {
+			presets: ['es2015', 'react', 'stage-0']
+		})
+		.bundle()
+		.pipe(source('bundle-companyposition.js'))
+		.pipe(streamify(uglify()))
+		// .pipe(gulpif(production, streamify(uglify({mangle: false}))))
+		.pipe(gulp.dest('dist/js'));
+
 	return browserify(['src/main.js'])
 		.transform(babelify, {
 			presets: ['es2015', 'react', 'stage-0']
