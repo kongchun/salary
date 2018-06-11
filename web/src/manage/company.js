@@ -25,15 +25,15 @@ function initTable(){
         ,{field:'alias', width:150, title: '別名', sort: false}
         ,{field:'addr',  title: '地址', minWidth: 250}
         ,{field:'city', width:80, title: '城市', sort: false}
-        ,{field:'district', width:80,title: '区域'}
-        ,{field:'confirmStatus', width:92,title: '审核状态',templet: function(d){
-          if(!!d.confirmStatus && (1==d.confirmStatus || '1'==d.confirmStatus)){
+        ,{field:'district', width:90,title: '区域'}
+        ,{field:'bdstatus', width:92,title: '审核状态',templet: function(d){
+          if(!!d.bdstatus && '1'==d.bdstatus){
             return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">人工审核</span>';
           }else{
             return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">自动识别</span>';
           }
         }}
-        ,{fixed: 'right', width: 220, align:'center', toolbar: '#barCompany'}
+        ,{fixed: 'right', width: 110, align:'center', toolbar: '#barCompany'}
       ]]
       ,page: true
     });
@@ -45,12 +45,12 @@ function initTable(){
       if(layEvent === 'detail'){
         layer.msg('查看暂不支持');
       } else if(layEvent === 'del'){
-        layer.msg('当前记录不允许删除');
-        return;
-        layer.confirm('真的删除行么', function(index){
+        
+        layer.confirm('删除数据：'+(data.alias||data.company)+'？', function(index){
           obj.del(); //删除对应行（tr）的DOM结构
           layer.close(index);
-          //向服务端发送删除指令
+          layer.msg('该记录仅被前台隐藏');
+          return;
         });
       } else if(layEvent === 'edit'){
         layer.msg('编辑操作');

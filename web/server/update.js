@@ -16,7 +16,9 @@ exports.updateCompanyPosition = function(company) {
 		}, {
 			'$set': {
 				'position': company['position'],
-				'confirmStatus': '1'
+				'bdstatus': '1',
+				'district': company['district'],
+				'city': company['city'],
 			}
 		});
 	}).then(function(data) {

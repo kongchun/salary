@@ -35,19 +35,19 @@ exports.getAverageSalary = function() {
 	})
 };
 
-exports.getCompanyList = function(page,limit,confirmStatus) {
+exports.getCompanyList = function(page,limit,bdstatus) {
 	db.close();
 	var start = (page - 1) * limit;
 	var query = {};
-	if(!!confirmStatus || '0'==confirmStatus){
-		if('0'==confirmStatus){
-			query['$or'] = [ { 'confirmStatus':{'$exists':false} }, { 'confirmStatus': '0'}, { 'confirmStatus': 0 } ];
+	if(!!bdstatus || '0'==bdstatus){
+		if('0'==bdstatus){
+			query['$or'] = [ { 'bdstatus':{'$exists':false} }, { 'bdstatus': '0'} ];
 		}else{
-			query.confirmStatus = confirmStatus;
+			query.bdstatus = bdstatus;
 		}
 	}
 	return db.open("repertory_company").then(function(collection) {
-		return collection.find(query).sort({time:-1}).skip(start).limit(limit).toArray();
+		return collection.find(query).sort({'time':-1,'position':1}).skip(start).limit(limit).toArray();
 	}).then(function(data) {
 		return db.collection.find(query).count().then(function(count) {
 			db.close();

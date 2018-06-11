@@ -33,6 +33,8 @@ function initForm(){
             "companyname": company['company'] ||''
             ,"address": company['addr'] ||''
             ,"position": position ||''
+            ,"district": company['district'] ||''
+            ,"city": company['city'] ||'苏州市'
         });
         form.on('submit(search)', function(data){
             let field = data.field;
@@ -52,8 +54,10 @@ function initForm(){
             let field = data.field;
             if(!!field['position']){
                 let arr = field['position'].split(',');
+                let city = field['city'] || company['city'];
+                let district = field['district'] || company['district'];
                 if(!!arr && arr.length>1){
-                    submitCompanyPosition(arr[0],arr[1]);
+                    submitCompanyPosition(arr[0],arr[1],city,district);
                 }else{
                     layer.msg('提交数据格式不正确');
                     $("#commitData").removeAttr("disabled");
@@ -67,12 +71,12 @@ function initForm(){
         form.render();
     });  
 }
-function submitCompanyPosition(lng,lat){
+function submitCompanyPosition(lng,lat,city,district){
     let index = layer.load(2);
     $.ajax({
 			url: '/manage/updateCompanyPosition',
 			type: 'post',
-			data: {'_id':company['_id'],'lat':lat,'lng':lng}
+			data: {'_id':company['_id'],'lat':lat,'lng':lng,'city':city,'district':district}
 	}).done(function (data) {
         layer.close(index);
         if(!!data & !!data['n'] && data['n']>0){

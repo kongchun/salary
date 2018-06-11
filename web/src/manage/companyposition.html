@@ -30,23 +30,50 @@
          </div>
     </div>
     <div class="layui-inline" style="padding-top: 9px;">
-          <label class="layui-form-label" style="width:86px;">查询条件</label>
-          <div class="layui-input-block">
+          <!--<label class="layui-form-label" style="width:86px;">查询条件</label>-->
+          
+    </div>
+    <div class="layui-inline">
+      <div class="layui-input-inline" style="margin-right: 0px">
               <input type="radio" name="searchType" value="address" title="地址" checked=""><div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><span>地址</span></div>
               <input type="radio" name="searchType" value="companyname" title="名称"><div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><span>名称</span></div>
           </div>
-    </div>
-    <div class="layui-inline">
       <button class="layui-btn" lay-submit lay-filter="search">搜索</button>
     </div>
     <div class="layui-inline" style="padding-top: 9px;">
          <label class="layui-form-label">坐标</label>
          <div class="layui-input-inline">
-           <input type="text" name="position" lay-verify="title" placeholder="请选择位置" autocomplete="off" class="layui-input" readonly >
+           <input type="text" name="position" lay-verify="title" placeholder="请选择位置" autocomplete="off" class="layui-input" >
          </div>
     </div>
     <div class="layui-inline">
-      <button class="layui-btn" lay-submit lay-filter="commit">提交位置</button>
+      <select name="city">
+        <option value="">请选择市</option>
+        <option value="苏州市" selected>苏州市</option>
+        <option value="上海" disabled="上海">上海</option>
+        <option value="北京" disabled="北京">北京</option>
+        <option value="无锡" disabled="无锡">无锡</option>
+        <option value="杭州" disabled="杭州">杭州</option>
+      </select>
+    </div>
+    <div class="layui-inline">
+      <select name="district">
+        <option value="">请选择县/区</option>
+        <option value="工业园区">工业园区</option>
+        <option value="吴中区">吴中区</option>
+        <option value="高新区">高新区</option>
+        <option value="姑苏区">姑苏区</option>
+        <option value="昆山市">昆山市</option>
+        <option value="相城区">相城区</option>
+        <option value="虎丘区">虎丘区</option>
+        <option value="吴江区">吴江区</option>
+        <option value="常熟市">常熟市</option>
+        <option value="张家港市">张家港市</option>
+        <option value="太仓市">太仓市</option>
+      </select>
+    </div>
+    <div class="layui-inline">
+      <button class="layui-btn" lay-submit lay-filter="commit">提交</button>
     </div>
   </div>
 </form>

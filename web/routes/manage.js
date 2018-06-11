@@ -32,10 +32,10 @@ router.get('/pagecompanyposition', function(req, res, next) {
 router.get('/listcompany', function(req, res) {
     var page = req.query.page;
     var limit = req.query.limit;
-    var confirmStatus = req.query.positionConfirm;
+    var bdstatus = req.query.positionConfirm;
     if(!!page) page = parseInt(page);
     if(!!limit) limit = parseInt(limit);
-    read.getCompanyList(page,limit,confirmStatus).then(function(data){
+    read.getCompanyList(page,limit,bdstatus).then(function(data){
         if(!!data){
             res.send({code:0,count:data.count,data:data.data,msg:''});
         }else{
@@ -65,7 +65,9 @@ router.post('/updateCompanyPosition', function(req, res) {
 	var _id = req.body._id;
     var lat = req.body.lat;
     var lng = req.body.lng;
-    update.updateCompanyPosition({_id:_id,position:{lat:lat,lng:lng}}).then(function(data) {
+    var city = req.body.city;
+    var district = req.body.district;
+    update.updateCompanyPosition({_id:_id,position:{lat:lat,lng:lng},city:city,district:district}).then(function(data) {
 		res.send(data);
 	}).catch(function(e) {
         console.error(e);
