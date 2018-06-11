@@ -136,11 +136,12 @@ gulp.task('html', function() {
 });
 
 
-gulp.task('build', ['html', 'styles', 'vendor', 'browserify']);
+gulp.task('build', ['html', 'styles',  'browserify']);
 
 
 gulp.task('watch', ['build'], function() {
 	gulp.watch('src/**/*.*', ['build']);
+	
 	//gulp.watch('dist/**/*.*', ['reload']);
 });
 

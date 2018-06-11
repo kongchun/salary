@@ -15,6 +15,10 @@ $(function() {
 	}).done(function (data) {
         company = data;
 		initForm(data);
+        setTimeout(function(){
+            $(".btn-search").click()
+        },500);
+
 	}).fail(function (e) {
 		console.error("数据查询超时");
 	});
