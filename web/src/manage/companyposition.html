@@ -16,22 +16,18 @@
 <body>
 
 <form class="layui-form" lay-filter="searchForm">
-  <div class="layui-form-item" style="background-color: antiquewhite;margin: 0;">
-    <div class="layui-inline" style="padding-top: 9px;">
-         <label class="layui-form-label">地址</label>
+  <div class="layui-form-item" style="background-color: antiquewhite;margin: 0;padding-top: 3px;">
+    <div class="layui-inline">
+         <label class="layui-form-label" style="width: 30px;">地址</label>
          <div class="layui-input-inline">
            <input type="tel" name="address" lay-verify="title" placeholder="请输入公司地址" autocomplete="off" class="layui-input">
          </div>
     </div>
-    <div class="layui-inline" style="padding-top: 9px;">
-         <label class="layui-form-label">公司</label>
+    <div class="layui-inline" >
+         <label class="layui-form-label" style="width: 30px;">公司</label>
          <div class="layui-input-inline">
            <input type="text" name="companyname" lay-verify="title" placeholder="请输入公司名称" autocomplete="off" class="layui-input">
          </div>
-    </div>
-    <div class="layui-inline" style="padding-top: 9px;">
-          <!--<label class="layui-form-label" style="width:86px;">查询条件</label>-->
-          
     </div>
     <div class="layui-inline">
       <div class="layui-input-inline" style="margin-right: 0px">
@@ -40,8 +36,10 @@
           </div>
       <button class="layui-btn layui-btn-primary btn-search" lay-submit lay-filter="search">搜索</button>
     </div>
-    <div class="layui-inline" style="padding-top: 9px;">
-         <label class="layui-form-label">坐标</label>
+  </div>
+  <div class="layui-form-item" style="background-color: antiquewhite;margin: 0;">
+    <div class="layui-inline" >
+         <label class="layui-form-label" style="width: 30px;">坐标</label>
          <div class="layui-input-inline">
            <input type="text" name="position" lay-verify="title" placeholder="请选择位置" autocomplete="off" class="layui-input" >
          </div>

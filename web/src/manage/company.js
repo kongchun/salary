@@ -33,7 +33,7 @@ function initTable(){
             return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">自动识别</span>';
           }
         }}
-        ,{fixed: 'right', width: 110, align:'center', toolbar: '#barCompany'}
+        ,{fixed: 'right', width: 120, align:'center', toolbar: '#barCompany'}
       ]]
       ,page: true
     });

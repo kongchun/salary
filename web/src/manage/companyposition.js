@@ -8,20 +8,23 @@ var company = {};
 var map = null;
 $(function() {
     const _id = getQueryString('_id');
-    $.ajax({
+    if(!!_id){
+        $.ajax({
 			url: '/manage/getcompanyById?_id='+_id,
 			type: 'get',
 			data: {}
-	}).done(function (data) {
-        company = data;
-		initForm(data);
-        setTimeout(function(){
-            $(".btn-search").click()
-        },500);
-
-	}).fail(function (e) {
-		console.error("数据查询超时");
-	});
+        }).done(function (data) {
+            company = data;
+            initForm(data);
+            setTimeout(function(){
+                $(".btn-search").click()
+            },500);
+        }).fail(function (e) {
+            console.error("数据查询超时");
+        });
+    }else{
+        initForm();
+    }
     initMap();
 	
 });
