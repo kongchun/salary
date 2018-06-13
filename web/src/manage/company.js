@@ -26,11 +26,19 @@ function initTable(){
         ,{field:'addr',  title: '地址', minWidth: 250}
         ,{field:'city', width:80, title: '城市', sort: false}
         ,{field:'district', width:90,title: '区域'}
-        ,{field:'bdstatus', width:92,title: '审核状态',templet: function(d){
-          if(!!d.bdstatus && '1'==d.bdstatus){
-            return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">人工审核</span>';
-          }else{
+        ,{field:'bdStatus', width:92,title: '审核状态',templet: function(d){
+          if(!!d.bdStatus && 99==d.bdStatus){
+            return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">手动审核</span>';
+          }else if(!!d.bdStatus && 3==d.bdStatus){
+            return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">地图识别</span>';
+          }else if(!!d.bdStatus && 2==d.bdStatus){
+            return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">库识别</span>';
+          }else if(!!d.bdStatus && 1==d.bdStatus){
             return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">自动识别</span>';
+          }else if(0==d.bdStatus){
+            return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">未识别</span>';
+          }else{
+            return '<span class="layui-badge-rim" style="padding: 1px 5px 20px;">未识别</span>';
           }
         }}
         ,{fixed: 'right', width: 120, align:'center', toolbar: '#barCompany'}

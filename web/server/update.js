@@ -16,7 +16,7 @@ exports.updateCompanyPosition = function(company) {
 		}, {
 			'$set': {
 				'position': company['position'],
-				'bdstatus': '1',
+				'bdStatus': 99,
 				'district': company['district'],
 				'city': company['city'],
 			}

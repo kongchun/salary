@@ -35,15 +35,15 @@ exports.getAverageSalary = function() {
 	})
 };
 
-exports.getCompanyList = function(page,limit,bdstatus) {
+exports.getCompanyList = function(page,limit,bdStatus) {
 	db.close();
 	var start = (page - 1) * limit;
 	var query = {};
-	if(!!bdstatus || '0'==bdstatus){
-		if('0'==bdstatus){
-			query['$or'] = [ { 'bdstatus':{'$exists':false} }, { 'bdstatus': '0'} ];
+	if(!!bdStatus || 0==bdStatus){
+		if(0==bdStatus){
+			query['$or'] = [ { 'bdStatus':null }, { 'bdStatus': 0} ];
 		}else{
-			query.bdstatus = bdstatus;
+			query.bdStatus = bdStatus;
 		}
 	}
 	return db.open("repertory_company").then(function(collection) {

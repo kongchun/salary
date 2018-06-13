@@ -32,10 +32,13 @@ router.get('/pagecompanyposition', function(req, res, next) {
 router.get('/listcompany', function(req, res) {
     var page = req.query.page;
     var limit = req.query.limit;
-    var bdstatus = req.query.positionConfirm;
+    var bdStatus = req.query.positionConfirm;
+    if(!!bdStatus || '0'==bdStatus){
+        bdStatus = parseInt(bdStatus);
+    }
     if(!!page) page = parseInt(page);
     if(!!limit) limit = parseInt(limit);
-    read.getCompanyList(page,limit,bdstatus).then(function(data){
+    read.getCompanyList(page,limit,bdStatus).then(function(data){
         if(!!data){
             res.send({code:0,count:data.count,data:data.data,msg:''});
         }else{
