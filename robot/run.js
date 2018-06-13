@@ -32,9 +32,10 @@ main.addConfig(new ZhaoPin(1)); //智联招聘 10
 //main.info();
 //main.groupCompany();
 //main.compareCompany();
+//main.loadPosition();
 //main.loadGeo();
-//main.fixedGeo();
-//main.filterGeo();
+//main.fixedGeo(); //tobe:delete
+//main.filterGeo();//tobe:delete
 //main.positionToJob();
 //main.transform();
 //
@@ -48,7 +49,7 @@ var view = new ViewData(db,table,year,month);
 //view.show();
 //view.average();
 //view.chart();
-view.tech();
+//view.tech();
 // //
 //
 
