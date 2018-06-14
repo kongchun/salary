@@ -1,6 +1,7 @@
 import helper from "../../iRobots/helper.js";
 import Container from "./Container.js";
 import Company from "./model/Company.js";
+import {filter as positionFilter} from "./model/positionETK.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
 
 export default class Main {
@@ -26,11 +27,9 @@ export default class Main {
         }).then(()=>{
             return this.compareCompany();
         }).then(()=>{
+            return this.loadPosition();
+        }).then(()=>{
             return this.loadGeo();
-        }).then(()=>{
-            return this.fixedGeo();
-        }).then(()=>{
-            return this.filterGeo();
         }).then(()=>{
             return this.positionToJob();
         }).then(()=>{
@@ -77,8 +76,9 @@ export default class Main {
                 count: 0,
                 source: "",
                 addr:"",
-                position:""
-            }, "function (doc, prev) {prev.count++;prev.source = doc.source;prev.alias = doc.companyAlias;prev.company = doc.company;if(prev.addr==null){prev.addr = doc.addr;}else if(doc.addr !=null){if(prev.addr.length<doc.addr.length){prev.addr = doc.addr;}};if(doc.position != null){prev.position = doc.position}}")
+                position:"",
+                bdStatus:0,
+            }, "function (doc, prev) {prev.count++;prev.source = doc.source;prev.alias = doc.companyAlias;prev.company = doc.company;if(prev.addr==null){prev.addr = doc.addr;}else if(doc.addr !=null){if(prev.addr.length<doc.addr.length){prev.addr = doc.addr;}};if(doc.position != null){prev.position = doc.position;prev.bdStatus=1}}")
         }).then((arr) => {
             this.db.close();
             //console.log(arr);
@@ -140,6 +140,39 @@ export default class Main {
 
     }
 
+    loadPosition(){
+        this.db.close()
+        return this.db.open(this.table.company).then(() => {
+            return this.db.collection.find({
+                position: "",
+                noLoad: null
+            }).toArray();
+        }).then((data) => {
+            return helper.iteratorArr(data, (company) => {
+               var address = i.addr;
+                var position = i.position;
+                var district = i.district;
+                var {city,district,position} = positionFilter(address,district,position);
+
+                return db.updateById(i._id, {
+                    position:position,
+                    district:district,
+                    city:city,
+                    bdStatus:2
+                })
+              
+            })
+        }).then((data) => {
+            db.close()
+            console.log("positionETL Success")
+            return;
+        }).catch((e) => {
+            db.close()
+            console.log(e)
+            return;
+        })
+    }
+
 
     loadGeo(key = "addr") {
         this.db.close()
@@ -156,7 +189,7 @@ export default class Main {
             return helper.iteratorArr(data, (i) => {
                 var name = (i[key]);
                 return addrToGeo(name).then((position) => {
-                    return this.db.updateById(i._id, { position: position }).then(function(t) {
+                    return this.db.updateById(i._id, { position: position,bdStatus:3}).then(function(t) {
                         return data;
                     })
 

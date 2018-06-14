@@ -21,5 +21,6 @@ export default class Job{
        this.source = source;
        this.city = city;
        this.kd = kd;
+       this.robotTime = new Date();
     }
 }
