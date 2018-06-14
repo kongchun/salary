@@ -48,8 +48,15 @@ gulp.task('vendor', ['vendor-css'], function() {
 	]).pipe(gulp.dest("dist/js/layui"));
 
 	gulp.src([
-			'src/echarts.min.js', "src/macarons.js", "src/bmap.min.js" //echart
+			'src/echarts.min.js', "src/macarons.js",  //echart
 		]).pipe(concat('vendor-echart.js'))
+		.pipe(uglify())
+		//.pipe(gulpif(production, uglify({mangle: false})))
+		.pipe(gulp.dest('dist/js'));
+
+	gulp.src([
+			'src/bmap.min.js', //echart
+		]).pipe(concat('vendor-bmap.js'))
 		.pipe(uglify())
 		//.pipe(gulpif(production, uglify({mangle: false})))
 		.pipe(gulp.dest('dist/js'));
@@ -75,6 +82,17 @@ gulp.task('vendor', ['vendor-css'], function() {
 
 gulp.task('browserify', function() {
 	//gulp.src('src/data.js').pipe(uglify()).pipe(gulp.dest('dist/js'));
+	browserify(['src/charts/datashow.js'])
+		// .transform(babelify, {
+		// 	presets: ['es2015', 'react', 'stage-0']
+		// })
+		.bundle()
+		.pipe(source('bundle-datashow.js'))
+		// .pipe(streamify(uglify()))
+		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
+		.pipe(gulp.dest('dist/js'));
+
+
 	browserify(['src/manage/company.js'])
 		.transform(babelify, {
 			presets: ['es2015', 'react', 'stage-0']
@@ -127,6 +145,9 @@ gulp.task('styles', function() {
 });
 
 gulp.task('html', function() {
+	gulp.src(['src/charts/*.html'])
+		//.pipe(revCollector())
+		.pipe(gulp.dest("dist/charts"));
 	gulp.src(['src/manage/*.html'])
 		//.pipe(revCollector())
 		.pipe(gulp.dest("dist/manage"));
