@@ -81,6 +81,7 @@ export default class ETL {
 		return {min,max,average,salaryRange}
 	}
 
+
 	all(){
 		var eduRange = this.education();
 		var yearRange = this.workYear();
