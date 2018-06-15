@@ -163,5 +163,20 @@ export default class Container {
             return;
         })
     }
-   
+    timeFilter(){
+        this.db.close();
+        return this.db.open(this.table.job).then(() =>{
+            return this.db.updateIterator({source:this.source,city:this.city, kd:this.kd },{time:1,robotTime:1} ,(job) =>{
+                this.etl.setJob(job);
+                return this.etl.time();
+            })
+        }).then(() =>{
+            this.db.close()
+            return ;
+        }).catch((e) => {
+            this.db.close();
+            console.log(e, this.source);
+            return;
+        })
+    }
 }

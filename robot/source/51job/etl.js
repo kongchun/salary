@@ -88,7 +88,16 @@ export default class ETL {
 		var salaryRange = getRangeBySalary(average);
 		return {min,max,average,salaryRange}
 	}
-
+	time(){
+		let time = this.job.time;
+		let reg = new RegExp(/^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/);
+		if(reg.test(time)){
+			return time;
+		}
+		let robotTime = this.job.robotTime;
+		let year = robotTime.getFullYear();
+		return {time:year + "-" + time};
+	}
 	all(){
 		var eduRange = this.education();
 		var yearRange = this.workYear();
