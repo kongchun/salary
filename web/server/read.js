@@ -39,7 +39,8 @@ exports.getCompanyList = function(page,limit,bdStatus) {
 	db.close();
 	var start = (page - 1) * limit;
 	var query = {};
-	if(!!bdStatus || 0==bdStatus){
+	if(''!=bdStatus && (!!bdStatus || 0==bdStatus)){
+		bdStatus = parseInt(bdStatus);
 		if(0==bdStatus){
 			query['$or'] = [ { 'bdStatus':null }, { 'bdStatus': 0} ];
 		}else{
