@@ -77,13 +77,13 @@ export default class Parse {
 
     position($) {
  		var addr = $(".location-address").text().replace(/(^\s*)|(\s*$)/g, "");
-        var map = $("#map-container").attr("data-long-lat");
+        //var map = $("#map-container").attr("data-long-lat");
         var position = null;  
 
-        if(map.indexOf(",")>-1){
-            var sp = map.split(",");
-            position = gps.bd_encrypt(sp[1],sp[0]);
-        }
+        // if(map.indexOf(",")>-1){
+        //     var sp = map.split(",");
+        //     position = gps.bd_encrypt(sp[1],sp[0]);
+        // }
 
         //console.log({ addr, position })
         return ({ addr, position });

@@ -1,7 +1,7 @@
 import helper from "../../iRobots/helper.js";
 import Container from "./Container.js";
 import Company from "./model/Company.js";
-import {filter as positionFilter} from "./model/positionETK.js";
+import {filter as positionFilter} from "./utils/positionETL.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
 
 export default class Main {
@@ -78,14 +78,18 @@ export default class Main {
                 addr:"",
                 position:"",
                 bdStatus:0,
-            }, "function (doc, prev) {prev.count++;prev.source = doc.source;prev.alias = doc.companyAlias;prev.company = doc.company;if(prev.addr==null){prev.addr = doc.addr;}else if(doc.addr !=null){if(prev.addr.length<doc.addr.length){prev.addr = doc.addr;}};if(doc.position != null){prev.position = doc.position;prev.bdStatus=1}}")
+             }, "function (doc, prev) {prev.count++;prev.source = doc.source;prev.alias = doc.companyAlias;prev.company = doc.company;if(prev.addr==null){prev.addr = doc.addr;}else if(doc.addr !=null){if(prev.addr.length<doc.addr.length){prev.addr = doc.addr;}};if(doc.position != null){prev.position = doc.position;prev.bdStatus=1}}")
         }).then((arr) => {
+
+
             this.db.close();
             //console.log(arr);
             return this.db.open(this.table.company).then(() => {
                 return this.db.collection.remove({}).then(() => {
                     return this.db.collection.insertMany(arr);
                 })
+            }).then(()=>{
+                 this.db.collection.updateMany({position:""},{$set:{position:null}});
             })
             return
         }).then(() => {
@@ -103,7 +107,7 @@ export default class Main {
     compareCompany() {
         this.db.close()
         return this.db.open(this.table.repertoryCompany).then(() => {
-            return this.db.collection.find({}).toArray();
+            return this.db.collection.find({position:{$ne:null}}).toArray();
         }).then((data) => {
             //console.log(data)
             this.db.close();
@@ -122,6 +126,7 @@ export default class Main {
                             position: i.position,
                             city: i.city,
                             district: i.district,
+                            bdStatus:i.bdStatus,
                             noLoad: true
                         });
                     })
@@ -144,17 +149,19 @@ export default class Main {
         this.db.close()
         return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
-                position: "",
+                position: null,
                 noLoad: null
             }).toArray();
         }).then((data) => {
-            return helper.iteratorArr(data, (company) => {
-               var address = i.addr;
+
+            return helper.iteratorArr(data, (i) => {
+                var address = i.addr;
+
                 var position = i.position;
                 var district = i.district;
                 var {city,district,position} = positionFilter(address,district,position);
-
-                return db.updateById(i._id, {
+                
+                return this.db.updateById(i._id, {
                     position:position,
                     district:district,
                     city:city,
@@ -163,11 +170,11 @@ export default class Main {
               
             })
         }).then((data) => {
-            db.close()
+            this.db.close()
             console.log("positionETL Success")
             return;
         }).catch((e) => {
-            db.close()
+            this.db.close()
             console.log(e)
             return;
         })
@@ -178,7 +185,7 @@ export default class Main {
         this.db.close()
         return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
-                position: "",
+                position: null,
                 noLoad: null
             }, {
                 company: 1,
@@ -213,7 +220,7 @@ export default class Main {
                 position: {
                     $ne: null
                 },
-                city: null,
+                district: null,
                 noLoad: null
             }, {
                 position: 1
@@ -235,7 +242,7 @@ export default class Main {
         })
     }
 
-    filterGeo(city= "苏州市") {
+    filterGeo(city = "苏州市") {
         this.db.close()
         return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
@@ -250,19 +257,46 @@ export default class Main {
                     city: null,
                     district: null
                 });
-
-
-            }).then(() => {
-                this.db.close();
-                console.log("filterGeo success")
-                return;
             })
+        }).then(() => {
+            //this.db.close();
+            console.log("filterGeo success")
+            return;
+        }).then(() => {
+            return this.db.collection.find({
+                noLoad: null
+            }).toArray();
+        }).then((data) => {
+            return helper.iteratorArr(data, (i) => {
+                var address = i.addr;
+
+                var position = i.position;
+                var district = i.district;
+                var { city, district, position } = positionFilter(address, district, position);
+
+                return this.db.updateById(i._id, {
+                    district: district
+                })
+
+            })
+        }).then(() => {
+            console.log("filterDistrict success")
+            return this.db.collection.updateMany({ position: null }, { $set: { bdStatus: 0 } })
+        }).then(() => {
+            this.db.close();
+            console.log("bdStatus success")
+            return;
+
         }).catch((e) => {
             this.db.close();
             console.log(e);
             return;
         })
+
     }
+
+
+
 
     positionToJob() {
        this.db.close()
