@@ -73,10 +73,12 @@ export default class ETL {
 		let time = this.job.time;
 		let reg = new RegExp(/^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/);
 		if(reg.test(time)){
-			return time;
+			return {time:time};
 		}
 		let robotTime = this.job.robotTime;
 		let acTime = time.split("发布于")[1];
+		console.log(time)
+		console.log(acTime)
 		if(acTime.indexOf("月") > -1){
 			let temp = acTime.split("月");
 			let mouth = temp[0];

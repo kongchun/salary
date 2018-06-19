@@ -30,6 +30,7 @@ main.addConfig(new ZhiPin(3)); //BOSS直聘 参数不要大于3
 // });
 
 //main.pageToJob();
+main.timeFilter();
 //main.info();
 //main.groupCompany();
 //main.compareCompany();

@@ -50,6 +50,7 @@ function filter(address,district="",position=""){
 	var district = district;
 	var position = position;
 
+
 	if(district=="虎丘区"){
 		district="高新区";
 	}
@@ -66,6 +67,13 @@ function filter(address,district="",position=""){
 		district = "工业园区";
 	}
 
+	if(address.match(/吴江/ig)){
+		district = "吴江区";
+	}
+
+	if(address.match(/吴中/ig)){
+		district = "吴中区";
+	}
 
 	RegExpFilter.forEach((x) => {
 	    if (address.match(x.reg)) {
