@@ -53,11 +53,30 @@ function initTable(){
       if(layEvent === 'detail'){
         layer.msg('查看暂不支持');
       } else if(layEvent === 'del'){
-        
         layer.confirm('删除数据：'+(data.alias||data.company)+'？', function(index){
-          obj.del(); //删除对应行（tr）的DOM结构
-          layer.close(index);
-          layer.msg('该记录仅被前台隐藏');
+          let index1 = layer.load(2);
+          $.ajax({
+            url: '/manage/deleteCompanyById',
+            type: 'post',
+            data: {'_id':data['_id']}
+          }).done(function (data) {
+                //obj.del(); //删除对应行（tr）的DOM结构
+                layer.close(index1);
+                if(!!data & !!data['n'] && data['n']>0){
+                    layer.msg('删除成功！');
+                    try{
+                        layui.table.reload('compnayList');
+                    }catch(e){}
+                }else{
+                    layer.msg('删除失败，原因：未匹配的记录');
+                }
+                $("#commitData").removeAttr("disabled");
+          }).fail(function (e) {
+                layer.close(index1);
+                console.error(e);
+                layer.msg('删除失败');
+                $("#commitData").removeAttr("disabled");
+          });
           return;
         });
       } else if(layEvent === 'edit'){
@@ -76,5 +95,4 @@ function initTable(){
     });
   });
 }
-
 

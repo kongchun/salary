@@ -69,7 +69,28 @@ export default class ETL {
 		var salaryRange = getRangeBySalary(average);
 		return {min,max,average,salaryRange}
 	}
-
+	time(){
+		let time = this.job.time;
+		let reg = new RegExp(/^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/);
+		if(reg.test(time)){
+			return time;
+		}
+		let robotTime = this.job.robotTime;
+		let acTime = time.split("发布于")[1];
+		if(acTime.indexOf("月") > -1){
+			let temp = acTime.split("月");
+			let mouth = temp[0];
+			let day = temp[1].split('日')[0];
+			acTime = mouth+ "-" + day;
+		}else if(acTime == "昨天"){
+			let yesDay = new Date(robotTime.getTime() - 86400000);
+			acTime = (yesDay.getMonth() + 1) + "-" + yesDay.getDate();
+		}else{
+			acTime = (robotTime.getMonth() + 1) + "-" + robotTime.getDate();
+		}
+		let year = robotTime.getFullYear();
+		return {time:year + "-" + acTime};
+	}
 	all(){
 		var eduRange = this.education();
 		var yearRange = this.workYear();

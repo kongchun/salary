@@ -33,9 +33,7 @@ router.get('/listcompany', function(req, res) {
     var page = req.query.page;
     var limit = req.query.limit;
     var bdStatus = req.query.positionConfirm;
-    if(!!bdStatus || '0'==bdStatus){
-        bdStatus = parseInt(bdStatus);
-    }
+    
     if(!!page) page = parseInt(page);
     if(!!limit) limit = parseInt(limit);
     read.getCompanyList(page,limit,bdStatus).then(function(data){
@@ -71,6 +69,16 @@ router.post('/updateCompanyPosition', function(req, res) {
     var city = req.body.city;
     var district = req.body.district;
     update.updateCompanyPosition({_id:_id,position:{lat:lat,lng:lng},city:city,district:district}).then(function(data) {
+		res.send(data);
+	}).catch(function(e) {
+        console.error(e);
+        res.send({});
+	})
+});
+
+router.post('/deleteCompanyById', function(req, res) {
+	var _id = req.body._id;
+    update.deleteCompany({_id:_id}).then(function(data) {
 		res.send(data);
 	}).catch(function(e) {
         console.error(e);

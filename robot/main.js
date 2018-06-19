@@ -338,7 +338,14 @@ export default class Main {
             return;
         })
    }
-
+    timeFilter(){
+        return helper.iteratorArr(this.containerList, (item) => {
+            return item.timeFilter();
+        }).then(function() {
+            console.log("ETL finish");
+            return;
+        })
+    }
    reInfo() {
         return helper.iteratorArr(this.containerList, (item) => {
             return item.parseInfo();
