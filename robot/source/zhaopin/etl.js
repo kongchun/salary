@@ -16,7 +16,7 @@ export default class ETL {
 		if (education == "硕士") {
 			education = "本科"
 		}
-		if (education == "中专") {
+		if (education == "中专" || education=="中技") {
 			education = "大专"
 		}
 

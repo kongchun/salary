@@ -3,6 +3,8 @@ import Container from "./Container.js";
 import Company from "./model/Company.js";
 import {filter as positionFilter} from "./utils/positionETL.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
+import moment from "moment";
+
 
 export default class Main {
     constructor(db,table) {
@@ -304,6 +306,7 @@ export default class Main {
            return this.db.collection.find({}, {
                position: 1,
                alias: 1,
+               district:1,
                _id: 0
            }).toArray();
        }).then((arr) => {
@@ -314,6 +317,7 @@ export default class Main {
                        companyAlias: i.alias
                    }, {
                        $set: {
+                           district:i.district,
                            position: i.position
                        }
                    })
@@ -353,5 +357,25 @@ export default class Main {
             console.log("info finish");
             return;
         })
+    }
+
+    clearoutTime(year,month){
+        var date = moment(year+"-"+month,"YYYY-MM");
+        var str = date.format("YYYY-MM-DD");
+
+
+       this.db.close()
+       return this.db.open(this.table.job).then(() => {
+           return this.db.collection.remove({etlTime:{$lt:str}},{time:1});
+       }).then((data) => {
+           this.db.close();
+           console.log("clearoutTime success");
+           return
+       }).catch((e) => {
+           this.db.close();
+           console.log(e);
+           return;
+       })
+
     }
 }

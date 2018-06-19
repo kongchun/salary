@@ -28,8 +28,11 @@ export default class ViewData {
             var count = data.length;
             var total = 0;
             data.forEach((i) => {
-                if(i.average>0)
-                total += i.average
+                if(i.average>0){
+                    total += i.average
+                }else{
+                    count--
+                }
             });
             console.log(total, count)
             var average = total / count;
@@ -149,7 +152,6 @@ export default class ViewData {
             }, function(doc, prev) {
                 prev.count++;
             }, true).then((data) => {
-                this.db.close()
                 var yearRange = []
                 data.forEach((i) => {
                     yearRange.push({
@@ -161,7 +163,32 @@ export default class ViewData {
 
                 return {points,salaryRange,eduRange,yearRange};
             })
-        }).then(({points,salaryRange,eduRange,yearRange})=>{
+        }).then(({points,salaryRange,eduRange,yearRange}) => {
+            return this.db.collection.group({
+                'district': true
+            }, {
+                filter: {
+                    $ne: true
+                }
+            }, {
+
+                "count": 0
+            }, function(doc, prev) {
+                prev.count++;
+            }, true).then((data) => {
+                this.db.close()
+                var districtRange = []
+                data.forEach((i) => {
+                    districtRange.push({
+                        "label": i.district,
+                        "count": i.count
+                    })
+                })
+
+
+                return {points,salaryRange,eduRange,yearRange,districtRange};
+            })
+        }).then(({points,salaryRange,eduRange,yearRange,districtRange})=>{
 
             this.db.close();
             return this.db.open(this.table.board).then(() => {
@@ -174,6 +201,7 @@ export default class ViewData {
                 console.log(salaryRange)
                 console.log(eduRange)
                 console.log(yearRange)
+                console.log(districtRange)
             
                 return this.db.collection.update({
                     year: this.year,

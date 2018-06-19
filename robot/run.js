@@ -19,7 +19,12 @@ var main = new Main(db,table);
 //main.addConfig(new Lagou(10)); //拉钩 10
 main.addConfig(new ZhaoPin(10)); //智联招聘 10
 main.addConfig(new FiveOneJob(10)); //51Job  10
-main.addConfig(new ZhiPin(3)); //BOSS直聘 参数不要大于3
+main.addConfig(new ZhiPin(2)); //BOSS直聘 参数不要大于2
+
+const year = "2018";
+const month = "6";
+
+
 
 // main.start().catch(function(e){
 // 	console.log(e);
@@ -30,7 +35,8 @@ main.addConfig(new ZhiPin(3)); //BOSS直聘 参数不要大于3
 // });
 
 //main.pageToJob();
-main.timeFilter();
+//main.timeFilter();
+//main.clearoutTime(year,month);
 //main.info();
 //main.groupCompany();
 //main.compareCompany();
@@ -44,10 +50,9 @@ main.timeFilter();
 //main.reInfo();
 //
 //============================
-const year = "2018";
-const month = "6";
 
-//var view = new ViewData(db,table,year,month);
+
+var view = new ViewData(db,table,year,month);
 //view.show();
 //view.average();
 //view.chart();

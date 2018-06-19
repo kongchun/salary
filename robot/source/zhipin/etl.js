@@ -86,8 +86,8 @@ export default class ETL {
 		}
 		let robotTime = this.job.robotTime;
 		let acTime = time.split("发布于")[1];
-		console.log(time)
-		console.log(acTime)
+		//console.log(time)
+		//console.log(acTime)
 		if(acTime.indexOf("月") > -1){
 			let temp = acTime.split("月");
 			let mouth = temp[0];
