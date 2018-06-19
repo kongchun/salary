@@ -73,7 +73,16 @@ export default class ETL {
 		let time = this.job.time;
 		let reg = new RegExp(/^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/);
 		if(reg.test(time)){
-			return {time:time};
+			return {etlTime:time};
+		}
+		let reg1 = new RegExp(/^[1-9]\d{3}-(0[1-9]|1[0-2]|[1-9])-(0[1-9]|[1-2][0-9]|3[0-1]|[1-9])$/);
+		if(reg1.test(time)){
+			let dayData = time.split("-");
+			let year = dayData[0];
+			let month = parseInt(dayData[1]) < 10? "0" + dayData[1]:dayData[1];
+			let date = parseInt(dayData[2]) < 10? "0" + dayData[2]:dayData[2];
+			return {etlTime:year + "-" + month + "-"  + date};
+
 		}
 		let robotTime = this.job.robotTime;
 		let acTime = time.split("发布于")[1];
@@ -95,7 +104,7 @@ export default class ETL {
 			acTime = month + "-" + date;
 		}
 		let year = robotTime.getFullYear();
-		return {time:year + "-" + acTime};
+		return {etlTime:year + "-" + acTime};
 	}
 	all(){
 		var eduRange = this.education();

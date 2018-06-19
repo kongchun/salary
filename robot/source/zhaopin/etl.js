@@ -84,11 +84,11 @@ export default class ETL {
 		let time = this.job.time;
 		let reg = new RegExp(/^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/);
 		if(reg.test(time)){
-			return {time:time};
+			return {etlTime:time};
 		}
 		let robotTime = this.job.robotTime;
 		let year = robotTime.getFullYear();
-		return {time:year + "-" + time};
+		return {etlTime:year + "-" + time};
 	}
 	all(){
 		var eduRange = this.education();
