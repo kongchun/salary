@@ -18,19 +18,19 @@
 <form class="layui-form" lay-filter="searchForm">
   <div class="layui-form-item" style="background-color: antiquewhite;margin: 0;padding-top: 3px;">
     <div class="layui-inline">
-         <label class="layui-form-label" style="width: 30px;">地址</label>
+         <label class="layui-form-label" style="width: 60px;">地址</label>
          <div class="layui-input-inline">
            <input type="tel" name="address" lay-verify="title" placeholder="请输入公司地址" autocomplete="off" class="layui-input">
          </div>
     </div>
     <div class="layui-inline" >
-         <label class="layui-form-label" style="width: 30px;">公司</label>
+         <label class="layui-form-label" style="width: 60px;">公司</label>
          <div class="layui-input-inline">
            <input type="text" name="companyname" lay-verify="title" placeholder="请输入公司名称" autocomplete="off" class="layui-input">
          </div>
     </div>
-    <div class="layui-inline">
-      <div class="layui-input-inline" style="margin-right: 0px">
+    <div class="layui-inline" style="height: 46px;">
+      <div class="layui-input-inline" style="margin-right: 0px;">
               <input type="radio" name="searchType" value="address" title="地址" checked=""><div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><span>地址</span></div>
               <input type="radio" name="searchType" value="companyname" title="名称"><div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><span>名称</span></div>
           </div>
@@ -39,12 +39,12 @@
   </div>
   <div class="layui-form-item" style="background-color: antiquewhite;margin: 0;">
     <div class="layui-inline" >
-         <label class="layui-form-label" style="width: 30px;">坐标</label>
+         <label class="layui-form-label" style="width: 60px;">坐标</label>
          <div class="layui-input-inline">
            <input type="text" name="position" lay-verify="title" placeholder="请选择位置" autocomplete="off" class="layui-input" >
          </div>
     </div>
-    <div class="layui-inline" style="width:100px">
+    <div class="layui-inline" style="width:100px;height: 46px;">
       <select name="city">
         <option value="">请选择市</option>
         <option value="苏州市" selected>苏州市</option>
@@ -54,23 +54,19 @@
         <option value="杭州" disabled="杭州">杭州</option>
       </select>
     </div>
-    <div class="layui-inline" style="width:140px">
+    <div class="layui-inline" style="width:140px;height: 46px;">
       <select name="district">
         <option value="">请选择县/区</option>
         <option value="工业园区">工业园区</option>
         <option value="吴中区">吴中区</option>
         <option value="高新区">高新区</option>
         <option value="姑苏区">姑苏区</option>
-        <option value="昆山市">昆山市</option>
         <option value="相城区">相城区</option>
-        <option value="虎丘区">虎丘区</option>
         <option value="吴江区">吴江区</option>
-        <option value="常熟市">常熟市</option>
-        <option value="张家港市">张家港市</option>
-        <option value="太仓市">太仓市</option>
+        <option value="苏州周边">苏州周边</option>
       </select>
     </div>
-    <div class="layui-inline">
+    <div class="layui-inline" style="height: 46px;">
       <button class="layui-btn" lay-submit lay-filter="commit">提交</button>
     </div>
   </div>
