@@ -1,4 +1,5 @@
 <!--index.wxml-->
+<import src="/template/tech-table.wxml"/>
 <view class="container">
   <view class='header'>
     <text class='title'>苏州5月前端平均薪资</text>
@@ -9,10 +10,14 @@
     <text class='compare_per'>同比上升3%</text>
   </view>
 
-  <view>
+  <!-- <view class='tb-container'>
     <ff-canvas id="column-dom" canvas-id="column" opts="{{ opts }}"></ff-canvas>
-  </view>
+  </view> -->
 
+  <view class='tech-header'>
+    <text class='title'>技能要求</text>
+  </view>
+  <template is="tech-table" data="{{techdata}}"/>
 
   <view class='hr'/>
   <view class='aboutus'>

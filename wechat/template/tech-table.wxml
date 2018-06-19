@@ -1,0 +1,22 @@
+<template name="tech-table">
+<view class='tech-title'>
+  <text>Top20总排行榜</text>
+</view>
+<view class='tech-table'>
+  <view wx:for="{{techdata}}" wx:key="{{seq}}" class='tech-tr'>
+    <view wx:if="{{0==index}}">
+      <view class='tech-td'>
+        <view class='tech-seq'>序号</view>
+        <view class='tech-name'>技能</view>
+      </view>
+    </view>
+    <view wx:if="{{index>0}}">
+      <view class='tech-td'>
+        <view class='tech-seq'>{{item.seq}}</view>
+        <view class='tech-name'>{{item.name}}</view>
+      </view>
+    </view>
+  </view>
+</view>
+</template>
+

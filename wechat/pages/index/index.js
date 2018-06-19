@@ -50,7 +50,8 @@ Page({
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    pageUrl: 'https://mp.weixin.qq.com/s/NVJYizw5jcl1toW5MIuS_g'
+    pageUrl: 'https://mp.weixin.qq.com/s/NVJYizw5jcl1toW5MIuS_g',
+    techdata: [{ seq: 1, name: 'javascript' }, { seq: 2, name: 'html' }, { seq: 3, name: 'css' }, { seq: 4, name: 'jquery' }, { seq: 5, name: 'angular' }, { seq: 6, name: 'vue' }, { seq: 7, name: 'ajax' }, { seq: 8, name: 'react' }, { seq: 9, name: 'bootstrap' }, { seq: 10, name: 'node' }, { seq: 11, name: 'webpack' }, { seq: 12, name: 'gulp' }, { seq: 13, name: 'ES6' }, { seq: 14, name: 'Grunt' }, { seq: 15, name: 'less' }, { seq: 16, name: 'sass' }, { seq: 17, name: 'ext' }, { seq: 18, name: 'yui' }, { seq: 19, name: 'mysql' }, { seq: 20, name: 'require' }]
   },
   //事件处理函数
   bindViewTap: function() {

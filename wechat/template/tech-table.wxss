@@ -1,0 +1,27 @@
+/* template/tech-table.wxss */
+.tech-title{
+  color: #818181;
+  margin: 10px 0 10px 0;
+}
+.tech-table{
+  border:1px solid #DBDBDB;
+  border-bottom:0;
+  margin: 5px auto;
+}
+.tech-tr{
+  border-bottom:1px solid #DBDBDB;
+}
+.tech-td{
+  display: inline-block;
+}
+.tech-seq{
+  display: inline-block;
+  border-right: 1px solid #DBDBDB;
+  width: 60px;
+  padding: 5px;
+}
+.tech-name{
+  display: inline-block;
+  width: 150px;
+  padding: 5px;
+}
