@@ -86,9 +86,13 @@ export default class ETL {
 			acTime = mouth+ "-" + day;
 		}else if(acTime == "昨天"){
 			let yesDay = new Date(robotTime.getTime() - 86400000);
-			acTime = (yesDay.getMonth() + 1) + "-" + yesDay.getDate();
+			let month = (yesDay.getMonth() + 1) < 10?"0" + (yesDay.getMonth() + 1):(yesDay.getMonth() + 1);
+			let date = yesDay.getDate() < 10?"0"+yesDay.getDate():yesDay.getDate();
+			acTime = month + "-" + date;
 		}else{
-			acTime = (robotTime.getMonth() + 1) + "-" + robotTime.getDate();
+			let month = (robotTime.getMonth() + 1) < 10?"0" + (robotTime.getMonth() + 1):(robotTime.getMonth() + 1);
+			let date = robotTime.getDate() < 10?"0"+robotTime.getDate():robotTime.getDate();
+			acTime = month + "-" + date;
 		}
 		let year = robotTime.getFullYear();
 		return {time:year + "-" + acTime};
