@@ -53,7 +53,7 @@ const month = "6";
 
 
 var view = new ViewData(db,table,year,month);
-//view.show();
+view.show();
 //view.average();
 //view.chart();
 //view.tech();

@@ -212,6 +212,7 @@ export default class ViewData {
                         salaryRange:salaryRange,
                         eduRange:eduRange,
                         yearRange:yearRange,
+                        districtRange：districtRange,
                         time:new Date(),
                         publish:false
                     }
