@@ -86,3 +86,18 @@ exports.getCompanyById = function(_id) {
 		throw error;
 	})
 };
+
+exports.getHitsByTime = function(year,month) {
+	db.close();
+	var query = {year:year,month:month};
+	return db.open("watch_count").then(function(collection) {
+		return collection.findOne(query);
+	}).then(function(data) {
+		db.close();
+		return data;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};

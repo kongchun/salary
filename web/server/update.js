@@ -51,6 +51,31 @@ exports.deleteCompany = function(company) {
 		db.close();
 		console.error(error)
 		throw error;
-	})
-	
+	})	
+};
+
+exports.updateAveraheSalaryCount = function(param) {
+	db.close();
+	var query = {month:param.month,year:param.year};
+	return db.open("watch_count").then(function(collection) {
+		return collection.findOne(query).then(function(data){
+			if(!!data){
+				return collection.update(query, {
+					'$set': {
+						'read': data.read +1
+					}
+				});
+			}else{
+				query.read = 1;
+				return collection.insert(query);
+			}
+		});
+	}).then(function(data) {
+		db.close();
+		return data;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	});
 };
