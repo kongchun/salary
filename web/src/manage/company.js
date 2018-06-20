@@ -3,7 +3,7 @@ $(function() {
 
   $("#searchBtn").on('click',function(){
     let positionStatus = $("select[name=positionStatus]").val();
-    layui.table.reload('compnayList', {where: {'positionConfirm':positionStatus}});
+    layui.table.reload('compnayList', {where: {'positionConfirm':positionStatus},page:{curr:1}});
   });
 
 });
