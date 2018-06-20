@@ -1,8 +1,8 @@
 var mongodb = require("mongodb");
 
 var MongoClient = mongodb.MongoClient;
-//var url = 'mongodb://www.technologycloud.cn:27027/salary';
-var url = 'mongodb://127.0.0.1:27017/kongchun';
+var url = 'mongodb://www.technologycloud.cn:27027/salary';
+// var url = 'mongodb://127.0.0.1:27017/kongchun';
 class DB {
 	constructor() {
 		this.db = null;
