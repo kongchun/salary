@@ -212,7 +212,7 @@ export default class ViewData {
                         salaryRange:salaryRange,
                         eduRange:eduRange,
                         yearRange:yearRange,
-                        districtRange：districtRange,
+                        districtRange:districtRange,
                         time:new Date(),
                         publish:false
                     }
@@ -228,6 +228,11 @@ export default class ViewData {
             this.db.close()
             console.log(e)
         })
+    }
+
+    topTen(){
+         this.db.close();
+        
     }
 
     tech() {
