@@ -125,6 +125,16 @@ function initMap(){
 	map.addEventListener("click", setPosition);
 }
 function searchMap(searchValue){
+    if(!!company && !!company.position){
+        var myIcon = new BMap.Icon("/images/markers.png", new BMap.Size(23, 25), {
+            offset: new BMap.Size(10, 25),
+            imageOffset: new BMap.Size(0, 0 - 10 * 25)
+        });
+        var marker = new BMap.Marker(new BMap.Point(company.position.lng, company.position.lat), {icon: myIcon});
+        map.addOverlay(marker);
+        marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+    }
+                
     let index = layer.load(2);
     var local = new BMap.LocalSearch(map, {
 		renderOptions:{map: map},
@@ -137,14 +147,7 @@ function searchMap(searchValue){
                 }else{
                     layer.msg('在苏州市没有找到相关的地点。');
                 }
-                if(!!company && !!company.position){
-                    var myIcon = new BMap.Icon("/images/markers.png", new BMap.Size(23, 25), {
-                        offset: new BMap.Size(10, 25),
-                        imageOffset: new BMap.Size(0, 0 - 10 * 25)
-                    });
-                    var marker = new BMap.Marker(new BMap.Point(company.position.lng, company.position.lat), {icon: myIcon});
-                    map.addOverlay(marker);
-                }
+
 			}else{
                 layer.msg('在苏州市没有找到相关的地点。');
             }
