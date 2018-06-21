@@ -53,8 +53,8 @@ export default class ViewData {
                         month:this.month
                     }, {
                         $set: {
-                            average: value,
-                            time:new Date(),
+                            average: parseFloat(value),
+                            time:new Date(this.year,this.month-1),
                             publish:false
                         }
                     })
@@ -62,8 +62,8 @@ export default class ViewData {
                     return this.db.collection.insert({
                         year: this.year,
                         month:this.month,
-                        average: value,
-                        time:new Date(),
+                        average: parseFloat(value),
+                        time:new Date(this.year,this.month-1),
                         publish:false
                     })
                 }

@@ -35,6 +35,23 @@ exports.getAverageSalary = function() {
 	})
 };
 
+exports.getAverageSalary2 = function() {
+	db.close();
+	return db.open("board").then(function(collection) {
+		return collection.find({publish:true},{average:1,year:1,month:1}).sort({time:-1}).skip(0).limit(10).toArray();
+	}).then(function(data) {
+		db.close();
+        if(!!data && data.length>0){
+            return data;
+        }
+		return null;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};
+
 exports.getCompanyList = function(page,limit,bdStatus) {
 	db.close();
 	var start = (page - 1) * limit;
