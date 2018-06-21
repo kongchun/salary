@@ -19,7 +19,7 @@ router.get('/getAverageSalary',function(req,res){
             res.send({year,month});
         });
     }else{
-        read.getAverageSalary().then(function(data){
+        read.getAverageSalaryInfo().then(function(data){
             if(!!data && !!data.points){
                 res.send(data);
             }else{
@@ -35,19 +35,25 @@ router.get('/getAverageSalary',function(req,res){
 
 router.get('/getNewAverageSalary',function(req,res){
     read.getAverageSalary().then(function(data){
-        if(!!data && !!data.points){
-            if(!!data.year && !!data.month){
-                read.getHitsByTime(data.year,data.month).then(hits=>{
+        if(!!data && data.length>0){
+            var salary = data[0]||{};
+            var arr = [];
+            data.forEach(function(d){
+                if(!!d.month && d.year)
+                    arr.push({ "key": d.month, "type": "薪资", "value": d.average});
+            });
+            if(!!data[0].year && !!data[0].month){
+                read.getHitsByTime(salary.year,salary.month).then(hits=>{
                     if(!!hits && !!hits.read){
-                        data.read = hits.read;
+                        salary.read = hits.read;
                     }else{
-                        data.read = 0;
+                        salary.read = 0;
                     }
-                    data.compare = '同比下降3%';
-                    res.send(data);
+                    salary.compare = '同比下降3%';
+                    res.send({salary:salary,arr:arr});
                 })
             }else{
-                res.send(data);
+                res.send({salary:salary,arr:arr});
             }
         }else{
             res.send({});

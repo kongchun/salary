@@ -18,7 +18,7 @@ exports.getAverageSalaryByDate = function(year,month) {
 	})
 };
 
-exports.getAverageSalary = function() {
+exports.getAverageSalaryInfo = function() {
 	db.close();
 	return db.open("board").then(function(collection) {
 		return collection.find({publish:true}).sort({time:-1}).skip(0).limit(1).toArray();
@@ -35,7 +35,7 @@ exports.getAverageSalary = function() {
 	})
 };
 
-exports.getAverageSalary2 = function() {
+exports.getAverageSalary = function() {
 	db.close();
 	return db.open("board").then(function(collection) {
 		return collection.find({publish:true},{average:1,year:1,month:1}).sort({time:-1}).skip(0).limit(10).toArray();
@@ -44,7 +44,7 @@ exports.getAverageSalary2 = function() {
         if(!!data && data.length>0){
             return data;
         }
-		return null;
+		return [];
 	}).catch(function(error) {
 		db.close();
 		console.error(error)

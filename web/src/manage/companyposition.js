@@ -137,6 +137,14 @@ function searchMap(searchValue){
                 }else{
                     layer.msg('在苏州市没有找到相关的地点。');
                 }
+                if(!!company && !!company.position){
+                    var myIcon = new BMap.Icon("/images/markers.png", new BMap.Size(23, 25), {
+                        offset: new BMap.Size(10, 25),
+                        imageOffset: new BMap.Size(0, 0 - 10 * 25)
+                    });
+                    var marker = new BMap.Marker(new BMap.Point(company.position.lng, company.position.lat), {icon: myIcon});
+                    map.addOverlay(marker);
+                }
 			}else{
                 layer.msg('在苏州市没有找到相关的地点。');
             }
