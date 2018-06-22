@@ -16,6 +16,15 @@ $(function() {
         }).done(function (data) {
             company = data;
             initForm(data);
+            if(!!company && !!company.position){
+                var myIcon = new BMap.Icon("/images/markers.png", new BMap.Size(23, 25), {
+                    offset: new BMap.Size(10, 25),
+                    imageOffset: new BMap.Size(0, 0 - 10 * 25)
+                });
+                var marker = new BMap.Marker(new BMap.Point(company.position.lng, company.position.lat), {icon: myIcon});
+                map.addOverlay(marker);
+                marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+            }
             setTimeout(function(){
                 $(".btn-search").click()
             },500);
@@ -124,17 +133,7 @@ function initMap(){
 	}
 	map.addEventListener("click", setPosition);
 }
-function searchMap(searchValue){
-    if(!!company && !!company.position){
-        var myIcon = new BMap.Icon("/images/markers.png", new BMap.Size(23, 25), {
-            offset: new BMap.Size(10, 25),
-            imageOffset: new BMap.Size(0, 0 - 10 * 25)
-        });
-        var marker = new BMap.Marker(new BMap.Point(company.position.lng, company.position.lat), {icon: myIcon});
-        map.addOverlay(marker);
-        marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
-    }
-                
+function searchMap(searchValue){            
     let index = layer.load(2);
     var local = new BMap.LocalSearch(map, {
 		renderOptions:{map: map},

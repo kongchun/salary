@@ -49,11 +49,11 @@ router.get('/getNewAverageSalary',function(req,res){
                     }else{
                         salary.read = 0;
                     }
-                    salary.compare = '同比下降3%';
-                    res.send({salary:salary,arr:arr});
+                    makeCompareStr(arr,salary);
+                    res.send({salary:salary,arr:arr.reverse()});
                 })
             }else{
-                res.send({salary:salary,arr:arr});
+                res.send({salary:salary,arr:arr.reverse()});
             }
         }else{
             res.send({});
@@ -64,15 +64,38 @@ router.get('/getNewAverageSalary',function(req,res){
     });
 });
 
+function makeCompareStr(arr,salary){
+    if(arr.length>1){
+        let nowAvg = arr[0].value;
+        let lastAvg = arr[1].value;
+        let compareStr = '同比上升';
+        let mid = -100;
+        salary.per = 'up';
+        if(nowAvg<lastAvg){
+            compareStr = '同比下降';
+            mid = 100;
+            salary.per = 'down';
+        }
+        salary.compare =  compareStr + ((1-(nowAvg/lastAvg))*mid).toFixed(1) +'%';
+    }else{
+        salary.compare = '';
+    }
+}
+
 router.post('/readAverageSalary',function(req,res){
     var year = req.body.year;
     var month = req.body.month;
-    update.updateAveraheSalaryCount({year:year,month:month}).then(function(data){
+    if(!!year && !!month){
+        update.updateAveraheSalaryCount({year:year,month:month}).then(function(data){
         res.send(data);
-    }).catch(e=>{
-        console.log(e);
+        }).catch(e=>{
+            console.log(e);
+            res.send({});
+        });
+    }else{
         res.send({});
-    });
+    }
+    
 });
 
 module.exports = router;

@@ -38,7 +38,7 @@ exports.getAverageSalaryInfo = function() {
 exports.getAverageSalary = function() {
 	db.close();
 	return db.open("board").then(function(collection) {
-		return collection.find({publish:true},{average:1,year:1,month:1}).sort({time:-1}).skip(0).limit(10).toArray();
+		return collection.find({publish:true},{average:1,year:1,month:1}).sort({time:-1}).skip(0).limit(6).toArray();
 	}).then(function(data) {
 		db.close();
         if(!!data && data.length>0){
