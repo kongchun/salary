@@ -19,6 +19,15 @@ router.get('/welcome', function(req, res, next) {
     res.send(page);
 });
 
+
+router.get('/distribution', function(req, res, next) {
+    var page ;
+    page = swig.renderFile('dist/index.html', {
+        html: ""
+    });
+    res.send(page);
+});
+
 router.get('/charts', function(req, res, next) {
     var page ;
     page = swig.renderFile('dist/charts/datashow.html', {

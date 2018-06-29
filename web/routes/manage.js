@@ -90,4 +90,12 @@ router.get('/onelevel', function(req, res) {
     res.send([]);
 });
 
+router.get('/charts', function(req, res, next) {
+    var page ;
+    page = swig.renderFile('dist/manage/charts.html', {
+        html: ""
+    });
+    res.send(page);
+});
+
 module.exports = router;
