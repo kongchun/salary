@@ -80,7 +80,7 @@ export default class Main {
                 addr:"",
                 position:"",
                 bdStatus:0,
-             }, "function (doc, prev) {prev.count++;prev.source = doc.source;prev.alias = doc.companyAlias;prev.company = doc.company;if(prev.addr==null){prev.addr = doc.addr;}else if(doc.addr !=null){if(prev.addr.length<doc.addr.length){prev.addr = doc.addr;}};if(doc.position != null){prev.position = doc.position;prev.bdStatus=1}}")
+             }, "function (doc, prev) {prev.count++;prev.source = doc.source;prev.alias = doc.companyAlias;prev.company = doc.company;if(prev.addr==null){prev.addr = doc.addr;}else if(doc.addr !=null){if(prev.addr.length<doc.addr.length){prev.addr = doc.addr;}};if(doc.position != null){prev.position.lat = doc.position.lat;prev.position.lng = doc.position.lng;prev.bdStatus=1}}")
         }).then((arr) => {
 
 
