@@ -35,6 +35,43 @@ exports.getAverageSalaryInfo = function() {
 	})
 };
 
+
+
+//add by kc
+exports.getChartsSalaryInfoByNews =function(){
+	db.close();
+	return db.open("board").then(function(collection) {
+		return collection.find({publish:true},{salaryRange:1,eduRange:1,yearRange:1,districtRange:1}).sort({time:-1}).skip(0).limit(1).toArray();
+	}).then(function(data){
+		db.close();
+        if(!!data && data.length>0){
+            return data[0];
+        }
+		return null;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+}
+
+
+exports.getChartsSalaryInfoByDate =function(year,month){
+	db.close();
+	return db.open("board").then(function(collection) {
+		return collection.findOne({year:year,month:month},{salaryRange:1,eduRange:1,yearRange:1,districtRange:1});
+	}).then(function(data){
+		db.close();
+		return data;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+}
+
+//add end
+
 exports.getAverageSalary = function() {
 	db.close();
 	return db.open("board").then(function(collection) {

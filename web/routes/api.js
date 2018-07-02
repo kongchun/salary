@@ -33,6 +33,27 @@ router.get('/getAverageSalary',function(req,res){
 	
 });
 
+router.get('/getChartsSalaryInfo',function(req,res){
+    let year =  req.query.year;
+    let month =  req.query.month;
+    if(!!year && !!month){
+        read.getChartsSalaryInfoByDate(year,month).then(function(data){
+            res.send(data);  
+        }).catch(e=>{
+            console.log(e);
+            res.send({});
+        });
+    }else{
+        read.getChartsSalaryInfoByNews().then(function(data){
+            res.send(data);
+        }).catch(e=>{
+            console.log(e);
+            res.send({});
+        });
+    }
+    
+});
+
 router.get('/getNewAverageSalary',function(req,res){
     read.getAverageSalary().then(function(data){
         if(!!data && data.length>0){

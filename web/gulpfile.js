@@ -103,6 +103,16 @@ gulp.task('browserify', function() {
 		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
 		.pipe(gulp.dest('dist/js'));
 
+	browserify(['src/manage/charts.js'])
+		.transform(babelify, {
+			presets: ['es2015', 'react', 'stage-0']
+		})
+		.bundle()
+		.pipe(source('bundle-charts.js'))
+		.pipe(streamify(uglify()))
+		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
+		.pipe(gulp.dest('dist/js'));
+
 	browserify(['src/manage/companyposition.js'])
 		.transform(babelify, {
 			presets: ['es2015', 'react', 'stage-0']
@@ -161,8 +171,7 @@ gulp.task('build', ['html', 'styles',  'browserify']);
 
 
 gulp.task('watch', ['build'], function() {
-	gulp.watch('src/**/*.*', ['build']);
-	
+	gulp.watch('src/**/*.*', ['build'])
 	//gulp.watch('dist/**/*.*', ['reload']);
 });
 
@@ -175,6 +184,8 @@ gulp.task('server', ['watch'], function() {
 	gulp.watch('public/**/bundle.js', server.notify);
 	gulp.watch('public/**/m_bundle.js', server.notify);
 	gulp.watch('public/**/*.css', server.notify);
+	gulp.watch('dist/**/*.html', server.notify);
+	gulp.watch('dist/**/*.js', server.notify);
 	gulp.watch(['app.js', 'routes/**/*.js'], server.run);
 });
 
