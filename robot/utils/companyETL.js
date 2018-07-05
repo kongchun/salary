@@ -63,6 +63,11 @@ function filter(company){
 	if (company.match(/维信荟智/ig)) {
 		return "维信";
 	}
+
+
+	if (company.match(/金螳螂/ig)) {
+		return "金螳螂";
+	}
 	return company;
 
 }

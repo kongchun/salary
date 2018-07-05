@@ -25,13 +25,12 @@ export default class ViewData {
             return this.db.findToArray({}, { average: 1 })
         }).then((data) => {
             this.db.close()
-            var count = data.length;
+            var count =0;
             var total = 0;
             data.forEach((i) => {
                 if(i.average>0){
                     total += i.average
-                }else{
-                    count--
+                    count++
                 }
             });
             console.log(total, count)
@@ -268,11 +267,29 @@ export default class ViewData {
         }).then(() => {
             this.db.close();
             techCount["javascript"] = techCount["javascript"] + techCount["js"] - techCount["json"];
+            techCount["ES6+"] = techCount["ECMAScript"] 
+            + techCount["ES6"] + techCount["ES7"]+techCount["ES8"]
+            + techCount["ES2015"] + techCount["ES2016"]+techCount["ES2017"]+techCount["ES2018"];
+
+
+            techCount["html"] = techCount["html"] + techCount["H5"];
             techCount["jquery"] = techCount["jq"];
             techCount["angular"] = techCount["ng"] - techCount["mongodb"]
             delete techCount['jq'];
             delete techCount['ng'];
             delete techCount['js'];
+            delete techCount['H5'];
+
+            delete techCount["ECMAScript"];
+            delete techCount["ES6"];
+            delete techCount["ES7"];
+            delete techCount["ES8"];
+            delete techCount["ES9"];
+
+            delete techCount["ES2015"];
+            delete techCount["ES2016"];
+            delete techCount["ES2017"];
+            delete techCount["ES2018"];
 
             var arr = [];
             for (let prop in techCount) {
@@ -326,6 +343,8 @@ const TECH = {
     ChartJS: "图形",
     Highcharts: "图形",
     Flot: "图形",
+    AntV:"图形",
+
 
     jq: "框架和库",
     jquery: "框架和库",
@@ -364,26 +383,35 @@ const TECH = {
     canJS:"MVVM",
     Ractive:"MVVM",
 
-    node: "node",
-    npm: "node",
-    Express: "node",
-    koa: "node",
-    Hapi: "node",
+    node: "构建服务",
+    npm: "构建服务",
+    Express: "构建服务",
+    koa: "构建服务",
+    Hapi: "构建服务",
 
     ECMAScript: "基础",
-    ES5: "基础",
+    "ES6+": "基础",
     ES6: "基础",
+    ES7: "基础",
+    ES8: "基础",
+    ES9: "基础",
+
+    ES2015: "基础",
+    ES2016: "基础",
+    ES2017: "基础",
+    ES2018: "基础",
+
     CoffeeScript: "基础",
     TypeScript: "基础",
 
-    Grunt: "构建",
-    gulp: "构建",
-    Bower: "构建",
-    less: "构建",
-    sass: "构建",
-    webpack: "构建",
-    Yeoman: "构建",
-    fis: "构建",
+    Grunt: "构建服务",
+    gulp: "构建服务",
+    Bower: "构建服务",
+    less: "构建服务",
+    sass: "构建服务",
+    webpack: "构建服务",
+    Yeoman: "构建服务",
+    fis: "构建服务",
 
     mysql: "数据库",
     mongodb: "数据库",
@@ -395,5 +423,6 @@ const TECH = {
 
     karma:"测试",
     jasmine:"测试",
-    protractor:"测试"
+    protractor:"测试",
+    mock:"测试"
 }

@@ -87,7 +87,7 @@ function filter(address,district="",position=""){
 	    }
 	})
 
-	console.log(city,district,position)
+	//console.log(city,district,position)
 	return {city,district,position};
 	
 }

@@ -35,7 +35,6 @@ export default class Parse {
 				       kd:this.kd,
 				       source:"lagou"
 			})
-			//console.log(job,333333333)
 			arr.push(job);
 		})
 		return arr;
@@ -44,29 +43,19 @@ export default class Parse {
 
 	info($){
 		var content = $.html();
-		var job_request = $(".job_request span");
-		var workYear = $(job_request[2]).text().replace(/\//g, "").replace(/(^\s*)|(\s*$)/g, "");
-		var education = $(job_request[3]).text().replace(/\//g, "").replace(/(^\s*)|(\s*$)/g, "");
-		var info = $(".job_bt").text().replace(/(^\s*)|(\s*$)/g, "");
+		var workYear = $(".workyear .text").text().replace(/\//g, "").replace(/(^\s*)|(\s*$)/g, "");
+		var education = $(".education .text").text().replace(/\//g, "").replace(/(^\s*)|(\s*$)/g, "");
+		var info = $(".positiondesc").text().replace(/(^\s*)|(\s*$)/g, "");
 		return {info,content,workYear,education};
 	}
 
 	position($){
-		var lng = $("[name='positionLng']").val();
-		var lat = $("[name='positionLat']").val();
-		var addr = $("[name='positionAddress']").val();
-		console.log(lng,lat,addr)
-
-		var position = gps.bd_encrypt(lat,lng);
-		if(lat == 0 && lng ==0){
-			position = null;
-		}
-
+		var addr = $(".workaddress .text").text().replace(/(^\s*)|(\s*$)/g, "");
+		var position = null;
 		if(addr==null){
 			addr = "苏州"
 			position = null;
 		}
-		
 		return ({addr,position});
 	}
 }

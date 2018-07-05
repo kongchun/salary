@@ -20,24 +20,61 @@ export default class Main {
 
     start(){
 
-        return this.list().then(()=>{
-            return this.pageToJob();
+        return this.stepList().then(()=>{
+            return this.stepToJob();
         }).then(()=>{
-            return this.info();
+            return this.stepInfo();
         }).then(()=>{
-            return this.groupCompany();
+            return this.stepCompare();
         }).then(()=>{
+            return this.stepBdLoad();
+        }).then(()=>{
+            return this.stepEtl();
+        })
+    }
+
+ //================
+
+    stepList(){
+        return this.list()
+    }
+
+    stepToJob(year,month){
+        return this.pageToJob().then(()=>{
+            return this.timeFilter();
+        }).then(()=>{
+            return this.clearoutTime(year,month);
+        })
+    }
+
+     stepInfo(){
+        return this.info()
+    }
+
+     stepCompare(year,month){
+        return this.groupCompany().then(()=>{
             return this.compareCompany();
         }).then(()=>{
-            return this.loadPosition();
+            return this.loadPosition(year,month);
+        })
+    }
+
+     stepBdLoad(){
+        return this.loadGeo().then(()=>{
+            return this.fixedGeo();
         }).then(()=>{
-            return this.loadGeo();
-        }).then(()=>{
-            return this.positionToJob();
-        }).then(()=>{
+            return this.filterGeo(year,month);
+        })
+    }
+
+     stepEtl(){
+        return this.positionToJob().then(()=>{
             return this.transform();
         })
     }
+
+
+    //================
 
     list() {
         //加载列表
@@ -161,13 +198,17 @@ export default class Main {
 
                 var position = i.position;
                 var district = i.district;
+                var bdStatus = 2;
                 var {city,district,position} = positionFilter(address,district,position);
+                if(district ==null || district==""){
+                    bdStatus = 0;
+                }
                 
                 return this.db.updateById(i._id, {
                     position:position,
                     district:district,
                     city:city,
-                    bdStatus:2
+                    bdStatus:bdStatus
                 })
               
             })
@@ -377,5 +418,28 @@ export default class Main {
            return;
        })
 
+    }
+
+    noLoadToRepertory(){
+        this.db.close()
+        return this.db.open(this.table.company).then(() => {
+           return this.db.collection.find({noLoad: null}).toArray();
+       }).then((data)=>{
+            this.db.close();
+            if(data.length == 0){
+                return null;
+            }
+            return this.db.open(this.table.repertoryCompany).then(() => {
+                return this.db.collection.insertMany(data);
+            })
+       }).then(() => {
+           this.db.close();
+           console.log("noLoadToRepertory success");
+           return;
+       }).catch((e) => {
+           this.db.close();
+           console.log(e);
+           return;
+       })
     }
 }
