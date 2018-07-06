@@ -98,4 +98,20 @@ router.get('/charts', function(req, res, next) {
     res.send(page);
 });
 
+router.get('/tables', function(req, res, next) {
+    var page ;
+    page = swig.renderFile('dist/manage/tables.html', {
+        html: ""
+    });
+    res.send(page);
+});
+
+router.get('/controlpage', function(req, res, next) {
+    var page ;
+    page = swig.renderFile('dist/manage/controlpage.html', {
+        html: ""
+    });
+    res.send(page);
+});
+
 module.exports = router;

@@ -36,4 +36,5 @@ router.get('/charts', function(req, res, next) {
     res.send(page);
 });
 
+
 module.exports = router;
