@@ -47,6 +47,9 @@ gulp.task('vendor', ['vendor-css'], function() {
 	gulp.src(['src/lib/layui/*.js'
 	]).pipe(gulp.dest("dist/js/layui"));
 
+	gulp.src(['node_modules/ejs/ejs.min.js'
+	]).pipe(gulp.dest("dist/jlib/ejs"));
+
 	gulp.src([
 			'src/echarts.min.js', "src/macarons.js",  //echart
 		]).pipe(concat('vendor-echart.js'))
@@ -81,6 +84,20 @@ gulp.task('vendor', ['vendor-css'], function() {
  */
 
 gulp.task('browserify', function() {
+	//manage js 
+	let jsFiles = ['company','charts','companyposition','tables'];
+	for(var i=0;i<jsFiles.length;i++){
+		browserify(['src/manage/'+jsFiles[i]+'.js'])
+		.transform(babelify, {
+			presets: ['es2015', 'react', 'stage-0']
+		})
+		.bundle()
+		.pipe(source('bundle-'+jsFiles[i]+'.js'))
+		.pipe(streamify(uglify()))
+		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
+		.pipe(gulp.dest('dist/js'));
+	}
+
 	//gulp.src('src/data.js').pipe(uglify()).pipe(gulp.dest('dist/js'));
 	browserify(['src/charts/datashow.js'])
 		// .transform(babelify, {
@@ -93,35 +110,35 @@ gulp.task('browserify', function() {
 		.pipe(gulp.dest('dist/js'));
 
 
-	browserify(['src/manage/company.js'])
-		.transform(babelify, {
-			presets: ['es2015', 'react', 'stage-0']
-		})
-		.bundle()
-		.pipe(source('bundle-company.js'))
-		.pipe(streamify(uglify()))
-		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
-		.pipe(gulp.dest('dist/js'));
+	// browserify(['src/manage/company.js'])
+	// 	.transform(babelify, {
+	// 		presets: ['es2015', 'react', 'stage-0']
+	// 	})
+	// 	.bundle()
+	// 	.pipe(source('bundle-company.js'))
+	// 	.pipe(streamify(uglify()))
+	// 	//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
+	// 	.pipe(gulp.dest('dist/js'));
 
-	browserify(['src/manage/charts.js'])
-		.transform(babelify, {
-			presets: ['es2015', 'react', 'stage-0']
-		})
-		.bundle()
-		.pipe(source('bundle-charts.js'))
-		.pipe(streamify(uglify()))
-		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
-		.pipe(gulp.dest('dist/js'));
+	// browserify(['src/manage/charts.js'])
+	// 	.transform(babelify, {
+	// 		presets: ['es2015', 'react', 'stage-0']
+	// 	})
+	// 	.bundle()
+	// 	.pipe(source('bundle-charts.js'))
+	// 	.pipe(streamify(uglify()))
+	// 	//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
+	// 	.pipe(gulp.dest('dist/js'));
 
-	browserify(['src/manage/companyposition.js'])
-		.transform(babelify, {
-			presets: ['es2015', 'react', 'stage-0']
-		})
-		.bundle()
-		.pipe(source('bundle-companyposition.js'))
-		.pipe(streamify(uglify()))
-		// .pipe(gulpif(production, streamify(uglify({mangle: false}))))
-		.pipe(gulp.dest('dist/js'));
+	// browserify(['src/manage/companyposition.js'])
+	// 	.transform(babelify, {
+	// 		presets: ['es2015', 'react', 'stage-0']
+	// 	})
+	// 	.bundle()
+	// 	.pipe(source('bundle-companyposition.js'))
+	// 	.pipe(streamify(uglify()))
+	// 	// .pipe(gulpif(production, streamify(uglify({mangle: false}))))
+	// 	.pipe(gulp.dest('dist/js'));
 
 	return browserify(['src/main.js'])
 		.transform(babelify, {
