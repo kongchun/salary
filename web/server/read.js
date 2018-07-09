@@ -190,3 +190,19 @@ exports.getAvgSarlyRank = function(limit) {
 		throw error;
 	})
 };
+
+exports.getCountJobRank = function(limit) {
+	db.close();
+	var query = {};
+	
+	return db.open("company").then(function(collection) {
+		return collection.find(query,{company:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
+	}).then(function(data) {
+		db.close();
+		return data;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};

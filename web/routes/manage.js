@@ -104,7 +104,9 @@ router.get('/tables', function(req, res, next) {
         let types = ['基础','框架和库','MVVM','图形','构建服务','数据库'];
         service.getTechDetailRanks(types).then(detailRank=>{
             read.getAvgSarlyRank(10).then(companyRank=>{
-                res.render('tables', {toprank,types,detailRank,companyRank});
+                read.getCountJobRank(10).then(jobRank=>{
+                    res.render('tables', {toprank,types,detailRank,companyRank,jobRank});
+                });
             });
         });
     }).catch(e=>{
