@@ -39,6 +39,7 @@
             width:500px;
             padding: 20px 50px;
             text-align:center;
+            float: left;
         }
         .layui-table th{
             text-align:center;
@@ -166,8 +167,29 @@
         </table>
     </div>
     <% } %>
+    <% if(!!jobRank && jobRank.length>0){ %>
+    <div class="toprank">
+        <h3 class="title">Top 10 前端岗位最多的企业</h3>
+        <table class="layui-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>招聘企业</th>
+                </tr> 
+            </thead>
+            <tbody>
+                <%for (var i=0;i<jobRank.length;i++){%>
+                <tr>
+                    <td><%=i+1%></td>
+                    <td><%=jobRank[i].company%></td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <% } %>
 </div>
-
+<div class="clearboth"></div> 
         
 
 </body>
