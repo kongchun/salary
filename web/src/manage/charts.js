@@ -10,9 +10,12 @@ $(function(){
 
   $.getJSON("/api/getChartsSalaryInfo",function(data){
       districtChart(data.districtRange);
-      yearChart(sortFilter(yearSort,data.yearRange));
-      priceChart(sortFilter(priceSort,data.salaryRange));
+      //yearChart(sortFilter(yearSort,data.yearRange));
+      //priceChart(sortFilter(priceSort,data.salaryRange));
+      radialChart(toPieChart(sortFilter(yearSort,data.yearRange)));
+      circleChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
       levelChart(data.eduRange);
+      pieChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
   })
 
 
@@ -25,7 +28,23 @@ function sortFilter(sortKey,data){
 }
 
 
-
+function toPieChart (data){
+  var total = 0;
+  var pieMap={};
+  var dealData={};
+  //根据count值计算百分比
+  data.map(function(item,index,input){
+    total+=item.count;
+  })
+  data.map(function(item,index,input){
+    item.count =parseFloat((parseFloat(item.count)/ total).toFixed(2))
+    item.a='1';//增加a属性
+    pieMap[item.label]=item.count;
+  })
+  dealData.data=data;
+  dealData.pieMap=pieMap;
+  return dealData;
+}
 
 
 function salaryChart(data){
@@ -165,4 +184,162 @@ function levelChart(data){
 
   // Step 4: 渲染图表
   chart.render();
+}
+
+
+function pieChart(data){
+   var chart = new F2.Chart({
+    id: 'pieChart'
+   // pixelRatio: window.devicePixelRatio // 指定分辨率
+  });
+
+  // Step 2: 载入数据源,设置百分比
+  var pieData = data.data;
+  chart.source(pieData,{
+    count:{
+       formatter: function formatter(val) {
+       return val * 100 + '%';
+      }
+    }
+  });
+  //配置图例
+  chart.legend({
+  position: 'right',//可取‘right/left’
+  itemFormatter: function itemFormatter(val) {  
+    return val +"  "+parseInt(data.pieMap[val] *100)+" %";//设置文字旁边的百分比
+    }
+  });
+  //设置圆环半径
+  chart.tooltip(false);
+  chart.coord('polar', {
+  transposed: true,
+  radius:0.8
+  });
+  // Step 3：创建图形语法，绘制饼型图，由 a 和 percent 两个属性决定扇形面积，color设置不同name使用的颜色，
+  //duration设置图形动画加载的时间长度，easing设置动画的缓动函数（linear quadraticIn quadraticOut 
+  //quadraticInOut cubicIn cubicOut cubicInOut elasticIn elasticOut elasticInOut backIn backOut backInOut bounceIn bounceOut bounceInOut）
+  chart.axis(false);
+  chart.interval().position('a*count').color('label')
+    .adjust('stack').style({
+        lineWidth: 1,
+        stroke: '#fff',
+        lineJoin: 'round',
+        lineCap: 'round'
+    }).animate({
+       appear: {
+        duration: 1200,
+        easing: 'bounceOut'
+       }
+  });
+
+  // Step 4: 渲染图表
+  chart.render();
+}
+
+
+function circleChart(data){
+   var chart = new F2.Chart({
+    id: 'circleChart'
+   // pixelRatio: window.devicePixelRatio // 指定分辨率
+  });
+
+  // Step 2: 载入数据源,设置百分比
+  var pieData = data.data;
+  chart.source(pieData,{
+    count:{
+       formatter: function formatter(val) {
+       return val * 100 + '%';
+      }
+    }
+  });
+  //配置图例
+  chart.legend({
+  position: 'right',//可取‘right/left’
+  itemFormatter: function itemFormatter(val) {  
+    return val +"  "+parseInt(data.pieMap[val] *100)+" %";//设置文字旁边的百分比
+    }
+  });
+  //设置圆环半径
+  chart.tooltip(false);
+  chart.coord('polar', {
+  transposed: true,
+  radius:0.8,
+  innerRadius: 0.618
+  });
+  // Step 3：创建图形语法，绘制饼型图，由 a 和 percent 两个属性决定扇形面积，color设置不同name使用的颜色，
+  //duration设置图形动画加载的时间长度，easing设置动画的缓动函数（linear quadraticIn quadraticOut 
+  //quadraticInOut cubicIn cubicOut cubicInOut elasticIn elasticOut elasticInOut backIn backOut backInOut bounceIn bounceOut bounceInOut）
+  chart.axis(false);
+  chart.interval().position('a*count').color('label')
+    .adjust('stack').style({
+        lineWidth: 1,
+        stroke: '#fff',
+        lineJoin: 'round',
+        lineCap: 'round'
+    });
+
+  chart.guide().html({
+    position: ['50%', '50%'],
+    html: '<div style="text-align: center;width: 100px;height: 72px;vertical-align: middle;">' + '<p id="number" style="font-size: 28px;margin: 10px 10px 5px;font-weight: bold;"></p>' + '<p id="name" style="font-size: 12px;margin: 0;"></p>' + '</div>'
+  });
+//   chart.interaction('pie-select', {
+//   startEvent: 'tap',
+//   animate: {
+//     duration: 300,
+//     easing: 'backOut'
+//   },
+//   onEnd: function onEnd(ev) {
+//     var shape = ev.shape,
+//       data = ev.data,
+//       shapeInfo = ev.shapeInfo,
+//       selected = ev.selected;
+
+//     if (shape) {
+//       if (selected) {
+//         $('#number').css('color', shapeInfo.color);
+//         $('#number').text(data.percent * 100 + '%');
+//         $('#label').text(data.label);
+//       } else {
+//         $('#number').text('');
+//         $('#label').text('');
+//       }
+//     }
+//   }
+// });
+  // Step 4: 渲染图表
+  chart.render();
+}
+
+function radialChart(data){
+
+  var chart = new F2.Chart({
+    id: 'radialChart',
+    //pixelRatio: window.devicePixelRatio
+  });
+  chart.coord('polar', {
+     transposed: true,
+     endAngle: Math.PI
+  });
+
+  chart.source(data.data,{
+    count:{
+       formatter: function formatter(val) {
+       return val * 100 + '%';
+      }
+    }
+  });
+    chart.axis('label', {
+    grid: null,
+    line: null
+  });
+  chart.axis('count', false);
+    chart.legend({
+    position: 'right',
+    itemFormatter: function itemFormatter(val) {  
+    return val +"  "+parseInt(data.pieMap[val] *100)+" %";//设置文字旁边的百分比
+    }
+  });
+  chart.interval().position('label*count').
+    color('label');
+    chart.render();
 }
