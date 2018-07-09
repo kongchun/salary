@@ -155,3 +155,38 @@ exports.getHitsByTime = function(year,month) {
 		throw error;
 	})
 };
+
+//技能 top 排行
+exports.getTopRank = function(year,month,limit,type) {
+	db.close();
+	var query = {year:year+'',month:month+''};
+	if(!!type){
+		query.type = type;
+	}
+	return db.open("tech").then(function(collection) {
+		return collection.find(query,{tech:1,type:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
+	}).then(function(data) {
+		db.close();
+		return data;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};
+
+exports.getAvgSarlyRank = function(limit) {
+	db.close();
+	var query = {};
+	
+	return db.open("job").then(function(collection) {
+		return collection.find(query,{company:1,average:1}).sort({average:-1}).skip(0).limit(limit).toArray();
+	}).then(function(data) {
+		db.close();
+		return data;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};

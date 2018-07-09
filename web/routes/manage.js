@@ -3,6 +3,7 @@ var router = express.Router();
 var swig = require('swig');
 var read = require('../server/read.js');
 var update = require('../server/update.js');
+var service = require('../server/service.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -99,11 +100,17 @@ router.get('/charts', function(req, res, next) {
 });
 
 router.get('/tables', function(req, res, next) {
-    var page ;
-    page = swig.renderFile('dist/manage/tables.html', {
-        html: ""
+    service.getTopRank().then(toprank=>{
+        let types = ['基础','框架和库','MVVM','图形','构建服务','数据库'];
+        service.getTechDetailRanks(types).then(detailRank=>{
+            read.getAvgSarlyRank(10).then(companyRank=>{
+                res.render('tables', {toprank,types,detailRank,companyRank});
+            });
+        });
+    }).catch(e=>{
+        res.render('tables', {"errorMsg":e});
     });
-    res.send(page);
+    
 });
 
 router.get('/controlpage', function(req, res, next) {

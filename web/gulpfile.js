@@ -49,6 +49,7 @@ gulp.task('vendor', ['vendor-css'], function() {
 
 	gulp.src(['node_modules/ejs/ejs.min.js'
 	]).pipe(gulp.dest("dist/jlib/ejs"));
+	
 
 	gulp.src([
 			'src/echarts.min.js', "src/macarons.js",  //echart

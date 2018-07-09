@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <title>表格排名</title>
+    <!-- 引入在线资源 -->
+    <link rel="stylesheet" href="/jlib/lay/layui.css" />
+    <script src="/js/vendor.js"></script>
+    <script src="/jlib/ejs/ejs.min.js"></script>
+    <script src="/js/bundle-tables.js"></script>
+    <style type="text/css">
+	    body, html{
+            width: 100%;
+            margin:0;
+            font-family:"微软雅黑";
+        }
+        body{
+            padding-top:30px;
+        }
+        h2{
+            color:#666666;
+            padding-left:50px;
+        }
+        .title{
+            color:#CCCCCC;
+            text-align:center;
+            margin-bottom: 30px;
+        }
+        .tech,.job{
+            width:100%;
+        }
+        .tech div{
+            float:left;
+        }
+        .toprank{
+            width:500px;
+            padding: 20px 50px;
+            text-align:center;
+        }
+        .layui-table th{
+            text-align:center;
+        }
+        .techDetailRank{
+            width:920px;
+            padding: 20px 20px;
+            text-align:center;
+        }
+        .techDetailRank table{
+            width:440px;
+            margin:0 10px;
+            float:left;
+        }
+        .clearboth{
+            clear: both;
+        }
+	</style>
+</head>
+
+<body>
+<div class="tech">    
+    <h2>技能要求</h2>
+    <hr class="layui-bg-gray">
+    <% if(!!toprank && toprank.length>10 && toprank.length<=20){ %>
+    <div class="toprank">
+        <h3 class="title">Top20总排行</h3>
+        <table class="layui-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>技能</th>
+                    <th>序号</th>
+                    <th>技能</th>
+                </tr> 
+            </thead>
+            <tbody>
+                <%for (var i=0;i<10;i++){%>
+                <tr>
+                    <td><%=i+1%></td>
+                    <td><%=toprank[i].tech%></td>
+                    <% if(toprank.length>10+i){ %>
+                    <td><%=10+i+1%></td>
+                    <td><%=toprank[10+i].tech%></td>
+                    <% }else{ %>
+                    <td></td>
+                    <td></td>
+                    <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <% } %>
+    <% if(!!types && types.length>0){ %>
+    <div class="techDetailRank">
+        <h3 class="title">Top10技能细分排行</h3>
+        <% if(types.length>=3){ %>
+        <%for (var t=0;t<10;t++){%>
+        <% if(types.length/3>t){ %>
+        <table class="layui-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <%for (var i=t*3;i<3*(t+1)&&i<types.length;i++){%>
+                    <td><%=types[i]%></td>
+                    <% } %>
+                </tr> 
+            </thead>
+            <tbody>
+                <%for (var i=0;i<10;i++){%>
+                <tr>
+                    <td><%=i+1%></td>
+                    <% if(!!detailRank[0+(t*3)] && detailRank[0+(t*3)].length>i){ %>
+                        <td><%=detailRank[0+(t*3)][i].tech%></td>
+                    <% }else{ %>
+                        <td>-</td>
+                    <% } %>
+                    <% if((1+t*3)<types.length){%>
+                    <% if(!!detailRank[1+(t*3)] && detailRank[1+(t*3)].length>i){ %>
+                        <td><%=detailRank[1+(t*3)][i].tech%></td>
+                    <% }else{ %>
+                        <td>-</td>
+                    <% } %>
+                    <% } %>
+                    <% if((2+t*3)<types.length){%>
+                    <% if(!!detailRank[2+(t*3)] && detailRank[2+(t*3)].length>i){ %>
+                        <td><%=detailRank[2+(t*3)][i].tech%></td>
+                    <% }else{ %>
+                        <td>-</td>
+                    <% } %>
+                    <% } %>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <% } %>
+        <% } %>
+        <% } %>
+    </div>
+    <% } %>
+</div>
+<div class="clearboth"></div> 
+<div class="job">    
+    <h2>就业指导</h2>
+    <hr class="layui-bg-gray">
+    <% if(!!companyRank && companyRank.length>0){ %>
+    <div class="toprank">
+        <h3 class="title">Top 10 前端平均薪酬最高</h3>
+        <table class="layui-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>招聘企业</th>
+                </tr> 
+            </thead>
+            <tbody>
+                <%for (var i=0;i<companyRank.length;i++){%>
+                <tr>
+                    <td><%=i+1%></td>
+                    <td><%=companyRank[i].company%></td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <% } %>
+</div>
+
+        
+
+</body>
+
+</html>
+
+
+
