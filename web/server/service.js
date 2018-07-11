@@ -1,12 +1,12 @@
 var read = require('./read.js');
 
 //技能 top20 总排行
-exports.getTopRank = function(){
+exports.getTopRank = function(limit=20){
     let now = new Date();
     let year = now.getFullYear();
     let month = now.getMonth()+1;
     return new Promise((resolve, reject) => {
-        read.getTopRank(year,month,20).then(topRank=>{
+        read.getTopRank(year,month,limit).then(topRank=>{
             if(!!topRank && topRank.length>0){
                 resolve(topRank);
             }else{
@@ -16,7 +16,7 @@ exports.getTopRank = function(){
                 }else{
                     month--;
                 }
-                read.getTopRank(year,month,20).then(topRank2=>{
+                read.getTopRank(year,month,limit).then(topRank2=>{
                     if(!!!topRank2 || topRank2.length<=0){
                         topRank2 = [];
                     }

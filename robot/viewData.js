@@ -17,6 +17,180 @@ export default class ViewData {
             return this.chart();
         }).then(()=>{
             return this.tech();
+        }).then(()=>{
+            return this.top();
+        })
+    }
+    top(){
+        this.getTopRank(50).then(toprank=>{
+            let types = ['基础','框架和库','MVVM','图形','构建服务','数据库'];
+            this.getTechDetailRanks(types).then(detailRank=>{
+                this.getAvgSarlyRank(50).then(companyRank=>{
+                    this.getCountJobRank(50).then(jobRank=>{
+                        var year = this.year;
+                        var month = this.month;
+                        return this.setTop({toprank,detailRank,companyRank,jobRank,year, month});
+                    });
+                });
+            });
+        }).catch(error=>{
+            console.error(error);
+            throw error;
+        });
+    }
+    getTopRank(limit=20){
+        let year = this.year;
+        let month = this.month;
+        return new Promise((resolve, reject) => {
+            this.getTopRankDb(year,month,limit).then(topRank=>{
+                if(!!topRank && topRank.length>0){
+                    resolve(topRank);
+                }else{
+                    if(month ==1){
+                        year--;
+                        month = 12;
+                    }else{
+                        month--;
+                    }
+                    this.getTopRankDb(year,month,limit).then(topRank2=>{
+                        if(!!!topRank2 || topRank2.length<=0){
+                            topRank2 = [];
+                        }
+                        resolve(topRank2);
+                    }).catch(e=>{
+                        reject(e);
+                    });
+                }
+            }).catch(e=>{
+                reject(e);
+            });
+        });
+    }
+    getTechDetailRanks(types){
+        return new Promise((resolve, reject) => {
+            let ranks = [];
+            if(!!types && types.length>0){
+                this.getTechDetailRank(0,types,ranks).then(res=>{
+                    resolve(res);
+                })
+            }else{
+                resolve(ranks);
+            }
+        });
+    };
+    getTechDetailRank(index,types,ranks){
+        return new Promise((resolve, reject) => {
+            if(!!types && types.length<=index){
+                resolve(ranks);
+                return;
+            }
+            let type = types[index++];
+            let year = this.year;
+            let month = this.month;
+            this.getTopRankDb(year,month,10,type).then(topRank=>{
+                if(!!topRank && topRank.length>0){
+                    ranks.push(topRank);
+                    this.getTechDetailRank(index,types,ranks).then(res=>{
+                        resolve(res);
+                    });
+                }else{
+                    let year2 = year;
+                    let month2 = month;
+                    if(month2 ==1){
+                        year2--;
+                        month2 = 12;
+                    }else{
+                        month2--;
+                    }
+                    this.getTopRankDb(year2,month2,10,type).then(topRank2=>{
+                        if(!!!topRank2 || topRank2.length<=0){
+                            topRank2 = [];
+                        }
+                        ranks.push(topRank2);
+                        this.getTechDetailRank(index,types,ranks).then(res=>{
+                            resolve(res);
+                        });
+                    }).catch(e=>{
+                        reject(e);
+                    });
+                }
+            }).catch(e=>{
+                reject(e);
+            });
+        });
+    }
+    getTopRankDb(year,month,limit,type) {
+        this.db.close();
+        var query = {year:year+'',month:month+''};
+        if(!!type){
+            query.type = type;
+        }
+        return this.db.open(this.table.tech).then((collection) =>{
+            return collection.find(query,{tech:1,type:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
+        }).then((data)=> {
+            this.db.close();
+            return data;
+        }).catch((error) => {
+            this.db.close();
+            console.error(error)
+            throw error;
+        })
+    };
+    getAvgSarlyRank(limit) {
+        this.db.close();
+        var query = {};
+        return this.db.open(this.table.job).then((collection) =>{
+            return collection.find(query,{company:1,average:1}).sort({average:-1}).skip(0).limit(limit).toArray();
+        }).then((data)=> {
+            this.db.close();
+            return data;
+        }).catch((error)=> {
+            this.db.close();
+            console.error(error)
+            throw error;
+        })
+    };
+    getCountJobRank(limit) {
+        this.db.close();
+        var query = {};
+        return this.db.open(this.table.company).then((collection)=> {
+            return collection.find(query,{company:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
+        }).then((data)=> {
+            this.db.close();
+            return data;
+        }).catch((error)=> {
+            this.db.close();
+            console.error(error)
+            throw error;
+        })
+    };
+    setTop(top){
+        this.db.close();
+        return this.db.open(this.table.top).then(() => {
+            return this.db.collection.findOne({
+                year: this.year,
+                month:this.month
+            })
+        }).then((data) => {
+            console.log(this.year+this.month, data)
+            if (data) {
+                return this.db.collection.update({
+                    year: this.year,
+                    month:this.month
+                }, {
+                    $set: top
+                })
+            } else {
+                return this.db.collection.insert(top);
+            }
+        }).then(() => {
+            this.db.close();
+            console.log("top success");
+            return;
+        }).catch((e) => {
+            this.db.close()
+            console.log(e);
+            return;
         })
     }
     average() {
@@ -223,7 +397,7 @@ export default class ViewData {
             this.db.close();
             console.log("chart success");
             return;
-        }).catch(function(e) {
+        }).catch((e)=> {
             this.db.close()
             console.log(e)
         })
@@ -244,7 +418,7 @@ export default class ViewData {
             }, {
                 info: 1
             }).toArray()
-        }).then(function(arr) {
+        }).then((arr)=> {
             console.log(arr.length)
             return helper.iteratorArr(arr, (data) => {
                 var content = (data.info).toLowerCase();
