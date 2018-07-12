@@ -28,10 +28,10 @@ const month = "7";
 //main.stepToJob(year,month);
 //main.stepInfo();
 //main.stepCompare(year,month);
-main.noLoadToRepertory();
+//main.noLoadToRepertory();
 //main.stepBdLoad();
 //main.stepEtl();
-//show();
+show();
 
 //=================================
 

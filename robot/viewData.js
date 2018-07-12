@@ -6,11 +6,12 @@ import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
 
 
 export default class ViewData {
-    constructor(db, table,year,month) {
+    constructor(db, table,year,month,types=['基础','框架和库','MVVM','图形','构建服务','数据库']) {
         this.db = db;
         this.year = year;
         this.month = month;
         this.table = table;
+        this.types = types;
     }
     show(){
         return this.average().then(()=>{
@@ -23,8 +24,8 @@ export default class ViewData {
     }
     top(){
         this.getTopRank(50).then(toprank=>{
-            let types = ['基础','框架和库','MVVM','图形','构建服务','数据库'];
-            this.getTechDetailRanks(types).then(detailRank=>{
+            
+            this.getTechDetailRanks(this.types).then(detailRank=>{
                 this.getAvgSarlyRank(50).then(companyRank=>{
                     this.getCountJobRank(50).then(jobRank=>{
                         var year = this.year;
@@ -172,7 +173,8 @@ export default class ViewData {
                 month:this.month
             })
         }).then((data) => {
-            console.log(this.year+this.month, data)
+            //console.log(this.year+this.month, data)
+            console.log(this.year+this.month,JSON.stringify(top,null,4))
             if (data) {
                 return this.db.collection.update({
                     year: this.year,
