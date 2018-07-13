@@ -30,7 +30,9 @@ export default class ViewData {
                     this.getCountJobRank(50).then(jobRank=>{
                         var year = this.year;
                         var month = this.month;
-                        return this.setTop({toprank,detailRank,companyRank,jobRank,year, month});
+                        var types = this.types;
+                        var time = new Date();
+                        return this.setTop({toprank,detailRank,companyRank,jobRank,types,year,month,time});
                     });
                 });
             });
