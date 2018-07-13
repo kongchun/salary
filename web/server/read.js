@@ -206,3 +206,18 @@ exports.getCountJobRank = function(limit) {
 		throw error;
 	})
 };
+
+exports.getTableRank = function(year,month) {
+	db.close();
+	var query = {'year':year+'','month':month+''};
+	return db.open("top").then(function(collection) {
+		return collection.findOne(query);
+	}).then(function(data) {
+		db.close();
+		return data;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};

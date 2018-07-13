@@ -100,19 +100,27 @@ router.get('/charts', function(req, res, next) {
 });
 
 router.get('/tables', function(req, res, next) {
-    service.getTopRank().then(toprank=>{
-        let types = ['基础','框架和库','MVVM','图形','构建服务','数据库'];
-        service.getTechDetailRanks(types).then(detailRank=>{
-            read.getAvgSarlyRank(10).then(companyRank=>{
-                read.getCountJobRank(10).then(jobRank=>{
-                    res.render('tables', {toprank,types,detailRank,companyRank,jobRank});
-                });
-            });
-        });
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth()+1;
+    read.getTableRank(year,month).then(ret=>{
+        ret.types = ['基础','框架和库','MVVM','图形','构建服务','数据库'];
+        res.render('tables', ret);
     }).catch(e=>{
         res.render('tables', {"errorMsg":e});
     });
-    
+    // service.getTopRank().then(toprank=>{
+    //     let types = ['基础','框架和库','MVVM','图形','构建服务','数据库'];
+    //     service.getTechDetailRanks(types).then(detailRank=>{
+    //         read.getAvgSarlyRank(10).then(companyRank=>{
+    //             read.getCountJobRank(10).then(jobRank=>{
+    //                 res.render('tables', {toprank,types,detailRank,companyRank,jobRank});
+    //             });
+    //         });
+    //     });
+    // }).catch(e=>{
+    //     res.render('tables', {"errorMsg":e});
+    // });
 });
 
 router.get('/controlpage', function(req, res, next) {
