@@ -104,7 +104,6 @@ router.get('/tables', function(req, res, next) {
     let year = now.getFullYear();
     let month = now.getMonth()+1;
     read.getTableRank(year,month).then(ret=>{
-        ret.types = ['基础','框架和库','MVVM','图形','构建服务','数据库'];
         res.render('tables', ret);
     }).catch(e=>{
         res.render('tables', {"errorMsg":e});
