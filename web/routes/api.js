@@ -119,4 +119,17 @@ router.post('/readAverageSalary',function(req,res){
     
 });
 
+router.get('/dataStatistics', function(req, res, next) {
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth()+1;
+    read.getTableRank(year,month).then(ret=>{
+        res.send(ret);
+    }).catch(e=>{
+        console.log(e);
+        res.send({});
+    });
+    
+});
+
 module.exports = router;
