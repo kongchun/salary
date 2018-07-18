@@ -15,11 +15,11 @@ const kd = "前端";
 
 var table = new Table({});
 var main = new Main(db,table);
-//main.addConfig(new Jobui(1));
-main.addConfig(new Lagou(1)); //拉钩 10
-main.addConfig(new ZhaoPin(1)); //智联招聘 10
-//main.addConfig(new FiveOneJob(1)); //51Job  10
-//main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2
+
+main.addConfig(new Lagou(3)); //拉钩 10
+main.addConfig(new ZhaoPin(5)); //智联招聘 10
+main.addConfig(new FiveOneJob(5)); //51Job  10
+main.addConfig(new ZhiPin(2)); //BOSS直聘 参数不要大于2
 
 const year = "2018";
 const month = "7";

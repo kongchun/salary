@@ -13,7 +13,7 @@ export default class Loader {
 
 	list (pageSize = 1){
 		let url = encodeURI(LIST_URL+`?city=${this.city}&positionName=${this.kd}&pageNo=${pageSize}&pageSize=15`);
-		return loader.getJSON(url,{delay:1000}).then((json)=>{
+		return loader.getJSON(url,{delay:10000}).then((json)=>{
 			return json;
 		})
 	}

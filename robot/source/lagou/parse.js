@@ -21,6 +21,8 @@ export default class Parse {
 
 	list(json){
 		var arr = []
+		console.log(json.content)
+
 		json.content.data.page.result.map((it)=>{
 			var job = new Job({
 					   jobId:it.positionId,
