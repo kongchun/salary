@@ -3,6 +3,7 @@ import Container from "./Container.js";
 import Company from "./model/Company.js";
 import {filter as positionFilter} from "./utils/positionETL.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
+import {fCompany} from "./utils/companyETL.js"
 import moment from "moment";
 
 
@@ -18,59 +19,53 @@ export default class Main {
         this.containerList.push(container);
     }
 
-    start(){
+   async start(){
 
-        return this.stepList().then(()=>{
-            return this.stepToJob();
-        }).then(()=>{
-            return this.stepInfo();
-        }).then(()=>{
-            return this.stepCompare();
-        }).then(()=>{
-            return this.stepBdLoad();
-        }).then(()=>{
-            return this.stepEtl();
-        })
+        await this.stepList();
+        await this.stepToJob();
+        await this.stepInfo();
+        await this.stepCompare();
+        await this.stepBdLoad();
+        await this.stepEtl();
+       
     }
 
  //================
 
-    stepList(){
-        return this.list()
+    async tepList(){
+        await this.list()
     }
 
-    stepToJob(year,month){
-        return this.pageToJob().then(()=>{
-            return this.timeFilter();
-        }).then(()=>{
-            return this.clearoutTime(year,month);
-        })
+    async stepToJob(year,month){
+        await this.pageToJob();
+        await this.timeFilter();
+        await this.clearoutTime(year,month);
+        await this.filterCompany();
+    
     }
 
-     stepInfo(){
-        return this.info()
+    async stepInfo(){
+        await this.info()
     }
 
-     stepCompare(year,month){
-        return this.groupCompany().then(()=>{
-            return this.compareCompany();
-        }).then(()=>{
-            return this.loadPosition(year,month);
-        })
+    async stepCompare(year,month){
+        await this.groupCompany();
+        await this.compareCompany();
+        await this.loadPosition(year,month);
+
     }
 
-     stepBdLoad(){
-        return this.loadGeo().then(()=>{
-            return this.fixedGeo();
-        }).then(()=>{
-            return this.filterGeo(year,month);
-        })
+    async stepBdLoad(year,month){
+        await this.loadGeo();
+        await this.fixedGeo();
+        await this.filterGeo();
+
     }
 
-     stepEtl(){
-        return this.positionToJob().then(()=>{
-            return this.transform();
-        })
+    async stepEtl(){
+        await this.positionToJob();
+        await this.transform();
+ 
     }
 
 
@@ -196,13 +191,19 @@ export default class Main {
             return helper.iteratorArr(data, (i) => {
                 var address = i.addr;
 
+
                 var position = i.position;
                 var district = i.district;
                 var bdStatus = 2;
+
                 var {city,district,position} = positionFilter(address,district,position);
-                if(district ==null || district==""){
+
+                //
+                if(district ==null || district=="" || position =="" || position==null){
                     bdStatus = 0;
                 }
+
+              
                 
                 return this.db.updateById(i._id, {
                     position:position,
@@ -441,5 +442,20 @@ export default class Main {
            console.log(e);
            return;
        })
+    }
+
+    filterCompany(){
+        this.db.close();
+        this.db.open(this.table.job).then(() => {
+            return db.collection.remove({companyAlias:fCompany});
+        }).then((data) => {
+            this.db.close()
+            console.log("jobFilterCompareETL Success")
+            return;
+        }).catch((e) => {
+            this.db.close()
+            console.log(e)
+            return;
+        })
     }
 }

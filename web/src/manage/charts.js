@@ -5,16 +5,21 @@ $(function(){
   })
      
 
-  var priceSort = {"<5K":1,"5-8K":2,"8-10K":3,"10-15K":4,">20K":5,"面议":6};
+  var priceSort = {"<5K":1,"5-8K":2,"8-10K":3,"10-15K":4,"15-20K":5,">20K":6,"面议":7};
   var yearSort = {"3年以下":1,"3-5年":2,"5-10年":3,"不限":4};
+  var eduSort = {"大专":1,"本科":2,"硕士":3,"不限":0};
+  var districtSort = {"工业园区":1,"姑苏区":2,"高新区":3,"吴中区":4,"相城区":5,"吴江区":6,"苏州周边":7}
 
   $.getJSON("/api/getChartsSalaryInfo",function(data){
-      districtChart(data.districtRange);
+      districtChart(sortFilter(districtSort,data.districtRange));
       //yearChart(sortFilter(yearSort,data.yearRange));
       //priceChart(sortFilter(priceSort,data.salaryRange));
-      radialChart(toPieChart(sortFilter(yearSort,data.yearRange)));
-      circleChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
-      levelChart(data.eduRange);
+      //radialChart(toPieChart(sortFilter(yearSort,data.yearRange)));
+
+      radialChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
+      //circleChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
+
+      levelChart(sortFilter(eduSort,data.eduRange));
       pieChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
   })
 
@@ -33,16 +38,23 @@ function toPieChart (data){
   var pieMap={};
   var dealData={};
   //根据count值计算百分比
-  data.map(function(item,index,input){
+  data.forEach(function(item,index,input){
     total+=item.count;
   })
+
+  console.log("--",data);
   data.map(function(item,index,input){
+    console.log(item);
+
     item.count =parseFloat((parseFloat(item.count)/ total).toFixed(2))
     item.a='1';//增加a属性
     pieMap[item.label]=item.count;
   })
   dealData.data=data;
   dealData.pieMap=pieMap;
+
+  console.log(dealData)
+
   return dealData;
 }
 
@@ -100,18 +112,18 @@ function salaryChart(data){
       });
 
       chart.line().position('key*value').color('type', val => {
-        if (val === '薪资') {
-          return '#32933D';
-        }
+        // if (val === '薪资') {
+        //   return '#32933D';
+        // }
       });
  
       //chart.line().position('key*value').color("#32933D");
       chart.point().position('key*value').style({
         stroke: '#fff',
         lineWidth: 1
-      }).color("#32933D");
+      })//.color("#32933D");
 
-      chart.area().position('key*value').color("#32933D");
+      chart.area().position('key*value')//.color("#32933D");
       chart.render();
 
  
@@ -160,6 +172,7 @@ function priceChart(data){
    // pixelRatio: window.devicePixelRatio // 指定分辨率
   });
 
+  
   // Step 2: 载入数据源
   chart.source(data);
   chart.legend(false);
@@ -178,7 +191,7 @@ function levelChart(data){
 
   // Step 2: 载入数据源
   chart.source(data);
-
+   chart.legend(false);
   // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
   chart.interval().position('label*count').color('label');
 

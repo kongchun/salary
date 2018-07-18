@@ -1,31 +1,9 @@
 import helper from "../../../iRobots/helper.js";
 var db = require('../../../iRobots/db.js')("127.0.0.1", "kongchun");
 const TABLE_REPERTORY_COMPANY = "repertory_company_copy";
+const fCompany =  /达内|才秀人人|学码思|深圳市芯澜电子/ig
 
-function run(){
 
-
-	db.close();
-	db.open(TABLE_REPERTORY_COMPANY).then(() => {
-	    return db.collection.find({}).toArray();
-	}).then((data) => {
-	    return helper.iteratorArr(data, (i) => {
-	        var company = i.company;
-	        return db.updateById(i._id, {
-	            alias: filter(i.company)
-	    	})
-	    })
-	}).then((data) => {
-	    db.close()
-	    console.log("compareETL Success")
-	    return;
-	}).catch((e) => {
-	    db.close()
-	    console.log(e)
-	    return;
-	})
-
-}
 
 function filter(company){
 
@@ -72,7 +50,31 @@ function filter(company){
 
 }
 
-export {filter}
+export {filter,fCompany}
+
+function run(){
+
+	db.close();
+	db.open(TABLE_REPERTORY_COMPANY).then(() => {
+	    return db.collection.find({}).toArray();
+	}).then((data) => {
+	    return helper.iteratorArr(data, (i) => {
+	        var company = i.company;
+	        return db.updateById(i._id, {
+	            alias: filter(i.company)
+	    	})
+	    })
+	}).then((data) => {
+	    db.close()
+	    console.log("compareETL Success")
+	    return;
+	}).catch((e) => {
+	    db.close()
+	    console.log(e)
+	    return;
+	})
+
+}
 
 
 function run1(){
@@ -98,4 +100,22 @@ function run1(){
 	})
 }
 
+function run2(){
+	db.close();
+	db.open("job").then(() => {
+	    return db.collection.remove({companyAlias:fCompany});
+	}).then((data) => {
+	    db.close()
+	    console.log("jobcompareETL Success")
+	    return;
+	}).catch((e) => {
+	    db.close()
+	    console.log(e)
+	    return;
+	})
+
+}
+
 //run1()
+//
+//run2()

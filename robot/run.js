@@ -31,7 +31,7 @@ const month = "7";
 //main.noLoadToRepertory();
 //main.stepBdLoad();
 //main.stepEtl();
-show();
+show(db,table,year,month);
 
 //=================================
 
@@ -70,7 +70,7 @@ show();
 
 //============================
 
-function show(){
+function show(db,table,year,month){
 	var view = new ViewData(db,table,year,month);
 	view.show();
 }

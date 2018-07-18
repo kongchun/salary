@@ -13,9 +13,7 @@ export default class ETL {
 
 	education(){
 		let education =  this.job.education;
-		if (education == "硕士") {
-			education = "本科"
-		}
+
 		if (education == "中专") {
 			education = "大专"
 		}

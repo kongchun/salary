@@ -78,16 +78,20 @@ function filter(address,district="",position=""){
 		district = "苏州周边";
 	}
 
+
+
 	RegExpFilter.forEach((x) => {
+		
+
 	    if (address.match(x.reg)) {
 	        district = x.district;
-	        if (position == "") {
+	        if (position ==null || position == "") {
 	            position = { "lng": x.position[0], "lat": x.position[1] };
 	        }
 	    }
 	})
 
-	//console.log(city,district,position)
+
 	return {city,district,position};
 	
 }

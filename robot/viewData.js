@@ -13,25 +13,28 @@ export default class ViewData {
         this.table = table;
         this.types = types;
     }
-    show(){
-        return this.average().then(()=>{
-            return this.chart();
-        }).then(()=>{
-            return this.tech();
-        }).then(()=>{
-            return this.top();
-        })
+    async show(){
+        await this.average();
+        await this.chart();
+        await this.tech();
+        await this.top();
+       
     }
     top(){
         this.getTopRank(50).then(toprank=>{
             
             this.getTechDetailRanks(this.types).then(detailRank=>{
+
                 this.getAvgSarlyRank(50).then(companyRank=>{
+
                     this.getCountJobRank(50).then(jobRank=>{
+
                         var year = this.year;
                         var month = this.month;
                         var types = this.types;
                         var time = new Date();
+                        //console.log({toprank,detailRank,companyRank,jobRank,types,year,month,time})
+                        
                         return this.setTop({toprank,detailRank,companyRank,jobRank,types,year,month,time});
                     });
                 });
@@ -146,6 +149,12 @@ export default class ViewData {
             return collection.find(query,{company:1,average:1}).sort({average:-1}).skip(0).limit(limit).toArray();
         }).then((data)=> {
             this.db.close();
+            let hash = {};
+            data = data.reduce((item, next) => {
+                hash[next.company] ? '' : hash[next.company] = true && item.push(next);
+                return item
+            }, []);
+
             return data;
         }).catch((error)=> {
             this.db.close();
@@ -168,6 +177,7 @@ export default class ViewData {
         })
     };
     setTop(top){
+        //console.log("xx",top)
         this.db.close();
         return this.db.open(this.table.top).then(() => {
             return this.db.collection.findOne({
@@ -176,7 +186,7 @@ export default class ViewData {
             })
         }).then((data) => {
             //console.log(this.year+this.month, data)
-            console.log(this.year+this.month,JSON.stringify(top,null,4))
+            console.log(JSON.stringify(top,null,4))
             if (data) {
                 return this.db.collection.update({
                     year: this.year,
