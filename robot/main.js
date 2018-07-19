@@ -32,7 +32,7 @@ export default class Main {
 
  //================
 
-    async tepList(){
+    async stepList(){
         await this.list()
     }
 
@@ -388,7 +388,7 @@ export default class Main {
         return helper.iteratorArr(this.containerList, (item) => {
             return item.timeFilter();
         }).then(function() {
-            console.log("ETL finish");
+            console.log("timeFilter finish");
             return;
         })
     }
@@ -447,7 +447,7 @@ export default class Main {
     filterCompany(){
         this.db.close();
         this.db.open(this.table.job).then(() => {
-            return db.collection.remove({companyAlias:fCompany});
+            return this.db.collection.remove({companyAlias:fCompany});
         }).then((data) => {
             this.db.close()
             console.log("jobFilterCompareETL Success")
