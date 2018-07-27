@@ -1,4 +1,5 @@
 var read = require('./read.js');
+var GPS = require('./gps.js');
 
 //技能 top20 总排行
 exports.getTopRank = function(limit=20){
@@ -85,4 +86,30 @@ exports.getTechDetailRank = function(index,types,ranks){
             reject(e);
         });
     });
+}
+
+exports.getSurroundingSalary = async function(latitude,longitude,distance = 500){
+    let location = GPS.bd_encrypt(latitude,longitude);
+    let pt = GPS.distanceToBoundaryMaxMin(location.lat, location.lng, distance);
+    let arr = await read.getSurroundingSalary(pt);
+    let maxSalary = {};
+    let minSalary = {};
+    let average = 0;
+    let jobs = 0;
+    if(!!arr && arr.length>0){
+        let sumAverage = 0;
+        for(let i=0;i<arr.length;i++){
+            let job = arr[i];
+            sumAverage += job.average;
+            if(!!!maxSalary.average || maxSalary.average<job.average){
+                maxSalary = job;
+            }
+            if(!!!minSalary.average || minSalary.average>job.average){
+                minSalary = job;
+            }
+        }
+        jobs = arr.length;
+        average = ((sumAverage/jobs).toFixed(2));
+    }
+    return {maxSalary,minSalary,average,jobs};
 }
