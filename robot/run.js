@@ -4,6 +4,7 @@ import Jobui from "./source/jobui/config.js";
 import FiveOneJob from "./source/51job/config.js";
 import ZhaoPin from "./source/zhaopin/config.js";
 import ZhiPin from "./source/zhipin/config.js";
+import baidu from "./source/baidu/config.js";
 
 import Main from "./main.js";
 import ViewData from "./viewData.js";
@@ -16,13 +17,17 @@ const kd = "前端";
 var table = new Table({});
 var main = new Main(db,table);
 
-//main.addConfig(new Lagou(3)); //拉钩 10
-main.addConfig(new ZhaoPin(2)); //智联招聘 10
-main.addConfig(new FiveOneJob(2)); //51Job  10
-main.addConfig(new ZhiPin(2)); //BOSS直聘 参数不要大于2
+
+//main.addConfig(new FiveOneJob(1)); //51Job  10
+main.addConfig(new baidu(2)); //baidu  10
+
+
+//main.addConfig(new ZhaoPin(1)); //智联招聘 10
+//main.addConfig(new Lagou(1)); //拉钩 10 (baidu/包含)
+//main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
 
 const year = "2018";
-const month = "7";
+const month = "8";
 
 //main.stepList();
 //main.stepToJob(year,month);
@@ -30,6 +35,7 @@ const month = "7";
 //main.stepCompare(year,month);
 //main.noLoadToRepertory();
 //main.stepBdLoad();
+
 //main.stepEtl();
 show(db,table,year,month);
 

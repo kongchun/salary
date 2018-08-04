@@ -1,7 +1,7 @@
 import helper from "../../../iRobots/helper.js";
 var db = require('../../../iRobots/db.js')("127.0.0.1", "kongchun");
 const TABLE_REPERTORY_COMPANY = "repertory_company_copy";
-const fCompany =  /达内|才秀人人|学码思|深圳市芯澜电子/ig
+const fCompany =  /达内|才秀人人|学码思|深圳市芯澜电子|软世通信|阿甲软件|研博教育|某大型软件/ig
 
 
 

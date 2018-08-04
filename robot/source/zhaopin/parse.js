@@ -11,7 +11,7 @@ export default class Parse {
 
     //根据返回的数据看是否自动停止解析
     maxPageSize(maxSize, html) {
-        var $ = loader.parseHTML(html);
+       // var $ = loader.parseHTML(html);
         var val = 20;
         return val > maxSize ? maxSize : val;
     }

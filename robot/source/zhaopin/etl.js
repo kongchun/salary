@@ -44,7 +44,9 @@ export default class ETL {
 			return "3年以下"
 		}
 
-
+		if(year == "1年以下"){
+			return "3年以下"
+		}
 
 
 		if(year == "1-3年"){

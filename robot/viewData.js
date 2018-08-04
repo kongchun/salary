@@ -44,7 +44,7 @@ export default class ViewData {
             month:this.month
         })
         
-        console.log(JSON.stringify(top,null,4))
+        //console.log(JSON.stringify(top,null,4))
         if (data) {
             await this.db.collection.update({
                 year: this.year,
@@ -146,6 +146,7 @@ export default class ViewData {
             console.log(total, count)
             var average = total / count;
             average = (average.toFixed(2));
+             console.log(average)
 
             await this.db.open(this.table.board);
             var data = await this.db.collection.findOne({
@@ -293,7 +294,7 @@ export default class ViewData {
                 })
             })
 
-            console.log(districtRange);
+            //console.log(districtRange);
 
             this.db.close();
             await this.db.open(this.table.board);
