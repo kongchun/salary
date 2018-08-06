@@ -221,3 +221,18 @@ exports.getTableRank = function(year,month) {
 		throw error;
 	})
 };
+
+exports.getSurroundingSalary = function(pt) {
+	db.close();
+	let query = {"position.lat": {"$gte" : pt.minLat, "$lte" : pt.maxLat},"position.lng": {"$gte" : pt.minLng, "$lte" : pt.maxLng}};
+	return db.open("job").then(function(collection) {
+		return collection.find(query,{company:1,average:1,position:1}).sort({average:-1}).toArray();
+	}).then(function(data) {
+		db.close();
+		return data;
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};

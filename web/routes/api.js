@@ -3,6 +3,7 @@ var router = express.Router();
 var swig = require('swig');
 var read = require('../server/read.js');
 var update = require('../server/update.js');
+var service = require('../server/service.js');
 
 router.get('/getAverageSalary',function(req,res){
 	let year =  req.query.year;
@@ -124,6 +125,19 @@ router.get('/dataStatistics', function(req, res, next) {
     let year = now.getFullYear();
     let month = now.getMonth()+1;
     read.getTableRank(year,month).then(ret=>{
+        res.send(ret);
+    }).catch(e=>{
+        console.log(e);
+        res.send({});
+    });
+    
+});
+
+router.get('/getSurroundingSalary', function(req, res, next) {
+    let latitude =  req.query.latitude;
+    let longitude =  req.query.longitude;
+    let distance = req.query.distance;
+    service.getSurroundingSalary(latitude,longitude,distance).then(ret=>{
         res.send(ret);
     }).catch(e=>{
         console.log(e);
