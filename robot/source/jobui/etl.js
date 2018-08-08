@@ -1,6 +1,4 @@
-import {getMinMax,getRangeBySalary} from "../../utils/etlHelper.js";
-
-
+import {getMinMax,getRangeBySalary,getRangeByYear,getRangeByEdu} from "../../utils/etlHelper.js";
 
 export default class ETL {
 	constructor(job) {
@@ -12,45 +10,16 @@ export default class ETL {
 	}
 
 	education(){
-
 		let education =  this.job.education;
-		if (education == "高中以上") {
-			education = "大专"
-		}
-		if (education == "中专以上") {
-			education = "大专"
-		}
-		if(education == "大专以上"){
-			return "大专"
-		}
-		if(education == "本科以上"){
-			return "本科"
-		}
-		if(education == "不限学历"){
-			return "不限"
-		}
-
+		education = getRangeByEdu(education);
 		return education;
 	}
 
 	workYear(){
 		let year =  this.job.workYear;
-		if (year == "应届毕业生") {
-			year = "3年以下"
-		}
-		if (year == "0-2年") {
-			year = "3年以下"
-		}
-		if (year == "8-10年") {
-			year = "5-10年"
-		}
-		if (year == "6-7年") {
-			year = "5-10年"
-		}
-		if (year == "不限经验") {
-			year = "不限"
-		}
+		year = getRangeByYear(year);
 		return year;
+
 	}
 	salary(){
 		let salary = this.job.salary;

@@ -1,6 +1,6 @@
 'use strict';
 import mongodb from "mongodb";
-import { filter as  companyETL} from "../utils/companyETL.js"
+import { getCompanyAlias } from "../utils/ETL/companyETL.js"
 
 export default class Job{
     constructor({_id,jobId=null,job=null,companyId=null,company=null,addr=null,info=null,workYear=null,education=null,salary=null,time=null,content=null,source=null,city=null,kd=null}) {
@@ -10,7 +10,7 @@ export default class Job{
        this.job = job;
        this.companyId = companyId;
        this.company = company;
-       this.companyAlias = companyETL(company);
+       this.companyAlias = getCompanyAlias(company);
        this.addr = addr;
        this.workYear = workYear;
        this.education = education; 

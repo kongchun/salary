@@ -1,6 +1,4 @@
-import {getMinMax,getRangeBySalary} from "../../utils/etlHelper.js";
-
-
+import {getMinMax,getRangeBySalary,getRangeByYear,getRangeByEdu,getEtlTime} from "../../utils/etlHelper.js";
 
 export default class ETL {
 	constructor(job) {
@@ -13,57 +11,16 @@ export default class ETL {
 
 	education(){
 		let education =  this.job.education;
-
-		if (education == "中专") {
-			education = "大专"
-		}
-		if (education == "中技") {
-			education = "大专"
-		}
-		if(education == "高中"){
-			education = "大专"
-		}
-		if(education == ""){
-			education = "不限"
-		}
-
-		return education
+		education = getRangeByEdu(education);
+		return education;
 	}
 
 	workYear(){
 		let year =  this.job.workYear;
-		if(year == ""){
-			return "不限"
-		}
-		if(year == "无工作经验"){
-			return "3年以下"
-		}
-		if(year == "1年经验"){
-			return "3年以下"
-		}
-		if(year == "2年经验"){
-			return "3年以下"
-		}
-		if(year == "3-4年经验"){
-			return "3-5年"
-		}
-		if(year == "5-7年经验"){
-			return "5-10年"
-		}
-
-		if(year == "8-9年经验"){
-			return "5-10年"
-		}
-
-		if(year == "10年以上经验"){
-			return "5-10年"
-		}
-
-		if(year == ""){
-			return "不限"
-		}
+		year = getRangeByYear(year);
 		return year;
 	}
+	
 	salary(){
 		let salary = this.job.salary;
 		let [min, max] = getMinMax(salary);
@@ -92,13 +49,11 @@ export default class ETL {
 	}
 	time(){
 		let time = this.job.time;
-		let reg = new RegExp(/^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/);
-		if(reg.test(time)){
-			return {etlTime:time};
-		}
 		let robotTime = this.job.robotTime;
-		let year = robotTime.getFullYear();
-		return {etlTime:year + "-" + time};
+		//console.log(time);
+		time = getEtlTime(time,robotTime);
+		//console.log(time,"2")
+		return {etlTime:time};
 	}
 	all(){
 		var eduRange = this.education();

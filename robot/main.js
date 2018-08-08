@@ -1,17 +1,23 @@
 import helper from "../../iRobots/helper.js";
 import Container from "./Container.js";
 import Company from "./model/Company.js";
-import {filter as positionFilter} from "./utils/positionETL.js";
+import {filter as positionFilter} from "./utils/ETL/positionETL.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
-import {fCompany} from "./utils/companyETL.js"
 import moment from "moment";
 
 
 export default class Main {
-    constructor(db,table) {
+    constructor(db,table,year,month) {
         this.db = db;
         this.table = table;
         this.containerList = [];
+        this.year = year;
+        this.month = month;
+    }
+
+    setDate(year,month){
+        this.year = year;
+        this.month = month;
     }
 
     addConfig(config) {
@@ -36,22 +42,19 @@ export default class Main {
         await this.list()
     }
 
-    async stepToJob(year,month){
+    async stepToJob(){
         await this.pageToJob();
-        await this.timeFilter();
-        await this.clearoutTime(year,month);
-        await this.filterCompany();
-    
+        await this.removeOutOfDate(this.year,this.month);
     }
 
     async stepInfo(){
         await this.info()
     }
 
-    async stepCompare(year,month){
+    async stepCompare(){
         await this.groupCompany();
         await this.compareCompany();
-        await this.loadPosition(year,month);
+        await this.loadPosition(this.year,this.month);
 
     }
 
@@ -87,12 +90,29 @@ export default class Main {
         }).then(function() {
             console.log("pageToJob finish");
             return;
+        }).catch((e)=>{
+            console.log(e)
         })
+    }
+
+    async removeOutOfDate(){
+        await this.timeFilter();
+        await this.clearoutTime(year,month);
+        return;
     }
 
     info() {
         return helper.iteratorArr(this.containerList, (item) => {
             return item.info();
+        }).then(function() {
+            console.log("info finish");
+            return;
+        })
+    }
+
+    reInfo() {
+        return helper.iteratorArr(this.containerList, (item) => {
+            return item.parseInfo();
         }).then(function() {
             console.log("info finish");
             return;
@@ -379,11 +399,13 @@ export default class Main {
    transform(){
         return helper.iteratorArr(this.containerList, (item) => {
             return item.transform();
-        }).then(function() {
+        }).then(() => {
+            this.db.close();
             console.log("ETL finish");
             return;
         })
    }
+
     timeFilter(){
         return helper.iteratorArr(this.containerList, (item) => {
             return item.timeFilter();
@@ -392,14 +414,7 @@ export default class Main {
             return;
         })
     }
-   reInfo() {
-        return helper.iteratorArr(this.containerList, (item) => {
-            return item.parseInfo();
-        }).then(function() {
-            console.log("info finish");
-            return;
-        })
-    }
+
 
     clearoutTime(year,month){
         var date = moment(year+"-"+month,"YYYY-MM");
@@ -444,18 +459,4 @@ export default class Main {
        })
     }
 
-    filterCompany(){
-        this.db.close();
-        this.db.open(this.table.job).then(() => {
-            return this.db.collection.remove({companyAlias:fCompany});
-        }).then((data) => {
-            this.db.close()
-            console.log("jobFilterCompareETL Success")
-            return;
-        }).catch((e) => {
-            this.db.close()
-            console.log(e)
-            return;
-        })
-    }
 }

@@ -9,98 +9,7 @@
 //2-库识别
 //3-地图识别
 //99-手动审核
-function run(){
-
-	db.close();
-	db.open(TABLE_REPERTORY_COMPANY).then(() => {
-	    return db.collection.find({bdStatus:3}).toArray();
-	}).then((data) => {
-	    return helper.iteratorArr(data, (i) => {
-	        var address = i.addr;
-	        var position = i.position;
-	        var district = i.district;
-	    
-	        var {city,district,position} = filter(address,district,position);
-
-	        return db.updateById(i._id, {
-	            position:position,
-	            district:district,
-	            city:city,
-	            bdStatus:3
-	    	})
-	    	
-	    })
-	}).then((data) => {
-	    db.close()
-	    console.log("positionETL Success")
-	    return;
-	}).catch((e) => {
-	    db.close()
-	    console.log(e)
-	    return;
-	})
-
-}
-
-
-
-
-function filter(address,district="",position=""){
-	var city = "苏州市";
-	var district = district;
-	var position = position;
-
-
-	if(district=="虎丘区"){
-		district="高新区";
-	}
-	if(address.match(/相城区/ig)){
-		district = "相城区";
-	}
-
-	if(address.match(/吴江/ig)){
-		district = "吴江区";
-	}
-
-	if(address.match(/吴中/ig)){
-		district = "吴中区";
-	}
-
-	if(address.match(/高新区|新区|竹园路/ig)){
-		district = "高新区";
-	}
-
-	if(address.match(/工业园区|园区|仁爱路|独墅湖|月亮湾|东平街|启月路/ig)){
-		district = "工业园区";
-	}
-
-	if(address.match(/昆山|常熟|张家港|太仓/ig)){
-		district = "苏州周边";
-	}
-
-
-
-	RegExpFilter.forEach((x) => {
-		
-
-	    if (address.match(x.reg)) {
-	        district = x.district;
-	        if (position ==null || position == "") {
-	            position = { "lng": x.position[0], "lat": x.position[1] };
-	        }
-	    }
-	})
-
-
-	return {city,district,position};
-	
-}
-
-
-export {filter}
-
-
-var RegExpFilter = [
+var RegExpPositionFilter = [
 	{reg:/干将西路1306|莲花商务/ig,district:"姑苏区",position:[120.587604,31.308413]},
 	{reg:/广济南路199|全景大厦/ig,district:"姑苏区",position:[120.606557,31.315347]},
 	{reg:/广济南路19号|永婕峰会/ig,district:"姑苏区",position:[120.606559,31.311682]},
@@ -110,8 +19,6 @@ var RegExpFilter = [
 
 	{reg:/天成路99|清华紫光大厦|紫光大厦/ig,district:"相城区",position:[120.645991,31.427185]},
 	
-
-
  	{reg:/中移软件园/ig,district:"高新区",position:[120.44023,31.367531]},
 	{reg:/财富广场|竹园路209/ig,district:"高新区",position:[120.546305,31.281492]},
 	{reg:/金枫路216|东创科技创业园/ig,district:"高新区",position:[120.532819,31.284809]},
@@ -119,8 +26,6 @@ var RegExpFilter = [
 	{reg:/滨河路588号|赛格电子/ig,district:"高新区",position:[120.581082,31.288914]},
 	{reg:/金山路131|科达科技|苏州科达/ig,district:"高新区",position:[120.730305,31.268729]},
 	{reg:/高新软件园|科灵路78/ig,district:"高新区",position:[120.428252,31.332192]},
-
-	
 
 	{reg:/吴中东路175|天域大厦/ig,district:"吴中区",position:[120.635518,31.277831]},
 	{reg:/苏蠡路81|苏蠡商务大厦/ig,district:"吴中区",position:[120.621231,31.260488]},
@@ -173,6 +78,58 @@ var RegExpFilter = [
 
 ]
 
-//run()
-//
-//
+var RegExpDistrictFilter = [
+	{reg:/虎丘|新区|竹园路/ig,district:"高新区"},
+	{reg:/相城/ig,district:"相城区"},
+	{reg:/吴江/ig,district:"吴江区"},
+	{reg:/吴中/ig,district:"吴中区"},
+	{reg:/工业园区|园区|仁爱路|独墅湖|月亮湾|东平街|启月路/ig,district:"工业园区"},
+	{reg:/昆山|常熟|张家港|太仓/ig,district:"苏州周边"},
+]
+
+function getPositionByAddr(address){
+	let district="",position="";
+	RegExpPositionFilter.forEach((x) => {
+	    if (address.match(x.reg)) {
+	        district = x.district;
+	        if (position ==null || position == "") {
+	            position = { "lng": x.position[0], "lat": x.position[1] };
+	        }
+	    }
+	})
+	return {district,position}
+}
+
+function getDistrictByAddr(address){
+	let district="";
+	RegExpDistrictFilter.forEach((x) => {
+	    if (address.match(x.reg)) {
+	        district = x.district;
+	    }
+	})
+	return {district}
+}
+
+function getEtlDistrict(district){
+	RegExpDistrictFilter.forEach((x) => {
+	    if (district.match(x.reg)) {
+	        district = x.district;
+	    }
+	})
+	return district
+}
+
+function filter(address,district="",position =""){
+	var city = "苏州市";
+	if(position == ""){
+		var {district,position} = getPositionByAddr(address);
+	}
+	if(district==""){
+		var {district} = getDistrictByAddr(address);
+	}
+	district = getEtlDistrict(district);
+	return {city,district,position};
+	
+}
+export {filter}
+

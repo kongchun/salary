@@ -1,8 +1,9 @@
 import helper from "../../iRobots/helper.js";
 import loader from "../../iRobots/loader.js";
-import Page from "./model/page.js"
-import { filter as  jobFilter} from "./utils/jobFilter.js"
+import Page from "./model/page.js";
 
+import { filter as  jobFilter} from "./utils/filter/jobFilter.js";
+import { filter as  companyFilter} from "./utils/filter/companyFilter.js";
 
 export default class Container {
     constructor(db, table,config) {
@@ -67,29 +68,43 @@ export default class Container {
 
     }
 
-    pageToJob() {
+    async pageToJob() {
         //console.log(1111);
+        var arr = await this.getNewPage();
+        console.log(arr);
+        var arrAll = [];
+        arr.forEach((it) => {
+            arrAll.push(...this.parse.list(it.content));
+        })
+
+        arrAll = jobFilter(arrAll);  //根据职位过滤
+        arrAll = companyFilter(arrAll);  //根据公司过滤
+
+        await this.insertJob(arrAll);
+        return;
+    }
+
+   getNewPage(){
         this.db.close();
         return this.db.open(this.table.page).then(() => { 
             return this.db.findToArray({ isNew: true, source: this.source,city:this.city, kd:this.kd }, { content: 1 })
         }).then((arr) => {
+            console.log(arr.length)
             return this.db.collection.updateMany({ isNew: true, source: this.source,city:this.city, kd:this.kd }, { $set: { isNew: false } }).then((t) => {
                 this.db.close();
                 return arr;
             })
-        }).then((arr) => {
-            //console.log(arr);
-            var arrAll = [];
-            arr.forEach((it) => {
-                arrAll.push(...this.parse.list(it.content));
-            })
-            //console.log(jobFilter)
-            return jobFilter(arrAll);
-        }).then((data) => {
+        }).catch((e) => {
             this.db.close();
-            return this.db.open(this.table.job).then(() => {
-                return this.db.insertUnique(data,"id")
-            })
+            console.log(e, this.source);
+            return;
+        })
+    }
+
+    insertJob(data){
+        this.db.close();
+        return this.db.open(this.table.job).then(() => {
+            return this.db.insertUnique(data,"id")
         }).then(() => {
             this.db.close();
             console.log(this.source + " pageToJob Loaded");
