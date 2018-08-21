@@ -97,7 +97,7 @@ export default class Main {
 
     async removeOutOfDate(){
         await this.timeFilter();
-        await this.clearoutTime(year,month);
+        await this.clearoutTime(this.year,this.month);
         return;
     }
 
@@ -250,7 +250,8 @@ export default class Main {
         return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
                 position: null,
-                noLoad: null
+                noLoad: null,
+                bdStatus:0
             }, {
                 company: 1,
                 addr: 1
@@ -260,6 +261,7 @@ export default class Main {
             return helper.iteratorArr(data, (i) => {
                 var name = (i[key]);
                 return addrToGeo(name).then((position) => {
+                    console.log(position)
                     return this.db.updateById(i._id, { position: position,bdStatus:3}).then(function(t) {
                         return data;
                     })
