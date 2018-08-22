@@ -124,12 +124,20 @@ router.get('/dataStatistics', function(req, res, next) {
     let now = new Date();
     let year = now.getFullYear();
     let month = now.getMonth()+1;
-    read.getTableRank(year,month).then(ret=>{
-        res.send(ret);
+    read.getAverageSalaryInfo().then(board=>{
+        year = board.year;
+        month = board.month;
+        read.getTableRank(year,month).then(ret=>{
+            res.send(ret);
+        }).catch(e=>{
+            console.log(e);
+            res.send({});
+        });
     }).catch(e=>{
         console.log(e);
         res.send({});
     });
+    
     
 });
 
