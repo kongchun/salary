@@ -60,8 +60,8 @@ export default class Main {
 
     async stepBdLoad(year,month){
         await this.loadGeo();
-        await this.fixedGeo();
-        await this.filterGeo();
+        //await this.fixedGeo();
+        //await this.filterGeo();
 
     }
 
@@ -247,7 +247,7 @@ export default class Main {
 
     loadGeo(key = "addr") {
         this.db.close()
-        return this.db.open(this.table.company).then(() => {
+        return this.db.open(this.table.repertoryCompany).then(() => {
             return this.db.collection.find({
                 position: null,
                 noLoad: null,

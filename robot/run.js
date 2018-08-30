@@ -21,25 +21,25 @@ const month = "8";
 var main = new Main(db,table,year,month);
 
 
-main.addConfig(new FiveOneJob(1)); //51Job  10
+// main.addConfig(new FiveOneJob(1)); //51Job  10
 main.addConfig(new baidu(2)); //baidu  10
 
 
-main.addConfig(new ZhaoPin(1)); //智联招聘 10
-main.addConfig(new Lagou(1)); //拉钩 10 (baidu/包含)
-main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
+// main.addConfig(new ZhaoPin(1)); //智联招聘 10
+// main.addConfig(new Lagou(1)); //拉钩 10 (baidu/包含)
+// main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
 
 
 
 //main.stepList();
 //main.stepToJob();
 //main.stepInfo();
-//main.stepCompare();
+// main.stepCompare();
 //main.noLoadToRepertory();
 //main.stepBdLoad();
 //
-main.stepEtl()
-//show(db,table,year,month);
+//main.stepEtl()
+show(db,table,year,month);
 
 //=================================
 

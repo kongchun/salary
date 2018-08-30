@@ -93,6 +93,7 @@ exports.getCompanyList = function(page,limit,bdStatus) {
 	db.close();
 	var start = (page - 1) * limit;
 	var query = {};
+
 	if(''!=bdStatus && (!!bdStatus || 0==bdStatus)){
 		bdStatus = parseInt(bdStatus);
 		if(0==bdStatus){
@@ -101,6 +102,7 @@ exports.getCompanyList = function(page,limit,bdStatus) {
 			query.bdStatus = bdStatus;
 		}
 	}
+	console.log(query);
 	return db.open("repertory_company").then(function(collection) {
 		return collection.find(query).sort({'time':-1,'position':1}).skip(start).limit(limit).toArray();
 	}).then(function(data) {
