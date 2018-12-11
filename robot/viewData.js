@@ -96,12 +96,12 @@ export default class ViewData {
         this.db.close();
         var query = {};
         return this.db.open(this.table.job).then((collection) =>{
-            return collection.find(query,{company:1,average:1}).sort({average:-1}).skip(0).limit(limit).toArray();
+            return collection.find(query,{company:1,companyAlias:1,average:1}).sort({average:-1}).skip(0).limit(limit).toArray();
         }).then((data)=> {
             this.db.close();
             let hash = {};
             data = data.reduce((item, next) => {
-                hash[next.company] ? '' : hash[next.company] = true && item.push(next);
+                hash[next.companyAlias] ? '' : hash[next.companyAlias] = true && item.push(next);
                 return item
             }, []);
 
@@ -277,6 +277,9 @@ export default class ViewData {
             }, {
                 filter: {
                     $ne: true
+                },
+                district:{
+                    $ne:""
                 }
             }, {
 
@@ -294,7 +297,7 @@ export default class ViewData {
                 })
             })
 
-            //console.log(districtRange);
+            console.log(districtRange);
 
             this.db.close();
             await this.db.open(this.table.board);
@@ -458,7 +461,12 @@ const TECH = {
     AntV:"图形",
     F2:"图形",
     G2:"图形",
-
+    frappe:"图形",
+    Recharts:"图形",
+    sigma:"图形",
+    mermaid:"图形",
+    chartistJS:"图形",
+    plotly:"图形",
 
     jq: "框架和库",
     jquery: "框架和库",
@@ -484,6 +492,12 @@ const TECH = {
 
     PhoneGap: "移动库",
     IONIC: "移动库",
+    NativeScript: "移动库",
+    Framework7: "移动库",
+    Amaze: "移动库",
+    weex: "移动库",
+    Mint: "移动库",
+    ratchet: "移动库",
 
     require: "基础",
     sea: "基础",
@@ -496,12 +510,28 @@ const TECH = {
     Redux: "MVVM",
     canJS:"MVVM",
     Ractive:"MVVM",
+    Polymer:"MVVM",
+    Preact:"MVVM",
+    Relay:"MVVM",
+    Aurelia:"MVVM",
+    dva:"MVVM",
+    inferno:"MVVM",
+    hyperapp:"MVVM",
+
 
     node: "构建服务",
     npm: "构建服务",
     Express: "构建服务",
     koa: "构建服务",
     Hapi: "构建服务",
+    Meteor: "构建服务",
+    Next: "构建服务",
+    sails: "构建服务",
+    keystone: "构建服务",
+    mean: "构建服务",
+    nuxt: "构建服务",
+    egg: "构建服务",
+    loopback: "构建服务",
 
     ECMAScript: "基础",
     "ES6+": "基础",
@@ -534,6 +564,15 @@ const TECH = {
     Memcache: "数据库",
     postgresql: "数据库",
     NOSQL: "数据库",
+    store: "数据库",
+    gum: "数据库",
+    typeORM: "数据库",
+    knex: "数据库",
+    lowDB: "数据库",
+    pouchDB: "数据库",
+    rxDB: "数据库",
+    postGraphile: "数据库",
+    sequelize: "数据库",
 
     karma:"测试",
     jasmine:"测试",

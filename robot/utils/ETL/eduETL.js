@@ -9,10 +9,16 @@ var RegExpFilter = [
 
 
 function getRangeByEdu(edu){
+
+	if(edu==null){
+		return "不限";
+	}
+
+
 	RegExpFilter.forEach((x) => {
-	    if (edu.match(x.reg)) {
-	        edu = x.label
-	    }
+		if (edu.match(x.reg)) {
+			edu = x.label
+		}
 	})
 	return edu;
 }

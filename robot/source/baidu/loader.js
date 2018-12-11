@@ -13,9 +13,9 @@ export default class Loader {
 
 	list (pageSize = 1){
 
-		pageSize = (pageSize-1)*50;
+		pageSize = (pageSize-1)*20;
 
-		let url = encodeURI(LIST_URL+`?query=${this.kd}&city=${this.city}&pcmod=1&pn=${pageSize}&rn=50`);
+		let url = encodeURI(LIST_URL+`?query=${this.kd}&city=${this.city}&pcmod=1&pn=${pageSize}&rn=20`);
 		console.log(url);
 		
 		return loader.getJSON(url,{

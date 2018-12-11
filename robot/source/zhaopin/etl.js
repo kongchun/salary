@@ -8,8 +8,13 @@ export default class ETL {
 	setJob(job){
 		this.job = job;
 	}
-
-	education(){
+/**
+ *
+ *
+ * @returns
+ * @memberof ETL
+ */
+education(){
 		let education =  this.job.education;
 		education = getRangeByEdu(education);
 		return education;

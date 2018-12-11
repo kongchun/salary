@@ -48,6 +48,7 @@ var RegExpPositionFilter = [
 	{reg:/国华大厦/ig,district:"工业园区",position:[120.742783,31.271726]},
 	{reg:/月亮湾路10|慧湖大厦/ig,district:"工业园区",position:[120.730305,31.268729]},
 	{reg:/星湖街218|若水路388|纳米科技园|纳米大学科技园|纳米技术国家大学科技园|纳米国家大学科技园|生物纳米园|生物纳米科技园/ig,district:"工业园区",position:[120.743698,31.264052]},
+	{reg:/若水路388/ig,district:"工业园区",position:[120.743698,31.264052]},
 	{reg:/新平街388|腾飞创新园|腾飞创意园/ig,district:"工业园区",position:[120.741976,31.260432]},
 	{reg:/裕新路168|脉山龙大厦/ig,district:"工业园区",position:[120.739763,31.258744]},
 	{reg:/裕新路188|同程网络|同程大厦/ig,district:"工业园区",position:[120.737171,31.25795]},
@@ -88,9 +89,13 @@ var RegExpDistrictFilter = [
 ]
 
 function getPositionByAddr(address){
+	//console.log("reg:"+address);
 	let district="",position="";
 	RegExpPositionFilter.forEach((x) => {
+		
+
 	    if (address.match(x.reg)) {
+			//console.log("regmatch:"+address);
 	        district = x.district;
 	        if (position ==null || position == "") {
 	            position = { "lng": x.position[0], "lat": x.position[1] };
@@ -121,7 +126,7 @@ function getEtlDistrict(district){
 
 function filter(address,district="",position =""){
 	var city = "苏州市";
-	if(position == ""){
+	if(address != ""){
 		var {district,position} = getPositionByAddr(address);
 	}
 	if(district==""){

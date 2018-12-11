@@ -203,15 +203,13 @@ export default class Main {
         this.db.close()
         return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
-                position: null,
-                noLoad: null
+                position: null
+                //noLoad: null
             }).toArray();
         }).then((data) => {
-
+            //console.log("loadPosition-datasize"+data.length)
             return helper.iteratorArr(data, (i) => {
                 var address = i.addr;
-
-
                 var position = i.position;
                 var district = i.district;
                 var bdStatus = 2;
