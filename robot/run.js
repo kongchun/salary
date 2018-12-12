@@ -16,64 +16,33 @@ const kd = "前端";
 
 var table = new Table({});
 const year = "2018";
-const month = "11";
+const month = "12";
 
 var main = new Main(db,table,year,month);
 
 
-main.addConfig(new FiveOneJob(2)); //51Job  10
-main.addConfig(new baidu(2)); //baidu  10
-main.addConfig(new ZhaoPin(2)); //智联招聘 10
+main.addConfig(new FiveOneJob(10)); //51Job  10
+main.addConfig(new baidu(10)); //baidu  10
+main.addConfig(new ZhaoPin(10)); //智联招聘 10
 // main.addConfig(new Lagou(1)); //拉钩 10 (baidu/包含)
 // main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
 
 
 
 //main.stepList();
-//main.stepToJob();
+// main.stepToJob();
 //main.stepInfo();
+
+
 //main.stepCompare();
 //main.noLoadToRepertory();
 //main.stepBdLoad();
-//
-//main.stepEtl()
-show(db,table,year,month);
-
-//=================================
-
-// main.start().catch(function(e){
-// 	console.log(e);
-// })
-
-// main.list().catch(function(e){
-// 	console.log(e);
-// });
-
-//main.pageToJob();
-//main.timeFilter();
-//main.clearoutTime(year,month);
-//main.info();
-//main.groupCompany();
-//main.compareCompany();
-//main.loadPosition();
-
-//main.loadGeo();
-//main.fixedGeo(); 
-//main.filterGeo();
+main.stepEtl();
 
 
-//main.positionToJob();
-//main.transform();
+//show(db,table,year,month);
 
 //main.reInfo();
-//
-
-
-
-
-
-
-
 //============================
 
 function show(db,table,year,month){

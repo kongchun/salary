@@ -29,6 +29,7 @@ export default class Parse {
                 var time = $(".t5", item).text().replace(/(^\s*)|(\s*$)/g, "");
 
                 var city = $(".t3", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                
                 if (city != "异地招聘") {
 
                     var job = new Job({
@@ -57,8 +58,12 @@ export default class Parse {
 
     info($) {
         var content = $.html();
-        var workYear = $(".jtag.inbox .i1").parent().text().replace(/(^\s*)|(\s*$)/g, "");
-        var education =$(".jtag.inbox .i2").parent().text().replace(/(^\s*)|(\s*$)/g, "");
+        var ltype = $(".msg.ltype").text().replace(/(^\s*)|(\s*$)/g, "").split("|");
+        var workYear = ltype[1].replace(/&nbsp;/ig,"");
+        var education =ltype[2].replace(/&nbsp;/ig,"");
+       // console.log(workYear,education);
+
+        
         var info = $(".bmsg.job_msg.inbox").text().replace(/(^\s*)|(\s*$)/g, "");
         return { info, content, workYear,education};
     }
@@ -68,7 +73,7 @@ export default class Parse {
  		var addr = $(".i_map").parent().text().replace("上班地址：","").replace("地图","").replace(/(^\s*)|(\s*$)/g, "");
  		var position = null; 	
 
-        console.log({addr});
+        //console.log({addr});
        // console.log({ addr, position,workYear,education })
         return ({ addr, position});
     }

@@ -167,8 +167,9 @@ export default class Container {
     transform(){
         this.db.close();
         return this.db.open(this.table.job).then(() =>{
-            return this.db.updateIterator({source:this.source,city:this.city, kd:this.kd },{workYear:1,education:1,salary:1} ,(job) =>{
+            return this.db.updateIterator({source:this.source,city:this.city, kd:this.kd },{workYear:1,education:1,salary:1,job:1,info:1} ,(job) =>{
                 this.etl.setJob(job);
+                //console.log(this.etl.all())
                 return this.etl.all();
             })
         }).then(() =>{

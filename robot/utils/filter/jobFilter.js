@@ -10,7 +10,7 @@
 				return true
 			}
 
-			if (data.job.match(/产品经理|合伙人|嵌入式|java|net|php|c\+\+|python|go|客服|后端|后台|测试|oracle|c#|数据|平面/ig)) {
+			if (data.job.match(/产品经理|芯片|CPU|IP|机械|营销|mes|合伙人|嵌入式|java|net|php|c\+\+|python|go|客服|后端|后台|测试|oracle|c#|数据|平面/ig)) {
 				//console.log(data.job, false);
 				return false
 			}
