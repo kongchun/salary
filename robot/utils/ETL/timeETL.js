@@ -33,6 +33,3 @@ function getEtlTime(time,currentTime = new Date()){
 }
 
 export {getEtlTime};
-
-
-//getEtlTime("发布于09月05日")

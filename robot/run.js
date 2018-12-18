@@ -37,10 +37,9 @@ main.addConfig(new ZhaoPin(10)); //智联招聘 10
 //main.stepCompare();
 //main.noLoadToRepertory();
 //main.stepBdLoad();
-main.stepEtl();
+//main.stepEtl();
 
-
-//show(db,table,year,month);
+show(db,table,year,month);
 
 //main.reInfo();
 //============================

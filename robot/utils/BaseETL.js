@@ -3,6 +3,7 @@ import {getRangeByEdu} from "./ETL/eduETL.js";
 import {getMinMax,getRangeBySalary} from "./ETL/salaryETL.js";
 import {getEtlTime} from "./ETL/timeETL.js";
 import {getEtlPost} from "./ETL/postETL.js";
+import {getEtlTag} from "./ETL/tagETL.js";
 
 export default class BaseETL {
 	constructor(job) {
@@ -39,6 +40,12 @@ export default class BaseETL {
 		let etlPost = getEtlPost(name,info);
 		return etlPost;
 	}
+
+	tag(){
+		let info = this.job.info;
+		let tag = getEtlTag(info);
+		return tag;
+	}
 	
 	salary(){
 		console.log("salary interface to be ..... ")
@@ -51,11 +58,14 @@ export default class BaseETL {
 		time = getEtlTime(time,robotTime);
 		return {etlTime:time};
 	}
+
+
 	all(){
 		var eduRange = this.education();
 		var yearRange = this.workYear();
 		var etlPost = this.post();
+		var etlTag = this.tag();
 		var {min,max,average,salaryRange} = this.salary();
-		return {eduRange,yearRange,salaryRange,min,max,average,etlPost}; 
+		return {eduRange,yearRange,salaryRange,min,max,average,etlPost,etlTag}; 
 	}
 }

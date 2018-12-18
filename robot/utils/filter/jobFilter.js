@@ -5,7 +5,7 @@
 	return arr.filter((data) => {
 			var flag = false;
 
-			if (data.job.match(/javascript|node|前端|web/ig)) {
+			if (data.job.match(/javascript|node|web/ig)) {
 				//console.log(data.job, true);
 				return true
 			}
