@@ -362,23 +362,40 @@ export default class ViewData {
             var arr =  await this.db.collection.find({
                 info: {
                     $ne: null
+                },
+                etlTag: {
+                    $ne: null
                 }
             }, {
-                info: 1
+                info: 1,
+                etlTag: 1
             }).toArray();
       
             this.db.close();
 
-            arr.forEach((data)=>{
-            var content = (data.info).toLowerCase();
-                for (let prop in TECH) {
-                    if (!techCount[prop]) {
-                        techCount[prop] = 0;
-                    }
+            arr.forEach((data) => {
+                let tagArray = data.etlTag;
+                for (let tag of tagArray) {
+                    let keyWord = tag.toLowerCase();
+                    let counted = false;
+                    for (let prop in TECH) {
+                        if (!techCount[prop]) {
+                            techCount[prop] = 0;
+                        }
 
-                    var text = prop.toLowerCase();
-                    if (content.indexOf(text) > -1) {
-                        techCount[prop]++;
+                        var text = prop.toLowerCase();
+                        if (keyWord === text) {
+                            techCount[prop]++;
+                            counted = true;
+                            break;
+                        }
+                    }
+                    if (!counted) {
+                        if (!techCount[keyWord]) {
+                            techCount[keyWord] = 1;
+                        } else {
+                            techCount[keyWord]++;
+                        }
                     }
                 }
             })
@@ -392,7 +409,38 @@ export default class ViewData {
 
                 techCount["html"] = techCount["html"] + techCount["H5"];
                 techCount["jquery"] = techCount["jq"];
-                techCount["angular"] = techCount["ng"] - techCount["mongodb"]
+                //techCount["angular"] = techCount["ng"] - techCount["mongodb"]
+            
+            //可能存在的tag
+            if (techCount.hasOwnProperty('html5')) {
+                techCount['html'] = techCount['html'] + techCount['html5'];
+                delete techCount['html5'];
+            }
+            if (techCount.hasOwnProperty('css3')) {
+                techCount['css'] = techCount['css'] + techCount['css3'];
+                delete techCount['css3'];
+            }
+            if (techCount.hasOwnProperty('angularjs')) {
+                techCount['angular'] = techCount['angular'] + techCount['angularjs'];
+                delete techCount['angularjs'];
+            }
+            if (techCount.hasOwnProperty('nodejs')) {
+                techCount['node'] = techCount['node'] + techCount['nodejs'];
+                delete techCount['nodejs'];
+            }
+            if (techCount.hasOwnProperty('vuejs')) {
+                techCount['vue'] = techCount['vue'] + techCount['vuejs'];
+                delete techCount['vuejs'];
+            }
+            if (techCount.hasOwnProperty('reactjs')) {
+                techCount['react'] = techCount['react'] + techCount['reactjs'];
+                delete techCount['reactjs'];
+            }
+            if (techCount.hasOwnProperty('requirejs')) {
+                techCount['require'] = techCount['require'] + techCount['requirejs'];
+                delete techCount['requirejs'];
+            }
+
                 delete techCount['jq'];
                 delete techCount['ng'];
                 delete techCount['js'];
@@ -408,6 +456,16 @@ export default class ViewData {
                 delete techCount["ES2016"];
                 delete techCount["ES2017"];
                 delete techCount["ES2018"];
+            
+                //无关词
+                delete techCount['nbsp'];
+                delete techCount['experience'];
+
+                for(let tech in techCount){
+                    if(techCount[tech] < 2){
+                        delete techCount[tech];
+                    }
+                }
 
                 var arr = [];
                 for (let prop in techCount) {
@@ -452,7 +510,7 @@ const TECH = {
     canvas: "图形",
     svg: "图形",
     d3: "图形",
-    echart: "图形",
+    echarts: "图形",
     Three: "图形",
     ArcGIS: "图形",
     ChartJS: "图形",
