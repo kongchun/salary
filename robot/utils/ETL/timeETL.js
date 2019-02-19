@@ -1,7 +1,7 @@
 import moment from "moment";
 
 function getEtlTime(time,currentTime = new Date()){
-	console.log(time);
+	//console.log(time);
 
 	time = time.replace(/发布于|日/ig,"").replace(/年|月/,"-");
 

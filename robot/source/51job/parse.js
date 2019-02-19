@@ -61,7 +61,9 @@ export default class Parse {
         var ltype = $(".msg.ltype").text().replace(/(^\s*)|(\s*$)/g, "").split("|");
         var workYear = ltype[1].replace(/&nbsp;/ig,"");
         var education =ltype[2].replace(/&nbsp;/ig,"");
-       // console.log(workYear,education);
+        if (education.indexOf("招")>-1)
+        education="不限"
+        console.log(workYear,education);
 
         
         var info = $(".bmsg.job_msg.inbox").text().replace(/(^\s*)|(\s*$)/g, "");

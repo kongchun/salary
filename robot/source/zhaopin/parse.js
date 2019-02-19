@@ -20,7 +20,7 @@ export default class Parse {
    
         var $ = loader.parseHTML(html);
         var arr = [];
-        console.log( $(".job-list").html())
+        //console.log( $(".job-list").html())
         $(".job-list").each((i, item) => {
                 
                 var jobId = $(item).attr("data-number");

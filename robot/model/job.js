@@ -3,14 +3,14 @@ import mongodb from "mongodb";
 import { getCompanyAlias } from "../utils/ETL/companyETL.js"
 
 export default class Job{
-    constructor({_id,jobId=null,job=null,companyId=null,company=null,addr=null,info=null,workYear=null,education=null,salary=null,time=null,content=null,source=null,city=null,kd=null}) {
+    constructor({_id,jobId=null,job=null,companyId=null,company=null,companyAlias=null,addr=null,info=null,workYear=null,education=null,salary=null,time=null,content=null,source=null,city=null,kd=null}) {
        this._id = _id?mongodb.ObjectId(_id):new mongodb.ObjectId();
        this.id = jobId+source;
        this.jobId = jobId;
        this.job = job;
        this.companyId = companyId;
        this.company = company;
-       this.companyAlias = getCompanyAlias(company);
+       this.companyAlias =  companyAlias?companyAlias:getCompanyAlias(company);
        this.addr = addr;
        this.workYear = workYear;
        this.education = education; 

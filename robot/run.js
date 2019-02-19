@@ -15,8 +15,8 @@ const kd = "前端";
 
 
 var table = new Table({});
-const year = "2018";
-const month = "12";
+const year = "2019";
+const month = "02";
 
 var main = new Main(db,table,year,month);
 
@@ -30,16 +30,16 @@ main.addConfig(new ZhaoPin(10)); //智联招聘 10
 
 
 //main.stepList();
-// main.stepToJob();
-//main.stepInfo();
+ //main.stepToJob();
+main.stepInfo();
 
 
-//main.stepCompare();
+// main.stepCompare();
 //main.noLoadToRepertory();
 //main.stepBdLoad();
 //main.stepEtl();
 
-show(db,table,year,month);
+//show(db,table,year,month);
 
 //main.reInfo();
 //============================
