@@ -114,7 +114,7 @@ export default class ViewData {
     };
     getCountJobRank(limit) {
         this.db.close();
-        var query = {};
+        var query = {bdState:{$ne:77}};
         return this.db.open(this.table.company).then((collection)=> {
             return collection.find(query,{company:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
         }).then((data)=> {
@@ -202,7 +202,9 @@ export default class ViewData {
                 positions: [],
                 "count": 0
             }, (doc, prev) => {
+                if(doc.position==""){return}
                 prev.count++;
+                
                 var {
                     lat,
                     lng

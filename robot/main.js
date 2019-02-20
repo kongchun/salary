@@ -72,13 +72,11 @@ export default class Main {
         await this.loadGeo();
         //await this.fixedGeo();
         //await this.filterGeo();
-
     }
 
     async stepEtl(){
         await this.positionToJob();
         await this.transform();
- 
     }
 
 
@@ -129,7 +127,6 @@ export default class Main {
             return this.db.collection.group({
                 "companyAlias": true
             }, {
-                
             }, {
                 count: 0,
                 source: "",
@@ -161,11 +158,11 @@ export default class Main {
         })
     }
 
-
+    //将业务分析处理过公司库对比到 公司
     compareCompany() {
         this.db.close()
         return this.db.open(this.table.repertoryCompany).then(() => {
-            return this.db.collection.find({position:{$ne:null}}).toArray();
+            return this.db.collection.find({}).toArray();
         }).then((data) => {
             //console.log(data)
             this.db.close();
@@ -199,16 +196,15 @@ export default class Main {
             console.log(e)
             return;
         })
-
-
+      
     }
-
+    //记录地址对比
     loadPosition(){
         this.db.close()
         return this.db.open(this.table.company).then(() => {
             return this.db.collection.find({
-                position: null
-                //noLoad: null
+                position:{"$in":[null,""]},
+                noLoad: null
             }).toArray();
         }).then((data) => {
             //console.log("loadPosition-datasize"+data.length)
@@ -225,13 +221,12 @@ export default class Main {
                     bdStatus = 0;
                 }
 
-              
-                
                 return this.db.updateById(i._id, {
                     position:position,
                     district:district,
                     city:city,
-                    bdStatus:bdStatus
+                    bdStatus:bdStatus,
+                    noLoad: true
                 })
               
             })
@@ -262,16 +257,15 @@ export default class Main {
             console.log(data);
             return helper.iteratorArr(data, (i) => {
                 var name = (i[key]);
+                console.log(name)
                 if(name==""){
-                    return data;
+                    return Promise.resolve(data);
                 }
-
                 return addrToGeo(name).then((position) => {
                     console.log(position)
                     return this.db.updateById(i._id, { position: position,bdStatus:3}).then(function(t) {
                         return data;
                     })
-
                 })
             })
         }).then((data) => {
@@ -357,7 +351,7 @@ export default class Main {
     positionToJob() {
        this.db.close()
        return this.db.open(this.table.company).then(() => {
-           return this.db.collection.find({}, {
+           return this.db.collection.find({"position":{"$ne":[null,""]},bdStatus:{"$ne":77}}, {
                position: 1,
                alias: 1,
                district:1,

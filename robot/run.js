@@ -29,8 +29,10 @@ main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
 
 
 //main.robotData();
-main.analyseCompany();
-//main.stepEtl();
+//main.analyseCompany();
+main.stepEtl().then(()=>{
+	show(db,table,year,month);
+})
 
 
 
@@ -42,9 +44,4 @@ function show(db,table,year,month){
 	var view = new ViewData(db,table,year,month);
 	view.show();
 }
-//view.average();
-//view.chart();
-//view.tech();
-// //
-//
 
