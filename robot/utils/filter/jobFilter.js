@@ -3,14 +3,16 @@
 
  var filter = function(arr){
 	return arr.filter((data) => {
-			var flag = false;
-
-			if (data.job.match(/javascript|node|web/ig)) {
+			//console.log(data.job)
+			if(data.job==null){
+				return false;
+			}
+			if (data.job.match(/javascript|node|web|前端开发工程师/ig)) {
 				//console.log(data.job, true);
 				return true
 			}
 
-			if (data.job.match(/SOC|前端IP设计|产品经理|芯片|CPU|IP|ASIC|机械设计|营销|mes|合伙人|嵌入式|java|net|php|c\+\+|python|go|客服|后端|后台|测试|oracle|c#|数据|平面/ig)) {
+			if (data.job.match(/ic|soc|cocos|mes|smt|采购|验证|芯片|嵌入式|.net|c#|php|java|ios|android|客服/ig)) {
 				//console.log(data.job, false);
 				return false
 			}
@@ -26,3 +28,4 @@
 };
 
 export {filter}
+

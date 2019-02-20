@@ -1,10 +1,7 @@
 import moment from "moment";
 
 function getEtlTime(time,currentTime = new Date()){
-	//console.log(time);
-
 	time = time.replace(/发布于|日/ig,"").replace(/年|月/,"-");
-
 
 	let reg = new RegExp(/^\d{4}-\d{2}-\d{2}$/);
 	let reg2= /^\d{2}-\d{2}$/
