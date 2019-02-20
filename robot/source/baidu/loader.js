@@ -16,7 +16,7 @@ export default class Loader {
 		pageSize = (pageSize-1)*20;
 
 		let url = encodeURI(LIST_URL+`?query=${this.kd}&city=${this.city}&pcmod=1&pn=${pageSize}&rn=20`);
-		console.log(url);
+		//console.log(url);
 		
 		return loader.getJSON(url,{
 			delay:1000
@@ -27,8 +27,7 @@ export default class Loader {
 
 	info (jobId){
 		let url = `http://zhaopin.baidu.com/szzw?id=${jobId}`;
-		return loader.getDOM(url,{delay:2000}).catch((e)=>{
-			console.log(111)
+		return loader.getDOM(url,{delay:500}).catch((e)=>{
 			console.log(e)
 		});
 	}

@@ -4,6 +4,7 @@ import Page from "./model/page.js";
 
 import { filter as  jobFilter} from "./utils/filter/jobFilter.js";
 import { filter as  companyFilter} from "./utils/filter/companyFilter.js";
+import { filter as  timeFilter} from "./utils/filter/timeFilter.js";
 
 export default class Container {
     constructor(db, table,config) {
@@ -38,7 +39,6 @@ export default class Container {
             }
             return (arr);
         }).then((arr) => {
-            //console.log(arr)
             return helper.iteratorArr(arr, (page) => {
                 return this.loader.list(page).then((data) => {
                     var db_page = new Page({
@@ -57,7 +57,7 @@ export default class Container {
                 })
             }).then(() => {
                 this.db.close();
-                console.log(this.source + " page Loaded");
+                console.log(this.source + "finish page Loaded");
                 return;
             }).catch((e) => {
                 this.db.close();
@@ -68,20 +68,23 @@ export default class Container {
 
     }
 
-    async pageToJob() {
-        //console.log(1111);
+    async pageToJob(year,month) {
         var arr = await this.getNewPage();
-        console.log(arr);
         var arrAll = [];
         arr.forEach((it) => {
             arrAll.push(...this.parse.list(it.content));
         })
-
-        arrAll = jobFilter(arrAll);  //根据职位过滤
-        arrAll = companyFilter(arrAll);  //根据公司过滤
-
+ 
+        arrAll = this.filterJob(arrAll,year,month);
         await this.insertJob(arrAll);
         return;
+    }
+
+    filterJob (arrAll,year,month){
+        arrAll = timeFilter(arrAll,year,month); //根据时间过滤
+        arrAll = jobFilter(arrAll);  //根据职位过滤
+        arrAll = companyFilter(arrAll);  //根据公司过滤
+        return arrAll;
     }
 
    getNewPage(){
@@ -100,7 +103,16 @@ export default class Container {
             return;
         })
     }
-
+    getALLPage(){
+        this.db.close();
+        return this.db.open(this.table.page).then(() => { 
+            return this.db.findToArray({  source: this.source,city:this.city, kd:this.kd }, { content: 1 })
+        }).catch((e) => {
+            this.db.close();
+            console.log(e, this.source);
+            return;
+        })
+    }
     insertJob(data){
         this.db.close();
         return this.db.open(this.table.job).then(() => {
@@ -181,20 +193,20 @@ export default class Container {
             return;
         })
     }
-    timeFilter(){
-        this.db.close();
-        return this.db.open(this.table.job).then(() =>{
-            return this.db.updateIterator({source:this.source,city:this.city, kd:this.kd },{time:1,robotTime:1} ,(job) =>{
-                this.etl.setJob(job);
-                return this.etl.time();
-            })
-        }).then(() =>{
-            this.db.close()
-            return ;
-        }).catch((e) => {
-            this.db.close();
-            console.log(e, this.source);
-            return;
-        })
-    }
+    // timeFilter(){
+    //     this.db.close();
+    //     return this.db.open(this.table.job).then(() =>{
+    //         return this.db.updateIterator({source:this.source,city:this.city, kd:this.kd },{time:1,robotTime:1} ,(job) =>{
+    //             this.etl.setJob(job);
+    //             return this.etl.time();
+    //         })
+    //     }).then(() =>{
+    //         this.db.close()
+    //         return ;
+    //     }).catch((e) => {
+    //         this.db.close();
+    //         console.log(e, this.source);
+    //         return;
+    //     })
+    // }
 }

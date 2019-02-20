@@ -1,7 +1,6 @@
 import {getRangeByYear} from "./ETL/yearETL.js";
 import {getRangeByEdu} from "./ETL/eduETL.js";
 import {getMinMax,getRangeBySalary} from "./ETL/salaryETL.js";
-import {getEtlTime} from "./ETL/timeETL.js";
 import {getEtlPost} from "./ETL/postETL.js";
 import {getEtlTag} from "./ETL/tagETL.js";
 
@@ -52,12 +51,7 @@ export default class BaseETL {
 		let min,max,average,salaryRange;
 		return {min,max,average,salaryRange};
 	}
-	time(){
-		let time = this.job.time;
-		let robotTime = this.job.robotTime;
-		time = getEtlTime(time,robotTime);
-		return {etlTime:time};
-	}
+
 
 
 	all(){

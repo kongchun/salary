@@ -36,6 +36,17 @@ export default class Main {
        
     }
 
+    async robotData(){
+        await this.stepList();
+        await this.stepToJob();
+        await this.stepInfo();
+    }
+
+    async analyseCompany(){
+        await this.stepCompare();
+        await this.noLoadToRepertory();
+        await this.stepBdLoad();
+    }
 
  //================
 
@@ -44,8 +55,7 @@ export default class Main {
     }
 
     async stepToJob(){
-        await this.pageToJob();
-        await this.removeOutOfDate(this.year,this.month);
+        await this.pageToJob(this.year,this.month);
     }
 
     async stepInfo(){
@@ -55,8 +65,7 @@ export default class Main {
     async stepCompare(){
         await this.groupCompany();
         await this.compareCompany();
-        await this.loadPosition(this.year,this.month);
-
+        await this.loadPosition();
     }
 
     async stepBdLoad(year,month){
@@ -85,21 +94,15 @@ export default class Main {
         })
     }
 
-    pageToJob() {
+    pageToJob(year,month) {
         return helper.iteratorArr(this.containerList, (item) => {
-            return item.pageToJob();
+            return item.pageToJob(year,month);
         }).then(function() {
             console.log("pageToJob finish");
             return;
         }).catch((e)=>{
             console.log(e)
         })
-    }
-
-    async removeOutOfDate(){
-        await this.timeFilter();
-        await this.clearoutTime(this.year,this.month);
-        return;
     }
 
     info() {
@@ -248,8 +251,8 @@ export default class Main {
         this.db.close()
         return this.db.open(this.table.repertoryCompany).then(() => {
             return this.db.collection.find({
-                position: null,
-                noLoad: null,
+                position: {"$in":[null,""]},
+                //noLoad: null,
                 bdStatus:0
             }, {
                 company: 1,
@@ -259,6 +262,10 @@ export default class Main {
             console.log(data);
             return helper.iteratorArr(data, (i) => {
                 var name = (i[key]);
+                if(name==""){
+                    return data;
+                }
+
                 return addrToGeo(name).then((position) => {
                     console.log(position)
                     return this.db.updateById(i._id, { position: position,bdStatus:3}).then(function(t) {
@@ -280,13 +287,13 @@ export default class Main {
 
     fixedGeo() {
         this.db.close()
-        return this.db.open(this.table.company).then(() => {
+        return this.db.open(this.table.repertoryCompany).then(() => {
             return this.db.collection.find({
                 position: {
                     $ne: null
                 },
-                district: null,
-                noLoad: null
+                district: "",
+                bdStatus:3
             }, {
                 position: 1
             }).toArray();
@@ -309,11 +316,12 @@ export default class Main {
 
     filterGeo(city = "苏州市") {
         this.db.close()
-        return this.db.open(this.table.company).then(() => {
+        return this.db.open(this.table.repertoryCompany).then(() => {
             return this.db.collection.find({
                 city: {
                     $ne: city
-                }
+                },
+                bdStatus:3
             }).toArray();
         }).then((arr) => {
             return helper.iteratorArr(arr, (data) => {
@@ -327,23 +335,6 @@ export default class Main {
             //this.db.close();
             console.log("filterGeo success")
             return;
-        }).then(() => {
-            return this.db.collection.find({
-                noLoad: null
-            }).toArray();
-        }).then((data) => {
-            return helper.iteratorArr(data, (i) => {
-                var address = i.addr;
-
-                var position = i.position;
-                var district = i.district;
-                var { city, district, position } = positionFilter(address, district, position);
-
-                return this.db.updateById(i._id, {
-                    district: district
-                })
-
-            })
         }).then(() => {
             console.log("filterDistrict success")
             return this.db.collection.updateMany({ position: null }, { $set: { bdStatus: 0 } })
@@ -407,37 +398,7 @@ export default class Main {
         })
    }
 
-    timeFilter(){
-        return helper.iteratorArr(this.containerList, (item) => {
-            return item.timeFilter();
-        }).then(function() {
-            console.log("timeFilter finish");
-            return;
-        })
-    }
-
-
-    clearoutTime(year,month){
-        var date = moment(year+"-"+month,"YYYY-MM");
-        var str = date.format("YYYY-MM-DD");
-
-
-       this.db.close()
-       return this.db.open(this.table.job).then(() => {
-           return this.db.collection.remove({etlTime:{$lt:str}},{time:1});
-       }).then((data) => {
-           this.db.close();
-           console.log("clearoutTime success");
-           return
-       }).catch((e) => {
-           this.db.close();
-           console.log(e);
-           return;
-       })
-
-    }
-
-    noLoadToRepertory(){
+   noLoadToRepertory(){
         this.db.close()
         return this.db.open(this.table.company).then(() => {
            return this.db.collection.find({noLoad: null}).toArray();
