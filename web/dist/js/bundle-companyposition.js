@@ -1,1 +1,159 @@
-!function e(t,n,a){function i(r,l){if(!n[r]){if(!t[r]){var s="function"==typeof require&&require;if(!l&&s)return s(r,!0);if(o)return o(r,!0);var c=new Error("Cannot find module '"+r+"'");throw c.code="MODULE_NOT_FOUND",c}var u=n[r]={exports:{}};t[r][0].call(u.exports,function(e){var n=t[r][1][e];return i(n||e)},u,u.exports,e,t,n,a)}return n[r].exports}for(var o="function"==typeof require&&require,r=0;r<a.length;r++)i(a[r]);return i}({1:[function(e,t,n){"use strict";function a(e){var t=new RegExp("(^|&)"+e+"=([^&]*)(&|$)","i"),n=window.location.search.substr(1).match(t);return null!=n?unescape(n[2]):null}function i(){layui.use("form",function(){var e=layui.form,t="";s.position&&s.position.lng&&s.position.lat&&(t=s.position.lng+","+s.position.lat),e.val("searchForm",{companyname:s.company||"",address:s.addr||"",position:t||"",district:s.district||"",city:s.city||"苏州市"}),e.on("submit(search)",function(e){var t=e.field,n="";return n="companyname"==t.searchType?t.companyname:t.address,c&&l(n),!1}),e.on("submit(commit)",function(e){$("#commitData").attr("disabled","true");var t=e.field;if(t.position){var n=t.position.split(","),a=t.city||s.city,i=t.district||s.district;n&&n.length>1?o(n[0],n[1],a,i):(layer.msg("提交数据格式不正确"),$("#commitData").removeAttr("disabled"))}else layer.msg("请先点选一个位置"),$("#commitData").removeAttr("disabled");return!1}),e.render()})}function o(e,t,n,a){var i=layer.load(2);$.ajax({url:"/manage/updateCompanyPosition",type:"post",data:{_id:s._id,lat:t,lng:e,city:n,district:a}}).done(function(e){if(layer.close(i),!!e&!!e.n&&e.n>0){layer.msg("坐标数据已提交");try{parent.layer.close(parent.layer.getFrameIndex(window.name)),parent.layui.table.reload("compnayList")}catch(e){}}else layer.msg("提交数据执行失败，原因：未匹配的记录");$("#commitData").removeAttr("disabled")}).fail(function(e){layer.close(i),console.error(e),layer.msg("数据提交失败"),$("#commitData").removeAttr("disabled")})}function r(){function e(e){$("input[name=position]").val(e.point.lng+","+e.point.lat)}c=new BMap.Map("allmap"),c.centerAndZoom(new BMap.Point(120.621233,31.335415),13);var t=new BMap.NavigationControl;c.addControl(t),c.setCurrentCity("苏州"),c.enableScrollWheelZoom(!0),c.setDefaultCursor("auto"),c.addEventListener("click",e)}function l(e){var t=layer.load(2),n=new BMap.LocalSearch(c,{renderOptions:{map:c},onSearchComplete:function(e){layer.close(t),n.getStatus()==BMAP_STATUS_SUCCESS&&e&&e.getCurrentNumPois()&&e.getCurrentNumPois()>0?layer.msg("加载完成！",{time:1e3,offset:"50%"}):layer.msg("在苏州市没有找到相关的地点。")}});n.search(e)}var s={},c=null;$(function(){var e=a("_id");e?$.ajax({url:"/manage/getcompanyById?_id="+e,type:"get",data:{}}).done(function(e){if(s=e,i(),s&&s.position){var t=new BMap.Icon("/images/markers.png",new BMap.Size(23,25),{offset:new BMap.Size(10,25),imageOffset:new BMap.Size(0,-250)}),n=new BMap.Marker(new BMap.Point(s.position.lng,s.position.lat),{icon:t});c.addOverlay(n),n.setAnimation(BMAP_ANIMATION_BOUNCE)}setTimeout(function(){$(".btn-search").click()},500)}).fail(function(e){console.error("数据查询超时")}):i(),r()})},{}]},{},[1]);
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+"use strict";
+
+function getQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]);
+    return null;
+}
+var company = {};
+var map = null;
+$(function () {
+    var _id = getQueryString('_id');
+    if (!!_id) {
+        $.ajax({
+            url: '/manage/getcompanyById?_id=' + _id,
+            type: 'get',
+            data: {}
+        }).done(function (data) {
+            company = data;
+            initForm(data);
+            if (!!company && !!company.position) {
+                var myIcon = new BMap.Icon("/images/markers.png", new BMap.Size(23, 25), {
+                    offset: new BMap.Size(10, 25),
+                    imageOffset: new BMap.Size(0, 0 - 10 * 25)
+                });
+                var marker = new BMap.Marker(new BMap.Point(company.position.lng, company.position.lat), { icon: myIcon });
+                map.addOverlay(marker);
+                marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+            }
+            setTimeout(function () {
+                $(".btn-search").click();
+            }, 500);
+        }).fail(function (e) {
+            console.error("数据查询超时");
+        });
+    } else {
+        initForm();
+    }
+    initMap();
+});
+
+function initForm() {
+    layui.use('form', function () {
+        var form = layui.form;
+        var position = '';
+        if (!!company['position'] && !!company['position']['lng'] && !!company['position']['lat']) {
+            position = company['position']['lng'] + ',' + company['position']['lat'];
+        }
+        form.val("searchForm", {
+            "companyname": company['company'] || '',
+            "address": company['addr'] || '',
+            "position": position || '',
+            "district": company['district'] || '',
+            "city": company['city'] || '苏州市'
+        });
+        form.on('submit(search)', function (data) {
+            var field = data.field;
+            var searchValue = '';
+            if ('companyname' == field['searchType']) {
+                searchValue = field['companyname'];
+            } else {
+                searchValue = field['address'];
+            }
+            if (!!map) {
+                searchMap(searchValue);
+            }
+            return false;
+        });
+        form.on('submit(commit)', function (data) {
+            $("#commitData").attr("disabled", 'true');
+            var field = data.field;
+            if (!!field['position']) {
+                var arr = field['position'].split(',');
+                var city = field['city'] || company['city'];
+                var district = field['district'] || company['district'];
+                if (!!arr && arr.length > 1) {
+                    submitCompanyPosition(arr[0], arr[1], city, district);
+                } else {
+                    layer.msg('提交数据格式不正确');
+                    $("#commitData").removeAttr("disabled");
+                }
+            } else {
+                layer.msg('请先点选一个位置');
+                $("#commitData").removeAttr("disabled");
+            }
+            return false;
+        });
+        form.render();
+    });
+}
+function submitCompanyPosition(lng, lat, city, district) {
+    var index = layer.load(2);
+    $.ajax({
+        url: '/manage/updateCompanyPosition',
+        type: 'post',
+        data: { '_id': company['_id'], 'lat': lat, 'lng': lng, 'city': city, 'district': district }
+    }).done(function (data) {
+        layer.close(index);
+        if (!!data & !!data['n'] && data['n'] > 0) {
+            layer.msg('坐标数据已提交');
+            try {
+                parent.layer.close(parent.layer.getFrameIndex(window.name));
+                parent.layui.table.reload('compnayList');
+            } catch (e) {}
+        } else {
+            layer.msg('提交数据执行失败，原因：未匹配的记录');
+        }
+        $("#commitData").removeAttr("disabled");
+    }).fail(function (e) {
+        layer.close(index);
+        console.error(e);
+        layer.msg('数据提交失败');
+        $("#commitData").removeAttr("disabled");
+    });
+}
+function initMap() {
+    map = new BMap.Map("allmap"); // 创建Map实例
+    map.centerAndZoom(new BMap.Point(120.621233, 31.335415), 13); // 初始化地图,设置中心点坐标和地图级别
+    //添加地图类型控件
+    // map.addControl(new BMap.MapTypeControl({
+    // 	mapTypes:[
+    //         BMAP_NORMAL_MAP,
+    //         BMAP_HYBRID_MAP
+    //     ]}));	  
+    // var top_left_control = new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_LEFT});// 左上角，添加比例尺
+    var top_left_navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
+    // var top_right_navigation = new BMap.NavigationControl({anchor: BMAP_ANCHOR_TOP_RIGHT, type: BMAP_NAVIGATION_CONTROL_SMALL}); //右上角
+    map.addControl(top_left_navigation);
+    map.setCurrentCity("苏州"); // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+    map.setDefaultCursor("auto");
+    function setPosition(e) {
+        $("input[name=position]").val(e.point.lng + "," + e.point.lat);
+    }
+    map.addEventListener("click", setPosition);
+}
+function searchMap(searchValue) {
+    var index = layer.load(2);
+    var local = new BMap.LocalSearch(map, {
+        renderOptions: { map: map },
+        onSearchComplete: function onSearchComplete(results) {
+            layer.close(index);
+            // 判断状态是否正确
+            if (local.getStatus() == BMAP_STATUS_SUCCESS) {
+                if (!!results && !!results.getCurrentNumPois() && results.getCurrentNumPois() > 0) {
+                    layer.msg('加载完成！', { time: 1000, offset: '50%' });
+                } else {
+                    layer.msg('在苏州市没有找到相关的地点。');
+                }
+            } else {
+                layer.msg('在苏州市没有找到相关的地点。');
+            }
+        }
+    });
+    local.search(searchValue);
+}
+
+},{}]},{},[1]);

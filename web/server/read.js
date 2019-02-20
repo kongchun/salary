@@ -238,3 +238,36 @@ exports.getSurroundingSalary = function(pt) {
 		throw error;
 	})
 };
+
+exports.listQuestions = function(page,limit,status) {
+	db.close();
+	var start = (page - 1) * limit;
+	var query = {};
+
+	if(''!=status && (!!status || 0==status)){
+		status = parseInt(status);
+		if(0==status){
+			query['$or'] = [ { 'status':null }, { 'status': 0} ];
+		}else{
+			query.status = status;
+		}
+	}
+	console.log(query);
+	return db.open("question_bank").then(function(collection) {
+		return collection.find(query).sort({'time':-1}).skip(start).limit(limit).toArray();
+	}).then(function(data) {
+		return db.collection.find(query).count().then(function(count) {
+			db.close();
+			return ({
+				limit,
+				count,
+				page,
+				data
+			});
+		})
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};

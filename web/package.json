@@ -27,7 +27,7 @@
     "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^3.0.0",
     "jquery": "^3.3.1",
-    "layui-src": "^2.3.0",
+    "layui-src": "^2.4.0",
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {

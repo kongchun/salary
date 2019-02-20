@@ -68,6 +68,7 @@ gulp.task('vendor', ['vendor-css'], function() {
 	return gulp.src([
 			'node_modules/jquery/dist/jquery.js',
 			'node_modules/bootstrap/dist/js/bootstrap.js',
+			//'node_modules/art-template/lib/template-web.js',
 			//'node_modules/headroom.js/dist/headroom.js',
 			//'node_modules/headroom.js/dist/jQuery.headroom.js'
 			//'src/echarts.min.js', "src/macarons.js", //echart
@@ -86,7 +87,7 @@ gulp.task('vendor', ['vendor-css'], function() {
 
 gulp.task('browserify', function() {
 	//manage js 
-	let jsFiles = ['company','charts','companyposition','tables'];
+	let jsFiles = ['company','charts','companyposition','tables','questions','questionForm','answers'];
 	for(var i=0;i<jsFiles.length;i++){
 		browserify(['src/manage/'+jsFiles[i]+'.js'])
 		.transform(babelify, {
@@ -94,7 +95,7 @@ gulp.task('browserify', function() {
 		})
 		.bundle()
 		.pipe(source('bundle-'+jsFiles[i]+'.js'))
-		.pipe(streamify(uglify()))
+		 .pipe(streamify(uglify()))
 		//.pipe(gulpif(production, streamify(uglify({mangle: false}))))
 		.pipe(gulp.dest('dist/js'));
 	}
