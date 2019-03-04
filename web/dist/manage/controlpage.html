@@ -7,18 +7,29 @@
     <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=0" name="viewport" />
     <title>控制台</title>
     <!-- 引入在线资源 -->
-    <script src="/js/vendor.js"></script>
-	<script src="https://gw.alipayobjects.com/os/antv/assets/f2/3.1.13/f2.min.js"></script>
-    <script src="/js/bundle-charts.js"></script>
+    <link rel="stylesheet" href="/jlib/lay/layui.css" />
+    
 </head>
 
 <body>
+    <div class="layui-card" style="margin-bottom:2rem;">
+        <div class="layui-card-header">操作</div>
+        <div class="layui-card-body">
+            <button id="publishBoard" class="layui-btn layui-btn-radius">发布</button>
+        </div>
+    </div>
+
      <canvas id="salaryChart" width="400" height="300"></canvas>
      <canvas id="districtChart" width="400" height="300"></canvas>
      <canvas id="yearChart" width="400" height="300"></canvas>
      <canvas id="priceChart" width="400" height="300"></canvas>
      <canvas id="levelChart" width="400" height="300"></canvas>
 
+    <script src="/js/vendor.js"></script>
+    <script src="/jlib/lay/layui.js"></script>
+    <script src="https://gw.alipayobjects.com/os/antv/assets/f2/3.1.13/f2.min.js"></script>
+    <script src="/js/bundle-charts.js"></script>
+    <script src="/js/bundle-controlpage.js"></script>
 </body>
 
 </html>
