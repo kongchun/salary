@@ -141,6 +141,46 @@
         <% } %>
     </div>
     <% } %>
+    <% if(!!toprank && toprank.length>=50){ %>
+        <div class="toprank">
+            <h3 class="title">Top50总排行</h3>
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>技能</th>
+                        <th>类型</th>
+                        <th>计数</th>
+                        <th>序号</th>
+                        <th>技能</th>
+                        <th>类型</th>
+                        <th>计数</th>
+                    </tr> 
+                </thead>
+                <tbody>
+                    <%for (var i=0;i<25;i++){%>
+                    <tr>
+                        <td>No.<%=i+1%></td>
+                        <td><%=toprank[i].tech%></td>
+                        <td><%=toprank[i].type%></td>
+                        <td><%=toprank[i].count%></td>
+                        <% if(toprank.length>25+i){ %>
+                            <td>No.<%=25+i+1%></td>
+                            <td><%=toprank[25+i].tech%></td>
+                            <td><%=toprank[25+i].type%></td>
+                            <td><%=toprank[25+i].count%></td>
+                        <% }else{ %>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        <% } %>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
 </div>
 <div class="clearboth"></div> 
 <div class="job">    

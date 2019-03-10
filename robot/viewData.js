@@ -255,10 +255,11 @@ export default class ViewData {
                     $ne: true
                 }
             }, {
-
-                "count": 0
-            }, function(doc, prev) {
-                prev.count++;
+                    "count": 0,
+                    "sum": 0
+                }, function (doc, prev) {
+                    prev.count++;
+                    prev.sum += doc.average;
             }, true)
 
 
@@ -266,7 +267,8 @@ export default class ViewData {
             data.forEach((i) => {
                 yearRange.push({
                     "label": i.yearRange,
-                    "count": i.count
+                    "count": i.count,
+                    "average": Math.round(i.sum*100/i.count)/100
                 })
             })
             console.log(yearRange);

@@ -16,7 +16,7 @@ $(function () {
     districtChart(sortFilter(districtSort, data.districtRange));
     //yearChart(sortFilter(yearSort,data.yearRange));
     //priceChart(sortFilter(priceSort,data.salaryRange));
-    //radialChart(toPieChart(sortFilter(yearSort,data.yearRange)));
+    ringChart(toRingChart(sortFilter(yearSort, data.yearRange)));
 
     radialChart(toPieChart(sortFilter(priceSort, data.salaryRange)));
     //circleChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
@@ -54,6 +54,78 @@ function toPieChart(data) {
 
   console.log(dealData);
 
+  return dealData;
+}
+
+function toRingChart(data) {
+  var total = 0;
+  var chartData = [];
+  var pieMap = {};
+  var dealData = {};
+  //根据count算百分比
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = data[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var item = _step.value;
+
+      if (!!item.label) {
+        total += item.count;
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  console.log("--", data);
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = data[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var _item = _step2.value;
+
+      if (!!_item.label) {
+        var itemData = {};
+        itemData['name'] = _item.label;
+        itemData['percent'] = Math.round(_item.count * 100 / total) / 100;
+        itemData['a'] = '1';
+        pieMap[_item.label] = _item.average;
+        chartData.push(itemData);
+      }
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  dealData.data = chartData;
+  dealData.pieMap = pieMap;
+  console.log(dealData);
   return dealData;
 }
 
@@ -345,6 +417,32 @@ function radialChart(data) {
     }
   });
   chart.interval().position('label*count').color('label');
+  chart.render();
+}
+
+//环图
+function ringChart(data) {
+  var chart = new F2.Chart({
+    id: 'yearChart'
+  });
+  chart.coord('polar', {
+    transposed: true,
+    innerRadius: 0.618
+  });
+  chart.source(data.data);
+  chart.axis(false);
+  chart.legend({
+    position: 'right',
+    itemFormatter: function itemFormatter(val) {
+      return val + ' 平均薪酬: ' + data.pieMap[val];
+    }
+  });
+  chart.interval().position('a*percent').color('name').adjust('stack').style({
+    lineWidth: 1,
+    stroke: '#fff',
+    lineJoin: 'round',
+    lineCap: 'round'
+  });
   chart.render();
 }
 
