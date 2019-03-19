@@ -87,7 +87,7 @@ gulp.task('vendor', ['vendor-css'], function() {
 
 gulp.task('browserify', function() {
 	//manage js 
-	let jsFiles = ['company','charts','companyposition','tables','questions','questionForm','answers'];
+	let jsFiles = ['company','charts','companyposition','tables','questions','questionForm','answers','controlpage'];
 	for(var i=0;i<jsFiles.length;i++){
 		browserify(['src/manage/'+jsFiles[i]+'.js'])
 		.transform(babelify, {

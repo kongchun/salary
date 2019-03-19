@@ -224,4 +224,14 @@ router.get('/answers', function (req, res, next) {
     res.send(page);
 });
 
+router.post('/publishBoard', async (req, res) => {
+    try {
+        let data = await update.publishBoard();
+        res.send(data);
+    } catch (e) {
+        console.error(e);
+        res.send({});
+    }
+});
+
 module.exports = router;

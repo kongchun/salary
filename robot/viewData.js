@@ -3,7 +3,7 @@ import Container from "./Container.js";
 import Company from "./model/Company.js";
 
 export default class ViewData {
-    constructor(db, table,year,month,types=['基础','框架和库','MVVM','图形','构建服务','数据库']) {
+    constructor(db, table,year,month,types=['基础','框架和库','MVVM','图形','构建服务','数据库','其它']) {
         this.db = db;
         this.year = year;
         this.month = month;
@@ -257,10 +257,11 @@ export default class ViewData {
                     $ne: true
                 }
             }, {
-
-                "count": 0
-            }, function(doc, prev) {
-                prev.count++;
+                    "count": 0,
+                    "sum": 0
+                }, function (doc, prev) {
+                    prev.count++;
+                    prev.sum += doc.average;
             }, true)
 
 
@@ -268,7 +269,8 @@ export default class ViewData {
             data.forEach((i) => {
                 yearRange.push({
                     "label": i.yearRange,
-                    "count": i.count
+                    "count": i.count,
+                    "average": Math.round(i.sum*100/i.count)/100
                 })
             })
             console.log(yearRange);
@@ -418,6 +420,10 @@ export default class ViewData {
                 techCount['html'] = techCount['html'] + techCount['html5'];
                 delete techCount['html5'];
             }
+            if (techCount.hasOwnProperty('xhtml')) {
+                techCount['html'] = techCount['html'] + techCount['xhtml'];
+                delete techCount['xhtml'];
+            }
             if (techCount.hasOwnProperty('css3')) {
                 techCount['css'] = techCount['css'] + techCount['css3'];
                 delete techCount['css3'];
@@ -459,9 +465,16 @@ export default class ViewData {
                 delete techCount["ES2017"];
                 delete techCount["ES2018"];
             
-                //无关词
-                delete techCount['nbsp'];
-                delete techCount['experience'];
+            //无关词
+            delete techCount['nbsp'];
+            delete techCount['experience'];
+            delete techCount['div'];
+            delete techCount['pc'];
+            delete techCount['net'];
+            delete techCount['api'];
+            delete techCount['mv'];
+            delete techCount['com'];
+            delete techCount['good'];
 
                 for(let tech in techCount){
                     if(techCount[tech] < 2){
@@ -475,7 +488,7 @@ export default class ViewData {
                         year:this.year,
                         month:this.month,
                         tech: prop,
-                        type: TECH[prop],
+                        type: !!TECH[prop] ? TECH[prop] : '其它',
                         count: techCount[prop]
                     });
                 };

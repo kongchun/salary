@@ -14,7 +14,7 @@ $(function(){
       districtChart(sortFilter(districtSort,data.districtRange));
       //yearChart(sortFilter(yearSort,data.yearRange));
       //priceChart(sortFilter(priceSort,data.salaryRange));
-      //radialChart(toPieChart(sortFilter(yearSort,data.yearRange)));
+      ringChart(toRingChart(sortFilter(yearSort,data.yearRange)));
 
       radialChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
       //circleChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
@@ -58,6 +58,33 @@ function toPieChart (data){
   return dealData;
 }
 
+function toRingChart (data){
+  let total = 0;
+  let chartData = [];
+  let pieMap = {};
+  let dealData = {};
+  //根据count算百分比
+  for (let item of data) {
+    if (!!item.label) {
+      total += item.count;
+    }
+  }
+  console.log("--", data);
+  for (let item of data) {
+    if (!!item.label) {
+      let itemData = {};
+      itemData['name'] = item.label;
+      itemData['percent'] = Math.round(item.count * 100 / total) / 100;
+      itemData['a'] = '1';
+      pieMap[item.label] = item.average;
+      chartData.push(itemData);
+    }
+  }
+  dealData.data=chartData;
+  dealData.pieMap=pieMap;
+  console.log(dealData);
+  return dealData;
+}
 
 function salaryChart(data){
 
@@ -355,4 +382,30 @@ function radialChart(data){
   chart.interval().position('label*count').
     color('label');
     chart.render();
+}
+
+//环图
+function ringChart(data){
+  let chart = new F2.Chart({
+    id: 'yearChart',
+  });
+  chart.coord('polar', {
+     transposed: true,
+     innerRadius: 0.618
+  });
+  chart.source(data.data);
+  chart.axis(false);
+  chart.legend({
+    position: 'right',
+    itemFormatter: (val)=>{  
+      return val + ' 平均薪酬: ' + data.pieMap[val];
+    }
+  });
+  chart.interval().position('a*percent').color('name').adjust('stack').style({
+    lineWidth: 1,
+    stroke: '#fff',
+    lineJoin: 'round',
+    lineCap: 'round'
+  });
+  chart.render();
 }

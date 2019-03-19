@@ -5,11 +5,10 @@ function getEtlTag(info){
 
 	while (true) {
 		let temp = reg.exec(str);
-		if (!!temp) {
-			res.add(temp[0]);
-		} else {
+		if (!temp) {
 			break;
 		}
+		res.add(temp[0]);
 	}
 
 	let out = Array.from(res);

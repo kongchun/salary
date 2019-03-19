@@ -144,3 +144,23 @@ exports.saveQuestion = function (question) {
 	});
 
 };
+
+//发布
+exports.publishBoard = async () => {
+	db.close();
+	try {
+		let collection = await db.open('board');
+		let data = await collection.updateMany({
+			publish: false
+		}, {
+			'$set': {
+				publish: true
+			}
+		});
+		db.close();
+		return data;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+};
