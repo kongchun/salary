@@ -70,6 +70,7 @@ export default class Container {
 
     async pageToJob(year,month) {
         var arr = await this.getNewPage();
+        //console.log(arr,"pageToJob");
         var arrAll = [];
         arr.forEach((it) => {
             arrAll.push(...this.parse.list(it.content));
@@ -90,9 +91,10 @@ export default class Container {
    getNewPage(){
         this.db.close();
         return this.db.open(this.table.page).then(() => { 
+            //console.log(this.table.page,{ isNew: true, source: this.source,city:this.city, kd:this.kd })
             return this.db.findToArray({ isNew: true, source: this.source,city:this.city, kd:this.kd }, { content: 1 })
         }).then((arr) => {
-            console.log(arr.length)
+            //console.log(arr.length)
             return this.db.collection.updateMany({ isNew: true, source: this.source,city:this.city, kd:this.kd }, { $set: { isNew: false } }).then((t) => {
                 this.db.close();
                 return arr;

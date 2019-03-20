@@ -57,7 +57,7 @@ export default class Parse {
                         kd: this.kd,
                         source: this.source
                     })
-                    console.log(job);
+                    //console.log(job);
                     arr.push(job);
                 
             

@@ -1,6 +1,7 @@
 import moment from "moment";
 
 function getEtlTime(time,currentTime = new Date()){
+	console.log(time,"time");
 	time = time.replace(/发布于|日/ig,"").replace(/年|月/,"-");
 
 	let reg = new RegExp(/^\d{4}-\d{2}-\d{2}$/);
@@ -25,7 +26,7 @@ function getEtlTime(time,currentTime = new Date()){
 	if(/昨天/ig.test(time)){
 		return moment(currentTime).subtract(1, 'days').format("YYYY-MM-DD");
 	}
-
+	console.log(time);
 	return time;
 }
 

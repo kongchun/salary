@@ -260,13 +260,16 @@ export default class ViewData {
                     "count": 0,
                     "sum": 0
                 }, function (doc, prev) {
-                    prev.count++;
-                    prev.sum += doc.average;
+                    if(doc.average>0){
+                        prev.count++;
+                        prev.sum += doc.average;
+                    }
             }, true)
 
 
             var yearRange = []
             data.forEach((i) => {
+                console.log(i.yearRange,i.sum)
                 yearRange.push({
                     "label": i.yearRange,
                     "count": i.count,

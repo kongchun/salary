@@ -10,6 +10,12 @@ export default class ETL  extends BaseETL{
 		let [min, max] = this.getMinMax(salary);
 		min = min;
 		max = max;
+
+		if (salary == '面议' || salary == '') {
+			min = 0;
+			max = 0;
+		}
+
 		let average = (max + min) / 2;
 		var salaryRange = this.getRangeBySalary(average);
 		return {min,max,average,salaryRange}

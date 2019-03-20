@@ -16,24 +16,26 @@ const kd = "前端";
 
 var table = new Table({});
 const year = "2019";
-const month = "02";
+const month = "03";
 
 var main = new Main(db,table,year,month);
 
 
-main.addConfig(new FiveOneJob(1)); //51Job  10
-main.addConfig(new baidu(1)); //baidu  10
-main.addConfig(new ZhaoPin(1)); //智联招聘 10
+main.addConfig(new FiveOneJob(3)); //51Job  10
+main.addConfig(new baidu(3)); //baidu  10
+main.addConfig(new ZhaoPin(3)); //智联招聘 10
 // main.addConfig(new Lagou(1)); //拉钩 10 (baidu/包含)
 main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
 
-
 //main.robotData();
-//main.analyseCompany();
-main.stepEtl().then(()=>{
-	show(db,table,year,month);
-})
 
+//main.analyseCompany();
+
+// main.stepEtl().then(()=>{
+// 	show(db,table,year,month);
+// })
+
+//main.stepToJob()
 
 
 //show(db,table,year,month);

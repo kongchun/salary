@@ -2,6 +2,7 @@
 import moment from "moment";
 import {getEtlTime} from "../ETL/timeETL.js";
  var filter = function(arr,year,month){
+	 //console.log(arr.length,year,month);
 	 let statisticsDateStr = moment(year+"-"+month,"YYYY-MM").format("YYYYMMDD");
 	return arr.filter((data) => {
 		let time = moment(getEtlTime(data.time,data.robotTime)).format("YYYYMMDD");
@@ -13,3 +14,5 @@ import {getEtlTime} from "../ETL/timeETL.js";
 };
 
 export {filter}
+
+filter([],"2019","2")

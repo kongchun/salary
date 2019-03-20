@@ -3,7 +3,7 @@ import Container from "./Container.js";
 import Company from "./model/Company.js";
 import {filter as positionFilter} from "./utils/ETL/positionETL.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
-import moment from "moment";
+
 
 
 export default class Main {
@@ -213,12 +213,15 @@ export default class Main {
                 var position = i.position;
                 var district = i.district;
                 var bdStatus = 2;
+                var noLoad = null;
 
                 var {city,district,position} = positionFilter(address,district,position);
 
                 //
                 if(district ==null || district=="" || position =="" || position==null){
                     bdStatus = 0;
+                }else{
+                    noLoad = true;
                 }
 
                 return this.db.updateById(i._id, {
@@ -226,7 +229,7 @@ export default class Main {
                     district:district,
                     city:city,
                     bdStatus:bdStatus,
-                    noLoad: true
+                    noLoad: noLoad
                 })
               
             })
@@ -262,7 +265,7 @@ export default class Main {
                     return Promise.resolve(data);
                 }
                 return addrToGeo(name).then((position) => {
-                    console.log(position)
+                    //console.log(position)
                     return this.db.updateById(i._id, { position: position,bdStatus:3}).then(function(t) {
                         return data;
                     })
