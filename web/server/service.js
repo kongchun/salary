@@ -113,3 +113,25 @@ exports.getSurroundingSalary = async function(latitude,longitude,distance = 500)
     }
     return {maxSalary,minSalary,average,jobs};
 }
+
+async function getTopRankRecurse(year, month, count, depth) {
+    let monthStr = month + '';
+    if (month < 1) {
+        year--;
+        month = 12;
+    } else if (month < 10) {
+        monthStr = '0' + month;
+    }
+    let data = await read.getTopRank(year, monthStr, count);
+    if (0 === data.length && depth > 0) {
+        data = await getTopRankRecurse(year, --month, count, --depth);
+    }
+    return data;
+}
+
+exports.getTopRankByLatestMonth = async count => {
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth() + 1;
+    return await getTopRankRecurse(year, month, count, 6);
+}

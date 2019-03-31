@@ -154,4 +154,15 @@ router.get('/getSurroundingSalary', function(req, res, next) {
     
 });
 
+router.get('/getTopTech', async (req, res) => {
+    try {
+        let data = await service.getTopRankByLatestMonth(20);
+        console.log(data);
+        res.send(data);
+    } catch (e) {
+        console.error(e);
+        res.send({});
+    }
+});
+
 module.exports = router;

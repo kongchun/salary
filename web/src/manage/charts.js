@@ -23,7 +23,9 @@ $(function(){
       pieChart(toPieChart(sortFilter(priceSort,data.salaryRange)));
   })
 
-
+  $.getJSON('/api/getTopTech', function (data) {
+    techCloud(data);
+  });
 })
 
 function sortFilter(sortKey,data){
@@ -407,5 +409,62 @@ function ringChart(data){
     lineJoin: 'round',
     lineCap: 'round'
   });
+  chart.render();
+}
+
+// 给point注册一个词云的shape
+G2.Shape.registerShape('point', 'cloud', {
+  drawShape: (cfg, container) => {
+    return container.addShape('text', {
+      attrs: _.assign(cfg.style, {
+        fontSize: cfg.origin._origin.size,
+        rotate: cfg.origin._origin.rotate,
+        text: cfg.origin._origin.text,
+        textAlign: 'center',
+        fill: cfg.color,
+        x: cfg.x,
+        y: cfg.y
+      })
+    });
+  }
+});
+
+//词云
+function techCloud(data) {
+  let dv = new DataSet.View().source(data);
+  let range = dv.range('count');
+  let min = range[0];
+  let max = range[1];
+  dv.transform({
+    type: 'tag-cloud',
+    fields: ['tech', 'count'],
+    size: [400, 300],
+    padding: 0,
+    rotate: () => {
+      var random = ~~(Math.random() * 4) % 4;
+      if (random == 2) {
+        random = 0;
+      }
+      return random * 90;
+    },
+    fontSize: d => {
+      if (d.value) {
+        return (d.value - min) / (max - min) * (80 - 24) + 24;
+      }
+      return 0;
+    }
+  });
+  let chart = new G2.Chart({
+    container: 'techCloud',
+    width: 400,
+    height: 300,
+    padding: 0
+  });
+  chart.source(dv);
+  chart.axis(false);
+  chart.tooltip({
+    showTitle: false
+  });
+  chart.point().position('x*y').color('type').shape('cloud').tooltip('count*type');
   chart.render();
 }
