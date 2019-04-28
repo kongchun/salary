@@ -413,12 +413,12 @@ function ringChart(data){
 }
 
 // 给point注册一个词云的shape
-G2.Shape.registerShape('point', 'cloud', {
-  drawShape: (cfg, container) => {
+F2.Shape.registerShape('point', 'cloud', {
+  draw: (cfg, container) => {
     return container.addShape('text', {
-      attrs: _.assign(cfg.style, {
+      attrs: F2.Util.mix({}, cfg.style, {
         fontSize: cfg.origin._origin.size,
-        rotate: cfg.origin._origin.rotate,
+        rotate: cfg.origin._origin.rotate * Math.PI / 180,
         text: cfg.origin._origin.text,
         textAlign: 'center',
         fill: cfg.color,
@@ -435,13 +435,17 @@ function techCloud(data) {
   let range = dv.range('count');
   let min = range[0];
   let max = range[1];
+  const MAX_FONTSIZE = 36; // 最大的字体
+  const MIN_FONTSIZE = 12; // 最小的字体
+  let canvasWidth = $('#techCloud').width(); // 获取画布宽度
+  let canvasHeight = $('#techCloud').height(); // 获取画布高度
   dv.transform({
     type: 'tag-cloud',
     fields: ['tech', 'count'],
-    size: [400, 300],
+    size: [canvasWidth, canvasHeight],
     padding: 0,
     rotate: () => {
-      var random = ~~(Math.random() * 4) % 4;
+      let random = ~~(Math.random() * 4) % 4;
       if (random == 2) {
         random = 0;
       }
@@ -449,22 +453,19 @@ function techCloud(data) {
     },
     fontSize: d => {
       if (d.value) {
-        return (d.value - min) / (max - min) * (80 - 24) + 24;
+        return (d.value - min) / (max - min) * (MAX_FONTSIZE - MIN_FONTSIZE) + MIN_FONTSIZE;
       }
       return 0;
     }
   });
-  let chart = new G2.Chart({
-    container: 'techCloud',
-    width: 400,
-    height: 300,
+  let chart = new F2.Chart({
+    id: 'techCloud',
     padding: 0
   });
-  chart.source(dv);
+  chart.source(dv.rows);
+  chart.legend(false);
   chart.axis(false);
-  chart.tooltip({
-    showTitle: false
-  });
-  chart.point().position('x*y').color('type').shape('cloud').tooltip('count*type');
+  chart.tooltip(false);
+  chart.point().position('x*y').color('type').shape('cloud');
   chart.render();
 }
