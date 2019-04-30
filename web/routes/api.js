@@ -156,11 +156,46 @@ router.get('/getSurroundingSalary', function(req, res, next) {
 
 router.get('/getTopTech', async (req, res) => {
     try {
-        let data = await service.getTopRankByLatestMonth(100);
+        let num = parseInt(req.query.num);
+        if (isNaN(num)) {
+            num = 100;
+        }
+        let data = await service.getTopRankByLatestMonth(num);
         res.send(data);
     } catch (e) {
         console.error(e);
+        res.send([]);
+    }
+});
+
+router.post('/saveTagCloud', async (req, res) => {
+    let now = new Date();
+    let year = now.getFullYear() + '';
+    let month = now.getMonth() + 1 + '';
+    let img = req.body.dataUrl;
+    try {
+        let result = await update.insertTagCloudImg(year, month, img);
+        res.send(result);
+    } catch (e) {
+        console.error(e);
         res.send({});
+    }
+});
+
+router.get('/getTagCloud', async (req, res) => {
+    let year = req.query.year;
+    let month = req.query.month;
+    if (!year || !month) {
+        let now = new Date();
+        year = now.getFullYear() + '';
+        month = now.getMonth() + 1 + '';
+    }
+    try {
+        let result = await read.getTagCloudImg(year, month);
+        res.send(result.img);
+    } catch (e) {
+        console.error(e);
+        res.send("");
     }
 });
 

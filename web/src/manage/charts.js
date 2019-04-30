@@ -1,4 +1,19 @@
 $(function(){
+  $('#saveCloud').click(function () {
+    let base64 = $('#techCloud')[0].toDataURL();
+    $.post('/api/saveTagCloud', { dataUrl: base64 }, function (data) {
+      if (!!data & !!data['n'] && data['n'] > 0) {
+        alert('保存成功');
+      } else if (data['n'] === 0) {
+        alert('保存未执行');
+      } else {
+        alert('保存执行失败');
+      }
+    }).fail(function (e) {
+      console.error(e);
+      alert('保存失败，网络错误');
+    });
+  });
 
   $.getJSON("/api/getNewAverageSalary",function(data){
       salaryChart(data.arr);
@@ -414,16 +429,19 @@ function ringChart(data){
 
 // 给point注册一个词云的shape
 F2.Shape.registerShape('point', 'cloud', {
-  draw: (cfg, container) => {
+  draw: function (cfg, container){
+    let y = this._coord.y.start - cfg.y;
     return container.addShape('text', {
       attrs: F2.Util.mix({}, cfg.style, {
+        fillOpacity: cfg.opacity,
         fontSize: cfg.origin._origin.size,
         rotate: cfg.origin._origin.rotate * Math.PI / 180,
         text: cfg.origin._origin.text,
         textAlign: 'center',
         fill: cfg.color,
+        textBaseline: 'Alphabetic',
         x: cfg.x,
-        y: cfg.y
+        y: y
       })
     });
   }
@@ -460,7 +478,8 @@ function techCloud(data) {
   });
   let chart = new F2.Chart({
     id: 'techCloud',
-    padding: 0
+    padding: 0,
+    pixelRatio: window.devicePixelRatio
   });
   chart.source(dv.rows);
   chart.legend(false);

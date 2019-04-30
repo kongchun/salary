@@ -271,3 +271,19 @@ exports.listQuestions = function(page,limit,status) {
 		throw error;
 	})
 };
+
+exports.getTagCloudImg = async (year, month) => {
+	db.close();
+	try {
+		let collection = await db.open('tag_cloud');
+		let result = await collection.findOne({
+			year: year,
+			month: month
+		});
+		db.close();
+		return result;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+}
