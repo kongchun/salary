@@ -165,7 +165,7 @@ exports.publishBoard = async () => {
 	}
 };
 
-exports.insertTagCloudImg = async (year, month, img) => {
+exports.insertTagCloudData = async (year, month, data) => {
 	db.close();
 	try {
 		let collection = await db.open('tag_cloud');
@@ -176,7 +176,7 @@ exports.insertTagCloudImg = async (year, month, img) => {
 				'$set': {
 					year: year,
 					month: month,
-					img: img
+					data: data
 				}
 			}, { upsert: true });
 		db.close();

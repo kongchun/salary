@@ -172,9 +172,9 @@ router.post('/saveTagCloud', async (req, res) => {
     let now = new Date();
     let year = now.getFullYear() + '';
     let month = now.getMonth() + 1 + '';
-    let img = req.body.dataUrl;
+    let data = req.body.data;
     try {
-        let result = await update.insertTagCloudImg(year, month, img);
+        let result = await update.insertTagCloudData(year, month, data);
         res.send(result);
     } catch (e) {
         console.error(e);
@@ -192,10 +192,10 @@ router.get('/getTagCloud', async (req, res) => {
     }
     try {
         let result = await read.getTagCloudImg(year, month);
-        res.send(result.img);
+        res.send(result.data);
     } catch (e) {
         console.error(e);
-        res.send("");
+        res.send([]);
     }
 });
 

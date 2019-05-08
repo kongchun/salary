@@ -1,7 +1,6 @@
 $(function(){
   $('#saveCloud').click(function () {
-    let base64 = $('#techCloud')[0].toDataURL();
-    $.post('/api/saveTagCloud', { dataUrl: base64 }, function (data) {
+    $.post('/api/saveTagCloud', { data: JSON.stringify(dvRows) }, function (data) {
       if (!!data & !!data['n'] && data['n'] > 0) {
         alert('保存成功');
       } else if (data['n'] === 0) {
@@ -447,6 +446,7 @@ F2.Shape.registerShape('point', 'cloud', {
   }
 });
 
+let dvRows = [];
 //词云
 function techCloud(data) {
   let dv = new DataSet.View().source(data);
@@ -454,7 +454,7 @@ function techCloud(data) {
   let min = range[0];
   let max = range[1];
   const MAX_FONTSIZE = 36; // 最大的字体
-  const MIN_FONTSIZE = 12; // 最小的字体
+  const MIN_FONTSIZE = 14; // 最小的字体
   let canvasWidth = $('#techCloud').width(); // 获取画布宽度
   let canvasHeight = $('#techCloud').height(); // 获取画布高度
   dv.transform({
@@ -481,7 +481,18 @@ function techCloud(data) {
     padding: 0,
     pixelRatio: window.devicePixelRatio
   });
-  chart.source(dv.rows);
+  console.log(dv.rows);
+  for (let row of dv.rows){
+    let data = {};
+    data.rotate = row.rotate;
+    data.size = row.size;
+    data.text = row.text;
+    data.type = row.type;
+    data.x = row.x;
+    data.y = row.y;
+    dvRows.push(data);
+  }
+  chart.source(dvRows);
   chart.legend(false);
   chart.axis(false);
   chart.tooltip(false);
