@@ -1,6 +1,6 @@
 $(function(){
   $('#saveCloud').click(function () {
-    $.post('/api/saveTagCloud', { data: JSON.stringify(dvRows) }, function (data) {
+    $.post('/manage/saveTagCloud', { data: JSON.stringify(window.dvRows) }, function (data) {
       if (!!data & !!data['n'] && data['n'] > 0) {
         alert('保存成功');
       } else if (data['n'] === 0) {
@@ -446,7 +446,7 @@ F2.Shape.registerShape('point', 'cloud', {
   }
 });
 
-let dvRows = [];
+window.dvRows = [];
 //词云
 function techCloud(data) {
   let dv = new DataSet.View().source(data);
@@ -490,9 +490,9 @@ function techCloud(data) {
     data.type = row.type;
     data.x = row.x;
     data.y = row.y;
-    dvRows.push(data);
+    window.dvRows.push(data);
   }
-  chart.source(dvRows);
+  chart.source(window.dvRows);
   chart.legend(false);
   chart.axis(false);
   chart.tooltip(false);

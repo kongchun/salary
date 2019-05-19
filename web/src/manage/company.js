@@ -25,11 +25,24 @@ function initTable() {
             return d.LAY_INDEX;
           }
         },
+        {
+          field: 'logo', width: 180, title: '图标', templet: d => {
+            let upload = '<button type="button" class="layui-btn layui-btn-sm layui-btn-radius btn-logo-upload"><i class="layui-icon">&#xe67c;</i>上传</button><input type="file" class="input-logo-upload" cpnid='+ d._id +' style="display:none">';
+            if (!!d.logo) {
+              return upload + '<img src="'+ d.logo +'">';
+            } else {
+              return upload + '<img>';
+            }
+          }
+        },
         { field: 'company', width: 250, title: '公司' }
-        , { field: 'alias', width: 150, title: '別名', sort: false }
+        , { field: 'alias', width: 150, title: '別名', sort: false, edit:'text' }
         , { field: 'addr', title: '地址', minWidth: 250 }
         , { field: 'city', width: 80, title: '城市', sort: false }
         , { field: 'district', width: 90, title: '区域' }
+        , { field: 'salary', width: 90, title: '平均薪酬', edit:'text' }
+        , { field: 'score', width: 90, title: '评分', edit:'text' }
+        , { field: 'description', width: 90, title: '介绍', edit:'text' }
         , {
           field: 'bdStatus', width: 92, title: '审核状态', templet: function (d) {
             if (!!d.bdStatus && 99 == d.bdStatus) {
@@ -52,6 +65,7 @@ function initTable() {
         , { fixed: 'right', width: 120, align: 'center', toolbar: '#barCompany' }
       ]]
       , page: true
+      , done: initUpload
     });
 
     //监听工具条
@@ -100,6 +114,13 @@ function initTable() {
         });
         layer.full(index);
       }
+    });
+
+    table.on('edit(company)', function (obj) {
+      $.post('/manage/updateCompanyInfo', { id: obj.data._id, field: obj.field, value: obj.value }, postCallback).fail(function (e) {
+        console.error(e);
+        layer.msg('更新失败，网络错误');
+      });
     });
 
     var active = {
@@ -155,3 +176,34 @@ function initTable() {
   });
 }
 
+function initUpload() {
+  $('.btn-logo-upload').click(function () {
+    $(this).next().click();
+  });
+  $('.input-logo-upload').change(function () {
+    let inputElement = $(this);
+    let file = inputElement[0].files[0];
+    let reader = new FileReader();
+    reader.onload = () => {
+      let dataUrl = reader.result;
+      $.post('/manage/updateCompanyInfo', { id: inputElement.attr('cpnid'), field: 'logo', value: dataUrl }, function (data) {
+        postCallback(data);
+        inputElement.next()[0].src = dataUrl;
+      }).fail(function (e) {
+        console.error(e);
+        layer.msg('更新失败，网络错误');
+      });
+    }
+    reader.readAsDataURL(file);
+  });
+}
+
+function postCallback(data) {
+  if (!!data & !!data['n'] && data['n'] > 0) {
+      layer.msg('更新成功');
+  } else if (data['n'] === 0) {
+      layer.msg('更新未执行');
+  } else {
+      layer.msg('更新执行失败');
+  }
+}

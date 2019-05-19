@@ -88,6 +88,28 @@ exports.deleteCompany = function (company) {
 	})
 };
 
+exports.updateCompanyInfo = async param => {
+	db.close();
+	let query = {};
+	let set = {}
+	try {
+		query = { '_id': new mongodb.ObjectId(param.id) };
+		set[param.field] = param.value;
+	} catch (error) {
+		console.error(error);
+		query = { '_id': id };
+	}
+	try {
+		let collection = await db.open('repertory_company');
+		let result = await collection.update(query, {'$set': set});
+		db.close();
+		return result;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+}
+
 exports.updateAveraheSalaryCount = function (param) {
 	db.close();
 	var query = { month: param.month, year: param.year };

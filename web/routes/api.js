@@ -168,20 +168,6 @@ router.get('/getTopTech', async (req, res) => {
     }
 });
 
-router.post('/saveTagCloud', async (req, res) => {
-    let now = new Date();
-    let year = now.getFullYear() + '';
-    let month = now.getMonth() + 1 + '';
-    let data = req.body.data;
-    try {
-        let result = await update.insertTagCloudData(year, month, data);
-        res.send(result);
-    } catch (e) {
-        console.error(e);
-        res.send({});
-    }
-});
-
 router.get('/getTagCloud', async (req, res) => {
     let year = req.query.year;
     let month = req.query.month;

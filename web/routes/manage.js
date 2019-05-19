@@ -101,6 +101,25 @@ router.post('/deleteCompanyById', function (req, res) {
     })
 });
 
+router.post('/updateCompanyInfo', async (req, res) => {
+    let id = req.body.id;
+    let field = req.body.field;
+    if (!!!id || !!!field) {
+        res.send({});
+    }
+    try {
+        let data = await update.updateCompanyInfo({
+            id: id,
+            field: field,
+            value: req.body.value
+        });
+        res.send(data);
+    } catch (e) {
+        console.error(e);
+        res.send({});
+    }
+});
+
 router.get('/onelevel', function (req, res) {
     res.send([]);
 });
@@ -228,6 +247,20 @@ router.post('/publishBoard', async (req, res) => {
     try {
         let data = await update.publishBoard();
         res.send(data);
+    } catch (e) {
+        console.error(e);
+        res.send({});
+    }
+});
+
+router.post('/saveTagCloud', async (req, res) => {
+    let now = new Date();
+    let year = now.getFullYear() + '';
+    let month = now.getMonth() + 1 + '';
+    let data = req.body.data;
+    try {
+        let result = await update.insertTagCloudData(year, month, data);
+        res.send(result);
     } catch (e) {
         console.error(e);
         res.send({});
