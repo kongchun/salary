@@ -34,10 +34,11 @@ router.get('/listcompany', function (req, res) {
     var page = req.query.page;
     var limit = req.query.limit;
     var bdStatus = req.query.positionConfirm;
+    let company = req.query.company;
 
     if (!!page) page = parseInt(page);
     if (!!limit) limit = parseInt(limit);
-    read.getCompanyList(page, limit, bdStatus).then(function (data) {
+    read.getCompanyList(page, limit, bdStatus, company).then(function (data) {
         if (!!data) {
             res.send({ code: 0, count: data.count, data: data.data, msg: '' });
         } else {

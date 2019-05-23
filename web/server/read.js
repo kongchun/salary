@@ -89,7 +89,7 @@ exports.getAverageSalary = function() {
 	})
 };
 
-exports.getCompanyList = function(page,limit,bdStatus) {
+exports.getCompanyList = function(page,limit,bdStatus,company) {
 	db.close();
 	var start = (page - 1) * limit;
 	var query = {};
@@ -101,6 +101,9 @@ exports.getCompanyList = function(page,limit,bdStatus) {
 		}else{
 			query.bdStatus = bdStatus;
 		}
+	}
+	if (!!company) { //模糊查询
+		query.company = { $regex: new RegExp(company) };
 	}
 	console.log(query);
 	return db.open("repertory_company").then(function(collection) {

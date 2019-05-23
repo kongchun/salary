@@ -6,7 +6,18 @@ $(function () {
     layui.table.reload('compnayList', { where: { 'positionConfirm': positionStatus }, page: { curr: 1 } });
   });
 
+  $('#searchBtnName').click(searchCompanyName);
+  $('input[name=companyName]').on('keydown', function (e) {
+    if (e.key === 'Enter') {
+      searchCompanyName();
+    }
+  });
 });
+
+function searchCompanyName() {
+  let companyName = $('input[name=companyName]').val().trim();
+  layui.table.reload('compnayList', { where: { company: companyName }, page: { curr: 1 } });
+}
 var updateCompanyStatusLock = false;
 function initTable() {
   layui.use(['table'], function () {
