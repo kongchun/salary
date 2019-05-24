@@ -3,7 +3,7 @@ import Container from "./Container.js";
 import Company from "./model/Company.js";
 
 export default class ViewData {
-    constructor(db, table,year,month,types=['基础','框架和库','MVVM','图形','构建服务','数据库','其它']) {
+    constructor(db, table,year,month,types=['基础','框架和库','MVVM','图形','构建服务','数据库','其它','综合知识','浏览器','图形处理','工具','app','编程语言']) {
         this.db = db;
         this.year = year;
         this.month = month;
@@ -478,7 +478,8 @@ export default class ViewData {
             delete techCount['mv'];
             delete techCount['com'];
             delete techCount['good'];
-
+            delete techCount['development'];
+            delete techCount['demo'];
                 for(let tech in techCount){
                     if(techCount[tech] < 2){
                         delete techCount[tech];
@@ -522,6 +523,9 @@ const TECH = {
     webrtc: "基础",
     websocket: "基础",
     js: "基础",
+    xml:"基础",
+    dom:"基础",
+    bom:"基础",
 
     WebGL: "图形",
     Flash: "图形",
@@ -543,6 +547,7 @@ const TECH = {
     mermaid:"图形",
     chartistJS:"图形",
     plotly:"图形",
+    photoshop:"图形",
 
     jq: "框架和库",
     jquery: "框架和库",
@@ -559,7 +564,9 @@ const TECH = {
     Ext: "框架和库",
     Sencha: "框架和库",
     easyui: "框架和库",
-
+    extjs:"框架和库",
+    elemenetui:"框架和库",
+    elemenet:"框架和库",
     GWT: "MVVM",
 
     backbone: "MVVM",
@@ -574,6 +581,8 @@ const TECH = {
     weex: "移动库",
     Mint: "移动库",
     ratchet: "移动库",
+    native:"移动库",
+    hybrid:"移动库",
 
     require: "基础",
     sea: "基础",
@@ -583,6 +592,7 @@ const TECH = {
     vue: "MVVM",
     ng: "MVVM",
     angular: "MVVM",
+    angular2: "MVVM",
     Redux: "MVVM",
     canJS:"MVVM",
     Ractive:"MVVM",
@@ -593,7 +603,7 @@ const TECH = {
     dva:"MVVM",
     inferno:"MVVM",
     hyperapp:"MVVM",
-
+    vuex:"MVVM",
 
     node: "构建服务",
     npm: "构建服务",
@@ -615,6 +625,7 @@ const TECH = {
     ES7: "基础",
     ES8: "基础",
     ES9: "基础",
+    es: "基础",
 
     ES2015: "基础",
     ES2016: "基础",
@@ -653,5 +664,45 @@ const TECH = {
     karma:"测试",
     jasmine:"测试",
     protractor:"测试",
-    mock:"测试"
+    mock:"测试",
+
+    web2:"综合知识",
+    w3c:"综合知识",
+    http:"综合知识",
+    mvc:"综合知识",
+    sql:"综合知识",
+    linux:"综合知识",
+    websocket:"综合知识",
+    socket:"综合知识",
+    devops:"综合知识",
+    router:"综合知识",
+    server:"综合知识",
+    seo:"综合知识",
+
+    php:"编程语言",
+    c:"编程语言",
+    python:"编程语言",
+    ruby:"编程语言",
+    java:"编程语言",
+
+    android:"app",
+    ios:"app",
+    webapp:"app",
+    mobile:"app",
+
+    github:"工具",
+    git:"工具",
+    svn:"工具",
+    dreamveaver:"工具",
+    framework:"工具",
+
+    photoshop:"图形处理",
+    illustrator:"图形处理",
+    ps:"图形处理",
+
+    chrome:"浏览器",
+    firefox:"浏览器",
+    ie:"浏览器"
+    
+    
 }

@@ -1,4 +1,4 @@
-const companyName =  /苏州科技城|达内|才秀人人|学码思|深圳市芯澜电子|软世通信|阿甲软件|研博教育|某大型/ig
+const companyName =  /苏州科技城|达内|才秀人人|学码思|深圳市芯澜电子|软世通信|阿甲软件|研博教育|某大型|高博应诺|安艾艾/ig
 
 var filter = function(arr){
 	return arr.filter((data) => {
