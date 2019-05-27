@@ -57,6 +57,9 @@
         .clearboth{
             clear: both;
         }
+        .table-salary-logo,.table-number-logo{
+            height: 30px;
+        }
 	</style>
 </head>
 
@@ -193,14 +196,18 @@
             <thead>
                 <tr>
                     <th>序号</th>
+                    <th>图标</th>
                     <th>招聘企业</th>
+                    <th>评分</th>
                 </tr> 
             </thead>
             <tbody>
                 <%for (var i=0;i<companyRank.length;i++){%>
                 <tr>
                     <td><%=i+1%></td>
+                    <td><img class="table-salary-logo" company="<%=companyRank[i].company%>"></td>
                     <td><%=companyRank[i].company%></td>
+                    <td class="table-salary-score" company="<%=companyRank[i].company%>"></td>
                 </tr>
                 <% } %>
             </tbody>
@@ -214,14 +221,18 @@
             <thead>
                 <tr>
                     <th>序号</th>
+                    <th>图标</th>
                     <th>招聘企业</th>
+                    <th>评分</th>
                 </tr> 
             </thead>
             <tbody>
                 <%for (var i=0;i<jobRank.length;i++){%>
                 <tr>
                     <td><%=i+1%></td>
+                    <td><img class="table-number-logo" company="<%=jobRank[i].company%>"></td>
                     <td><%=jobRank[i].company%></td>
+                    <td class="table-number-score" company="<%=jobRank[i].company%>"></td>
                 </tr>
                 <% } %>
             </tbody>

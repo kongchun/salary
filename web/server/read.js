@@ -290,3 +290,33 @@ exports.getTagCloudImg = async (year, month) => {
 		throw error;
 	}
 }
+
+exports.getCompanyLogoAndScore = async array => {
+	db.close();
+	try {
+		let result = [];
+		if (array instanceof Array) {
+			let collection = await db.open('company');
+			let temp = [];
+			for (let name of array) {
+				let cpn = await collection.findOne({
+					company: name
+				});
+				temp.push(!cpn?'':cpn.alias);
+			}
+			db.close();
+			collection = await db.open('repertory_company');
+			for (let item of temp) {
+				let cpnFull = await collection.findOne({
+					alias: item
+				});
+				result.push({ logo: !cpnFull?'':cpnFull.logo, score: !cpnFull?'':cpnFull.score });
+			}
+			db.close();
+		}
+		return result;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+}

@@ -185,4 +185,16 @@ router.get('/getTagCloud', async (req, res) => {
     }
 });
 
+router.post('/getCompanyLogoAndScore', async (req, res) => {
+    let param = req.body.data;
+    let companies = param.split(',');
+    try {
+        let result = await read.getCompanyLogoAndScore(companies);
+        res.send(result);
+    } catch (e) {
+        console.error(e);
+        res.send([]);
+    }
+});
+
 module.exports = router;
