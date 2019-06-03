@@ -168,16 +168,30 @@ router.get('/getTopTech', async (req, res) => {
     }
 });
 
+async function getLastestTagCloudImg(year,month,depth){
+    let result = await read.getTagCloudImg(year + '', month + '');
+    if ((!result || !result.data || result.data.length < 1) && depth < 3) {
+        if (month > 1) {
+            month -= 1;
+        } else {
+            month = 12;
+            year -= 1;
+        }
+        result = await getLastestTagCloudImg(year, month, ++depth);
+    }
+    return result;
+}
+
 router.get('/getTagCloud', async (req, res) => {
     let year = req.query.year;
     let month = req.query.month;
     if (!year || !month) {
         let now = new Date();
-        year = now.getFullYear() + '';
-        month = now.getMonth() + 1 + '';
+        year = now.getFullYear();
+        month = now.getMonth() + 1;
     }
     try {
-        let result = await read.getTagCloudImg(year, month);
+        let result = await getLastestTagCloudImg(year, month, 0);
         res.send(result.data);
     } catch (e) {
         console.error(e);
