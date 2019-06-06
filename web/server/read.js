@@ -312,8 +312,8 @@ exports.getCompanyLogoAndScore = async array => {
 			for (let item of temp) {
 				let cpnFull = await collection.findOne({
 					alias: item
-				});
-				result.push({ logo: !cpnFull?'':cpnFull.logo, score: !cpnFull?'':cpnFull.score });
+				},{logo:1,score:1,company:1,alias:1,district:1});
+				result.push(cpnFull);
 			}
 			db.close();
 		}

@@ -12,6 +12,9 @@ function getCompanyDetail(logos, scores, stop) {
         if (!!data) {
             for (let i = 0; i < data.length; i++) {
                 let item = data[i];
+                if(!item){
+                    return;
+                }
                 if (!!item.logo) {
                     logos[i].src = item.logo;
                 }
