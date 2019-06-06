@@ -10,7 +10,7 @@ var RegExpFilter = [
 
 function getRangeByEdu(edu){
 
-	if(edu==null){
+	if(edu==null || edu==""){
 		return "不限";
 	}
 

@@ -1,6 +1,5 @@
 import helper from "../../iRobots/helper.js";
 import Container from "./Container.js";
-import Company from "./model/Company.js";
 import {filter as positionFilter} from "./utils/ETL/positionETL.js";
 import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
 

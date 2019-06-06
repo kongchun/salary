@@ -11,7 +11,8 @@ var RegExpFilter = [
 
 
 function getRangeByYear(year){
-	if(year==null){
+	//console.log(year);
+	if(year==null || year==""){
 		return "不限";
 	}
 	RegExpFilter.forEach((x) => {

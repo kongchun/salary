@@ -16,14 +16,14 @@ const kd = "前端";
 
 var table = new Table({});
 const year = "2019";
-const month = "03";
+const month = "06";
 
 var main = new Main(db,table,year,month);
 
 
-main.addConfig(new FiveOneJob(3)); //51Job  10
-main.addConfig(new baidu(3)); //baidu  10
-main.addConfig(new ZhaoPin(3)); //智联招聘 10
+main.addConfig(new FiveOneJob(5)); //51Job  10
+main.addConfig(new baidu(5)); //baidu  10
+main.addConfig(new ZhaoPin(5)); //智联招聘 10
 // main.addConfig(new Lagou(1)); //拉钩 10 (baidu/包含)
 main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
 
@@ -31,9 +31,9 @@ main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
 
 //main.analyseCompany();
 
-// main.stepEtl().then(()=>{
-// 	show(db,table,year,month);
-// })
+main.stepEtl().then(()=>{
+	show(db,table,year,month);
+})
 
 //main.stepToJob()
 
@@ -46,4 +46,3 @@ function show(db,table,year,month){
 	var view = new ViewData(db,table,year,month);
 	view.show();
 }
-

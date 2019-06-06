@@ -1,7 +1,7 @@
 
 function getCompanyAlias(company){
 
-	var cityReg = /江苏|大连|苏州市|苏州|南京|北京|上海|杭州|工业园区|南通|中国|常熟|武汉|浙江|张家港市|张家港|昆山/ig
+	var cityReg = /江苏|无锡|广东|大连|苏州市|苏州|南京|北京|上海|杭州|工业园区|南通|中国|常熟|武汉|浙江|张家港市|张家港|昆山/ig
 	var companyReg = /分公司|公司|有限|股份|责任|科技|信息|集团|总部|技术|控股|网络|贸易|自动化|开发|电子商务|投资|办事处|发展|管理|咨询|服务|金融|合伙|企业|软件职业培训学校/ig
 	var otherReg = /（|）|\(|\)|\.|\d/ig
 
@@ -59,6 +59,16 @@ function getCompanyAlias(company){
 	if (company.match(/极课大数据|曲速教育/ig)) {
 		return "极课大数据/曲速教育";
 	}
+	if (company.match(/苏州科达科技|科达/ig)) {
+		return "苏州科达";
+	}
+	if (company.match(/艾尼斯/ig)) {
+		return "艾尼斯";
+	}
+	if (company.match(/紫光云/ig)) {
+		return "紫光云";
+	}
+	
 	
 
 	
