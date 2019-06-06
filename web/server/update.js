@@ -198,7 +198,8 @@ exports.insertTagCloudData = async (year, month, data) => {
 				'$set': {
 					year: year,
 					month: month,
-					data: data
+					data: data,
+					time: new Date()
 				}
 			}, { upsert: true });
 		db.close();
@@ -207,4 +208,49 @@ exports.insertTagCloudData = async (year, month, data) => {
 		db.close();
 		throw error;
 	}
-}
+};
+
+exports.getPublishContent = async newUrl => {
+	db.close();
+	try {
+		console.log(`目标url: ${newUrl}`);
+		let collection = await db.open('board');
+		let board = await collection.find().sort({ time: -1 }).next();
+		db.close();
+		collection = await db.open('board', newUrl);
+		await collection.save(board);
+		db.close();
+		collection = await db.open('repertory_company');
+		let repertory_company = await collection.find().toArray();
+		db.close();
+		collection = await db.open('repertory_company', newUrl);
+		for (let item of repertory_company) {
+			await collection.save(item);
+		}
+		db.close();
+		collection = await db.open('tag_cloud');
+		let tag_cloud = await collection.find().sort({ time: -1 }).next();
+		db.close();
+		collection = await db.open('tag_cloud', newUrl);
+		await collection.save(tag_cloud);
+		db.close();
+		collection = await db.open('tech');
+		let tech = await collection.find().toArray();
+		db.close();
+		collection = await db.open('tech', newUrl);
+		for (let item of tech) {
+			await collection.save(item);
+		}
+		db.close();
+		collection = await db.open('top');
+		let top = await collection.find().sort({ time: -1 }).next();
+		db.close();
+		collection = await db.open('top', newUrl);
+		await collection.save(top);
+		db.close();
+		return { n: 1 };
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+};

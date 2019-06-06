@@ -14,6 +14,16 @@ $('#publishBoard').on('click', function () {
     });
 });
 
+$('#publishToUrl').on('click', function () {
+    let newUrl = 'mongodb://' + $('#publishUrl').val().trim();
+    $.post('/manage/savePublishContent',{url: newUrl}).done(function (data) {
+        postCallback(data, '发布到URL');
+    }).fail(function (e) {
+        console.error(e);
+        top.layer.msg('发布到URL失败，网络错误');
+    });
+});
+
 function postCallback(data, msg) {
     if (!!data & !!data['n'] && data['n'] > 0) {
         top.layer.msg(msg + '成功');

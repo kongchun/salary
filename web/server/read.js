@@ -283,6 +283,9 @@ exports.getTagCloudImg = async (year, month) => {
 			year: year,
 			month: month
 		});
+		if (!result) {
+			result = await collection.find().sort({ time: -1 }).next();
+		}
 		db.close();
 		return result;
 	} catch (error) {

@@ -268,4 +268,15 @@ router.post('/saveTagCloud', async (req, res) => {
     }
 });
 
+router.post('/savePublishContent', async (req, res) => {
+    let newUrl = req.body.url;
+    try {
+        let result = await update.getPublishContent(newUrl);
+        res.send(result);
+    } catch (e) {
+        console.error(e);
+        res.send({});
+    }
+});
+
 module.exports = router;

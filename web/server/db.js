@@ -8,13 +8,17 @@ class DB {
 		this.db = null;
 		this.collection = null;
 	}
-	open(table) {
+	open(table,tempUrl) {
 		return new Promise((resolve, reject) => {
 			if (this.db && this.db != null) {
 				resolve(this.collection);
 				return;
 			}
-			MongoClient.connect(url).then((db) => {
+			let connectUrl = url;
+			if (!!tempUrl) {
+				connectUrl = tempUrl;
+			}
+			MongoClient.connect(connectUrl).then((db) => {
 				console.log("openDB")
 				this.db = db;
 				var collection = this.collection = db.collection(table);
