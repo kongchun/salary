@@ -16,10 +16,10 @@ function getCompanyDetail(logos, scores, stop = false) {
                     if (!item) {
                         return;
                     }
-                    if (!!item.logo) {
+                    if (item.logo) {
                         logos[i].src = item.logo;
                     }
-                    if (!!item.score) {
+                    if (item.score) {
                         scores[i].innerHTML = item.score;
                     }
                 }

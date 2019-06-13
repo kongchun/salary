@@ -299,7 +299,7 @@ exports.getCompanyLogoAndScore = async array => {
 	try {
 		let result = [];
 		if (array instanceof Array) {
-			let collection = await db.open('repertory_company');
+			let collection = await db.open('company');
 			let temp = [];
 			for (let name of array) {
 				let cpn = await collection.findOne({
