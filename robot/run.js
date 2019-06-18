@@ -28,7 +28,6 @@ main.addConfig(new ZhaoPin(5)); //智联招聘 10
 main.addConfig(new ZhiPin(1)); //BOSS直聘 参数不要大于2 (baidu 包含)
 
 //main.robotData();
-
 //main.analyseCompany();
 
 main.stepEtl().then(()=>{

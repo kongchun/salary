@@ -24,7 +24,7 @@ export default class Loader {
 			pn:pageSize,
 			kd:this.kd
 		}
-		return loader.getDOM(url,{delay:100}).then(($)=>{
+		return loader.getDOM(url,{delay:500}).then(($)=>{
 			return $.html();
 		})
 	}
@@ -32,7 +32,7 @@ export default class Loader {
 	info (jobId){
 		let url = `http://jobs.51job.com/all/${jobId}.html`;
 		//console.log(url);
-		return loader.getDOM(url,{delay:300});
+		return loader.getDOM(url,{delay:500});
 	}
 
 	position(job){

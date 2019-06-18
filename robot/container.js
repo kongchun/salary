@@ -138,7 +138,7 @@ export default class Container {
             return this.db.findToArray({ content: null, source: this.source,city:this.city, kd:this.kd  })
         }).then((arr)=>{
             return helper.iteratorArr(arr, (job) => {
-                console.log("job"+job.jobId)
+                //console.log("job"+job.jobId)
                 return this.loader.info(job.jobId).then((data) => {
                     return this.db.open(this.table.job).then(() => {
                         return this.db.updateById(job._id,this.parse.info(data));
