@@ -13,14 +13,17 @@ export default class Loader {
 
 	list (pageSize = 1){
 		var url = `http://m.jobui.com/jobs?jobKw=${this.kd}&cityKw=${this.city}&sortField=last&nowPage=${pageSize}#jobList`;
+		//console.log(url);
 		return loader.getDOM(encodeURI(url),{delay:100}).then(($)=>{
-			return $.html();
+			return {content:$.html(),url};
 		})
 	}
 
 	info (jobId){
-		let url = `http://m.jobui.com/job/${jobId}`;
-		return loader.getDOM(url,{delay:500});
+		let url = `http://www.jobui.com/job/${jobId}`;
+		return loader.getDOM(url,{delay:1000}).then(($)=>{
+			return {content:$.html(),url};
+		});
 	}
 
 	position(job){

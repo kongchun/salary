@@ -3,6 +3,7 @@ import {getRangeByEdu} from "./ETL/eduETL.js";
 import {getMinMax,getRangeBySalary} from "./ETL/salaryETL.js";
 import {getEtlPost} from "./ETL/postETL.js";
 import {getEtlTag} from "./ETL/tagETL.js";
+import {getCompanyAlias} from "./ETL/companyETL.js"
 
 export default class BaseETL {
 	constructor(job) {
@@ -19,6 +20,16 @@ export default class BaseETL {
 
 	getRangeBySalary(salary){
 		return getRangeBySalary(salary);
+	}
+
+	companyAlias(){
+		let companyAlias = this.job.companyAlias;
+		let company= this.job.company;
+		if(company == companyAlias){
+			companyAlias = null;
+		}
+
+		return  companyAlias?companyAlias:getCompanyAlias(company);
 	}
 
 	education(){
@@ -47,19 +58,22 @@ export default class BaseETL {
 	}
 	
 	salary(){
-		console.log("salary interface to be ..... ")
+		console.warn("salary interface to be ..... ")
 		let min,max,average,salaryRange;
 		return {min,max,average,salaryRange};
 	}
 
-
-
-	all(){
+	all(job){
+		if(job) {
+			this.setJob(job);
+		};
+		var companyAlias = this.companyAlias();
 		var eduRange = this.education();
 		var yearRange = this.workYear();
 		var etlPost = this.post();
 		var etlTag = this.tag();
 		var {min,max,average,salaryRange} = this.salary();
-		return {eduRange,yearRange,salaryRange,min,max,average,etlPost,etlTag}; 
+		//console.log(job);
+		return {companyAlias,eduRange,yearRange,salaryRange,min,max,average,etlPost,etlTag}; 
 	}
 }

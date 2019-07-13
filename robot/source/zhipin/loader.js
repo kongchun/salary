@@ -1,4 +1,3 @@
-import Parse from "./parse.js";
 import loader from "../../../../iRobots/loader.js";
 
 var  CITY_CODE = {
@@ -19,20 +18,16 @@ export default class Loader {
 		var code = CITY_CODE[this.city];
 
 		let url = encodeURI(`http://www.zhipin.com/job_detail/?query=${this.kd}&scity=${code}&sort=2&page=${pageSize}`);
-		console.log(url)
-		return loader.getDOM(url,{delay:200}).then(($)=>{
-			return $.html();
+		return loader.getDOM(url,{delay:1000}).then(($)=>{
+			return {content:$.html(),url};
 		})
 	}
 
 	info (jobId){
 		let url = `http://www.zhipin.com/job_detail/${jobId}.html`;
-		console.log(url)
-		return loader.getDOM(url,{delay:500});
-	}
-
-	position(job){
-		return Promise.resolve(loader.parseHTML(job.content));
+		return loader.getDOM(url,{delay:2000}).then(($)=>{
+			return {content:$.html(),url};
+		});
 	}
 }
 

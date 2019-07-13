@@ -8,7 +8,7 @@ export default class ETL  extends BaseETL{
 	salary(){
 		let salary = this.job.salary;
 		var [min, max] = [0, 0];
-		[min, max] = getMinMax(salary);
+		[min, max] = this.getMinMax(salary);
 		if (salary.indexOf("千") > -1) {
 			min = min * 1000;
 			max = max * 1000;
@@ -32,7 +32,7 @@ export default class ETL  extends BaseETL{
 		}
 
 		let average = (max + min) / 2;
-		var salaryRange = getRangeBySalary(average);
+		var salaryRange = this.getRangeBySalary(average);
 		return {min,max,average,salaryRange}
 	}
 

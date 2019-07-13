@@ -19,19 +19,19 @@ export default class Loader {
 		var code = CITY_CODE[this.city];
 
 		let url = encodeURI(`https://m.zhaopin.com/${code}/?keyword=${this.kd}&pageindex=${pageSize}&maprange=3&islocation=0`);
+		//console.log(url);
 		return loader.getDOM(url,{delay:1000}).then(($)=>{
-			return $.html();
+			return {content:$.html(),url};
 		})
 	}
 
 	info (jobId){
 		let url = `https://m.zhaopin.com/job/${jobId}`;
 		//console.log(url);
-		return loader.getDOM(url,{delay:300});
-	}
-
-	position(job){
-		return Promise.resolve(loader.parseHTML(job.content));
+		return loader.getDOM(url,{delay:300}).then(($)=>{
+			return {content:$.html(),url};
+		});
 	}
 }
+
 

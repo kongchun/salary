@@ -25,7 +25,7 @@ export default class Parse {
                 
                 var jobId = $(item).attr("data-number");
                 var jobName = $(".job-name", item).text().replace(/(^\s*)|(\s*$)/g, "");
-                var companyId = jobId.split("j")[0];
+                var companyId = $(".jobmenu", item).attr("data-companyid").replace(/(^\s*)|(\s*$)/g, "");
                 var company = $(".comp-name", item).text().replace(/(^\s*)|(\s*$)/g, "");
                 var salary = $(".job-sal", item).text().replace(/(^\s*)|(\s*$)/g, "");
                 var time = $(".time", item).text().replace(/(^\s*)|(\s*$)/g, "");
@@ -41,6 +41,7 @@ export default class Parse {
                         salary: salary,
                         addr: null,
                         time: time,
+                        pageContent:$(item).html(),
                         city: this.city,
                         kd: this.kd,
                         source: this.source
@@ -55,24 +56,23 @@ export default class Parse {
 
     }
 
-    info($) {
-        var content = $.html();
-        var info = $("article").text().replace(/(^\s*)|(\s*$)/g, "");
-        var t = $(".exp").text().replace(/(^\s*)|(\s*$)/g, "");
+    info(html) {
+        var $ = loader.parseHTML(html);
+        var info = $(".about-main").text().replace(/(^\s*)|(\s*$)/g, "");
         var workYear =$(".exp").text().replace(/(^\s*)|(\s*$)/g, "");
         var education =$(".exp").next().text().replace(/(^\s*)|(\s*$)/g, "");
+        var addr = $(".add").text().replace(/(^\s*)|(\s*$)/g, "");
+        var img = $(".companyLogo").attr("src");
+        var companyLogo = (!img)?null:img;
+        if(companyLogo.indexOf("default")>-1){
+            companyLogo = null;
+        }
 
-        return { info, content, workYear,education};
-    }
-
-    position($) {
-
- 		var addr = $(".add").text().replace(/(^\s*)|(\s*$)/g, "");
         if(addr.indexOf("不限")>-1){
             addr = ""
         }
  		var position = null; 	
-        return ({ addr, position });
+        return { info, workYear,education,addr, position,companyLogo};
     }
 }
 

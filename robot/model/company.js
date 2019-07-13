@@ -8,7 +8,6 @@ export default class Company{
        this.addr = addr;
        this.count = count;
        this.position = position;
-       this.noLoad = false;
        this.city = city;
        this.kd = kd;
     }

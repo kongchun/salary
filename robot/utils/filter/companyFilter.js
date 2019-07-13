@@ -2,6 +2,7 @@ const companyName =  /苏州科技城|达内|才秀人人|学码思|深圳市芯
 
 var filter = function(arr){
 	return arr.filter((data) => {
+		//console.log(data.company);
 		if (data.company.match(companyName)) {
 			return false
 		}

@@ -1,13 +1,11 @@
-import helper from "../../iRobots/helper.js";
-import loader from "../../iRobots/loader.js";
 import Page from "./model/page.js";
 
-import { filter as  jobFilter} from "./utils/filter/jobFilter.js";
-import { filter as  companyFilter} from "./utils/filter/companyFilter.js";
-import { filter as  timeFilter} from "./utils/filter/timeFilter.js";
+import { filter as jobFilter } from "./utils/filter/jobFilter.js";
+import { filter as companyFilter } from "./utils/filter/companyFilter.js";
+import { filter as timeFilter } from "./utils/filter/timeFilter.js";
 
 export default class Container {
-    constructor(db, table,config) {
+    constructor({ db, table, config, year, month }) {
         this.db = db;
         this.loader = config.loader;
         this.parse = config.parse;
@@ -17,185 +15,119 @@ export default class Container {
         this.kd = config.kd;
         this.etl = config.etl;
         this.table = table;
+        this.year = year;
+        this.month = month;
     }
 
-
-    getMaxSize(maxSize) {
-        return this.loader.list(1).then((json) => {
-            return this.parse.maxPageSize(maxSize, json);
-        }).catch((e) => {
-            console.log(e, this.source);
-            return 0;
-        })
+    //获取最大分页数
+    async getMaxSize(maxSize) {
+        let {content,url} = await this.loader.list(1);
+        return this.parse.maxPageSize(maxSize, content);
     }
 
-
-
-    list() {
-        return this.getMaxSize(this.maxSize).then((maxSize) => {
-            var arr = [];
-            for (let i = 1; i <= maxSize; i++) {
-                arr.push(i);
-            }
-            return (arr);
-        }).then((arr) => {
-            return helper.iteratorArr(arr, (page) => {
-                return this.loader.list(page).then((data) => {
-                    var db_page = new Page({
-                        url: page,
-                        content: data,
-                        city:this.city,
-                        kd:this.kd,
-                        source: this.source
-                    })
-                    return db_page;
-                });
-            }).then((data) => {
-                this.db.close();
-                return this.db.open(this.table.page).then(() => {
-                    return this.db.collection.insertMany(data)
-                })
-            }).then(() => {
-                this.db.close();
-                console.log(this.source + "finish page Loaded");
-                return;
-            }).catch((e) => {
-                this.db.close();
-                console.log(e, this.source);
-                return;
+    async list() {
+        let dataList = [];
+        let maxSize = await this.getMaxSize(this.maxSize);
+        for (let i = 1; i <= maxSize; i++) {
+            let {content,url} = await this.loader.list(i);
+            let db_page = new Page({
+                url: url,
+                content: content,
+                city: this.city,
+                kd: this.kd,
+                source: this.source
             })
-        })
-
-    }
-
-    async pageToJob(year,month) {
-        var arr = await this.getNewPage();
-        //console.log(arr,"pageToJob");
-        var arrAll = [];
-        arr.forEach((it) => {
-            arrAll.push(...this.parse.list(it.content));
-        })
- 
-        arrAll = this.filterJob(arrAll,year,month);
-        await this.insertJob(arrAll);
+            dataList.push(db_page);
+        }
+        await this.db.open(this.table.page);
+        await this.db.collection.insertMany(dataList);
+        this.db.close();
+        console.log(this.source + " page Loaded");
         return;
     }
 
-    filterJob (arrAll,year,month){
-        arrAll = timeFilter(arrAll,year,month); //根据时间过滤
-        arrAll = jobFilter(arrAll);  //根据职位过滤
-        arrAll = companyFilter(arrAll);  //根据公司过滤
-        return arrAll;
+    async pageToJob() {
+        const dataset = await this.getNewPage();
+        let jobs = [];
+        dataset.forEach((it) => {
+            jobs.push(...this.parse.list(it.content));
+        })
+
+        jobs = this.filterJob(jobs);
+        await this.insertJob(jobs);
+        return;
     }
 
-   getNewPage(){
+    //获取未解析的页面
+    async getNewPage() {
+        await this.db.open(this.table.page);
+        const dataset = await this.db.findToArray({ isNew: true, source: this.source, city: this.city, kd: this.kd }, { content: 1 });
+        await this.db.collection.updateMany({ isNew: true, source: this.source, city: this.city, kd: this.kd }, { $set: { isNew: false } });
         this.db.close();
-        return this.db.open(this.table.page).then(() => { 
-            //console.log(this.table.page,{ isNew: true, source: this.source,city:this.city, kd:this.kd })
-            return this.db.findToArray({ isNew: true, source: this.source,city:this.city, kd:this.kd }, { content: 1 })
-        }).then((arr) => {
-            //console.log(arr.length)
-            return this.db.collection.updateMany({ isNew: true, source: this.source,city:this.city, kd:this.kd }, { $set: { isNew: false } }).then((t) => {
-                this.db.close();
-                return arr;
-            })
-        }).catch((e) => {
-            this.db.close();
-            console.log(e, this.source);
-            return;
-        })
+        return dataset;
     }
-    
-    getALLPage(){
+    //过滤
+    filterJob(jobs) {
+        //console.log(jobs.length)
+        jobs = timeFilter(jobs, this.year, this.month); //根据时间过滤
+        //console.log(jobs.length,"y")
+        jobs = jobFilter(jobs);  //根据职位过滤
+        //console.log(jobs.length,"name")
+        jobs = companyFilter(jobs);  //根据公司过滤
+        console.log(jobs.length,"jobSize",this.source);
+        //jobs=[jobs[0]] || []
+        return jobs;
+    }
+
+    //插入job
+    async insertJob(data) {
+        if(data.size==0){
+            return;
+        }
+        await this.db.open(this.table.job);
+        await this.db.insertUnique(data, "id");
         this.db.close();
-        return this.db.open(this.table.page).then(() => { 
-            return this.db.findToArray({  source: this.source,city:this.city, kd:this.kd }, { content: 1 })
-        }).catch((e) => {
-            this.db.close();
-            console.log(e, this.source);
-            return;
-        })
+        console.log(this.source + " pageToJob Loaded");
     }
 
-    insertJob(data){
+    //--------------------------------------------------------------------------
+    async info() {
+        await this.getContent();
+        await this.parseInfo();
+        await this.transform();
+    }
+    //加载详情信息
+    async getContent() {
+        await this.db.open(this.table.job);
+        const jobList = await this.db.findToArray({ content: null, source: this.source, city: this.city, kd: this.kd });
+        for (const job of jobList) {
+            const {content,url} = await this.loader.info(job.jobId);
+            this.db.updateById(job._id, { content,url});
+        }
         this.db.close();
-        return this.db.open(this.table.job).then(() => {
-            return this.db.insertUnique(data,"id")
-        }).then(() => {
-            this.db.close();
-            console.log(this.source + " pageToJob Loaded");
-            return;
-        }).catch((e) => {
-            this.db.close();
-            console.log(e, this.source);
-            return;
-        })
+        console.log(this.source + " content Loaded finish");
     }
 
-    info(){
+    //解析内容中的详情信息
+    async parseInfo() {
+        await this.db.open(this.table.job);
+        const jobList = await this.db.findToArray({ source: this.source, city: this.city, kd: this.kd }, { content: 1 ,pageContent:1});
+        for (const job of jobList) {
+            await this.db.updateById(job._id, this.parse.info(job.content,job.pageContent))
+        }
         this.db.close();
-        return this.db.open(this.table.job).then(() => {
-            return this.db.findToArray({ content: null, source: this.source,city:this.city, kd:this.kd  })
-        }).then((arr)=>{
-            return helper.iteratorArr(arr, (job) => {
-                //console.log("job"+job.jobId)
-                return this.loader.info(job.jobId).then((data) => {
-                    return this.db.open(this.table.job).then(() => {
-                        return this.db.updateById(job._id,this.parse.info(data));
-                    }).then(() => {
-                        return this.db.updateById(job._id,this.parse.position(data));
-                    })
-                });
-            })
-        }).then(() => {
-            this.db.close();
-            console.log(this.source + " info Loaded");
-            return;
-        }).catch((e) => {
-            this.db.close();
-            console.log(e, this.source);
-            return;
-        })
+        console.log(this.source + " parseInfo finish");
     }
 
-    parseInfo(){
-         return this.db.open(this.table.job).then(() => {
-            return this.db.findToArray({source: this.source,city:this.city, kd:this.kd  })
-        }).then((arr)=>{
-            return helper.iteratorArr(arr, (job) => {
-                return this.db.updateById(job._id,this.parse.info(loader.parseHTML(job.content))).then(() => {
-                    return this.db.updateById(job._id,this.parse.position(loader.parseHTML(job.content)));
-                })
-            })
-        }).then(() => {
-            this.db.close();
-            console.log(this.source + " parseInfo Loaded");
-            return;
-        }).catch((e) => {
-            this.db.close();
-            console.log(e, this.source);
-            return;
-        })
-    }
-
-
-   
-    transform(){
+    //数据清洗ELT
+    async transform() {
+        await this.db.open(this.table.job);
+        const jobList = await this.db.findToArray({ source: this.source, city: this.city, kd: this.kd }, { company: 1, companyAlias: 1, workYear: 1, education: 1, salary: 1, job: 1, info: 1 });
+        for (const job of jobList) {
+            await this.db.updateById(job._id, this.etl.all(job));
+        }
         this.db.close();
-        return this.db.open(this.table.job).then(() =>{
-            return this.db.updateIterator({source:this.source,city:this.city, kd:this.kd },{workYear:1,education:1,salary:1,job:1,info:1} ,(job) =>{
-                this.etl.setJob(job);
-                //console.log(this.etl.all())
-                return this.etl.all();
-            })
-        }).then(() =>{
-            this.db.close()
-            return ;
-        }).catch((e) => {
-            this.db.close();
-            console.log(e, this.source);
-            return;
-        })
+        console.log(this.source + " ELT finish");
     }
 
 }

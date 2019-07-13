@@ -1,12 +1,10 @@
-import helper from "../../iRobots/helper.js";
 import Container from "./Container.js";
+import { addrToGeoFull,geoToCityAndDistrict} from "./utils/bdHelper.js";
 import {filter as positionFilter} from "./utils/ETL/positionETL.js";
-import { addrToGeo, geoToCityAndDistrict } from "./utils/bdHelper.js";
-
-
+import StatisticData from "./statistic/statisticData.js";
 
 export default class Main {
-    constructor(db,table,year,month) {
+    constructor(db, table, year, month) {
         this.db = db;
         this.table = table;
         this.containerList = [];
@@ -14,407 +12,289 @@ export default class Main {
         this.month = month;
     }
 
-    setDate(year,month){
-        this.year = year;
-        this.month = month;
-    }
-
     addConfig(config) {
-        var container = new Container(this.db,this.table,config);
+        var container = new Container({ db: this.db, table: this.table, config: config, year: this.year, month: this.month });
         this.containerList.push(container);
     }
 
-   async start(){
-
+    //抓取数据完成
+    async robotData() {
         await this.stepList();
         await this.stepToJob();
         await this.stepInfo();
-        await this.stepCompare();
-        await this.stepBdLoad();
-        await this.stepEtl();
-       
+        console.log("robotData flinsh")
     }
 
-    async robotData(){
-        await this.stepList();
-        await this.stepToJob();
-        await this.stepInfo();
-    }
-
-    async analyseCompany(){
-        await this.stepCompare();
-        await this.noLoadToRepertory();
-        await this.stepBdLoad();
-    }
-
- //================
-
-    async stepList(){
-        await this.list()
-    }
-
-    async stepToJob(){
-        await this.pageToJob(this.year,this.month);
-    }
-
-    async stepInfo(){
-        await this.info()
-    }
-
-    async stepCompare(){
+    async analyseCompany() {
         await this.groupCompany();
+        await this.parseFromJobs();
         await this.compareCompany();
-        await this.loadPosition();
-    }
-
-    async stepBdLoad(year,month){
+        await this.compareAddress();
         await this.loadGeo();
-        //await this.fixedGeo();
-        //await this.filterGeo();
+        await this.fixedGeo();
+        await this.etlDistrict();
+        await this.noLoadToRepertory();
+        console.log("analyseCompany flinsh")
     }
 
-    async stepEtl(){
+    async statistic(){
+        await this.compareCompany();
         await this.positionToJob();
-        await this.transform();
+        var statisticData = new StatisticData(this.db,this.table,this.year,this.month);
+	    statisticData.show();
     }
 
 
-    //================
-
-    list() {
+    //获取职位列表
+    async stepList() {
         //加载列表
-        return helper.iteratorArr(this.containerList, (item) => {
-            return item.list();
-        }).then(function() {
-            console.log("list finish");
-            return;
-        })
+        for (const item of this.containerList) {
+            await item.list();
+        }
+        console.log("StepList finish");
     }
 
-    pageToJob(year,month) {
-        return helper.iteratorArr(this.containerList, (item) => {
-            return item.pageToJob(year,month);
-        }).then(function() {
-            console.log("pageToJob finish");
-            return;
-        }).catch((e)=>{
-            console.log(e)
-        })
-    }
-
-    info() {
-        return helper.iteratorArr(this.containerList, (item) => {
-            return item.info();
-        }).then(function() {
-            console.log("info finish");
-            return;
-        })
-    }
-
-    reInfo() {
-        return helper.iteratorArr(this.containerList, (item) => {
-            return item.parseInfo();
-        }).then(function() {
-            console.log("info finish");
-            return;
-        })
-    }
-
-    groupCompany() {
-        this.db.close();
-        return this.db.open(this.table.job).then(() => {
-            return this.db.collection.group({
-                "companyAlias": true
-            }, {
-            }, {
-                count: 0,
-                source: "",
-                addr:"",
-                position:"",
-                bdStatus:0,
-             }, "function (doc, prev) {prev.count++;prev.source = doc.source;prev.alias = doc.companyAlias;prev.company = doc.company;if(prev.addr==null){prev.addr = doc.addr;}else if(doc.addr !=null){if(prev.addr.length<doc.addr.length){prev.addr = doc.addr;}};if(doc.position != null){prev.position.lat = doc.position.lat;prev.position.lng = doc.position.lng;prev.bdStatus=1}}")
-        }).then((arr) => {
-
-
-            this.db.close();
-            //console.log(arr);
-            return this.db.open(this.table.company).then(() => {
-                return this.db.collection.remove({}).then(() => {
-                    return this.db.collection.insertMany(arr);
-                })
-            }).then(()=>{
-                 this.db.collection.updateMany({position:""},{$set:{position:null}});
-            })
-            return
-        }).then(() => {
-            this.db.close();
-            console.log("groupCompany Success")
-            return;
-        }).catch((e) => {
-            this.db.close();
-            console.log(e)
-            return;
-        })
-    }
-
-    //将业务分析处理过公司库对比到 公司
-    compareCompany() {
-        this.db.close()
-        return this.db.open(this.table.repertoryCompany).then(() => {
-            return this.db.collection.find({}).toArray();
-        }).then((data) => {
-            //console.log(data)
-            this.db.close();
-            return helper.iteratorArr(data, (i) => {
-                var alias = i.alias;
-                //console.log(company)
-                return this.db.open(this.table.company).then(() => {
-                    return this.db.collection.findOne({
-                        alias: alias
-                    }).then((t) => {
-                        if (t == null) {
-                            return t;
-                        }
-                        return this.db.updateById(t._id, {
-                            addr: i.addr,
-                            position: i.position,
-                            city: i.city,
-                            district: i.district,
-                            bdStatus:i.bdStatus,
-                            noLoad: true
-                        });
-                    })
-                })
-            })
-        }).then((data) => {
-            this.db.close()
-            console.log("compareCompany Success")
-            return;
-        }).catch((e) => {
-            this.db.close()
-            console.log(e)
-            return;
-        })
-      
-    }
-    //记录地址对比
-    loadPosition(){
-        this.db.close()
-        return this.db.open(this.table.company).then(() => {
-            return this.db.collection.find({
-                position:{"$in":[null,""]},
-                noLoad: null
-            }).toArray();
-        }).then((data) => {
-            //console.log("loadPosition-datasize"+data.length)
-            return helper.iteratorArr(data, (i) => {
-                var address = i.addr;
-                var position = i.position;
-                var district = i.district;
-                var bdStatus = 2;
-                var noLoad = null;
-
-                var {city,district,position} = positionFilter(address,district,position);
-
-                //
-                if(district ==null || district=="" || position =="" || position==null){
-                    bdStatus = 0;
-                }else{
-                    noLoad = true;
-                }
-
-                return this.db.updateById(i._id, {
-                    position:position,
-                    district:district,
-                    city:city,
-                    bdStatus:bdStatus,
-                    noLoad: noLoad
-                })
-              
-            })
-        }).then((data) => {
-            this.db.close()
-            console.log("positionETL Success")
-            return;
-        }).catch((e) => {
-            this.db.close()
-            console.log(e)
-            return;
-        })
+    //列表转换职位
+    async stepToJob() {
+        for (const item of this.containerList) {
+            await item.pageToJob();
+        }
+        console.log("StepToJob finish");
     }
 
 
-    loadGeo(key = "addr") {
-        this.db.close()
-        return this.db.open(this.table.repertoryCompany).then(() => {
-            return this.db.collection.find({
-                position: {"$in":[null,""]},
-                //noLoad: null,
-                bdStatus:0
-            }, {
-                company: 1,
-                addr: 1
-            }).toArray();
-        }).then((data) => {
-            console.log(data);
-            return helper.iteratorArr(data, (i) => {
-                var name = (i[key]);
-                console.log(name)
-                if(name==""){
-                    return Promise.resolve(data);
-                }
-                return addrToGeo(name).then((position) => {
-                    //console.log(position)
-                    return this.db.updateById(i._id, { position: position,bdStatus:3}).then(function(t) {
-                        return data;
-                    })
-                })
-            })
-        }).then((data) => {
-            this.db.close();
-            console.log("loadGeo success");
-            return;
-        }).catch((e) => {
-            this.db.close();
-            console.log(e);
-            return;
-        })
+    //职位详细信息
+    async stepInfo() {
+        for (const item of this.containerList) {
+            await item.info();
+        }
+        console.log("stepInfo finish");
     }
 
-    fixedGeo() {
-        this.db.close()
-        return this.db.open(this.table.repertoryCompany).then(() => {
-            return this.db.collection.find({
-                position: {
-                    $ne: null
-                },
-                district: "",
-                bdStatus:3
-            }, {
-                position: 1
-            }).toArray();
-        }).then((arr) => {
-            return helper.iteratorArr(arr, (data) => {
-                return geoToCityAndDistrict(data.position).then((cityAndDistrict) => {
-                    return this.db.updateById(data._id, cityAndDistrict);
-                })
-            }).then(() => {
-                this.db.close();
-                console.log("fixedGeo success")
-                return;
-            })
-        }).catch((e) => {
-            this.db.close();
-            console.log(e);
-            return;
-        })
-    }
+    //bdStatus：
+    //0-未识别
+    //1-自动识别
+    //2-库识别
+    //3-地图识别
+    //99-手动审核
+    //77-回收站
 
-    filterGeo(city = "苏州市") {
-        this.db.close()
-        return this.db.open(this.table.repertoryCompany).then(() => {
-            return this.db.collection.find({
-                city: {
-                    $ne: city
-                },
-                bdStatus:3
-            }).toArray();
-        }).then((arr) => {
-            return helper.iteratorArr(arr, (data) => {
-                return this.db.updateById(data._id, {
-                    position: null,
-                    city: null,
-                    district: null
-                });
-            })
-        }).then(() => {
-            //this.db.close();
-            console.log("filterGeo success")
-            return;
-        }).then(() => {
-            console.log("filterDistrict success")
-            return this.db.collection.updateMany({ position: null }, { $set: { bdStatus: 0 } })
-        }).then(() => {
-            this.db.close();
-            console.log("bdStatus success")
-            return;
-
-        }).catch((e) => {
-            this.db.close();
-            console.log(e);
-            return;
-        })
-
-    }
-
-
-
-
-    positionToJob() {
-       this.db.close()
-       return this.db.open(this.table.company).then(() => {
-           return this.db.collection.find({"position":{"$ne":[null,""]},bdStatus:{"$ne":77}}, {
-               position: 1,
-               alias: 1,
-               district:1,
-               _id: 0
-           }).toArray();
-       }).then((arr) => {
-           this.db.close();
-           return helper.iteratorArr(arr, (i) => {
-               return this.db.open(this.table.job).then(() => {
-                   return this.db.collection.updateMany({
-                       companyAlias: i.alias
-                   }, {
-                       $set: {
-                           district:i.district,
-                           position: i.position
-                       }
-                   })
-               })
-           })
-       }).then(() => {
-           this.db.close();
-           console.log("positionToJob success");
-           return
-       }).catch((e) => {
-           this.db.close();
-           console.log(e);
-           return;
-       })
-   }
-
-   transform(){
-        return helper.iteratorArr(this.containerList, (item) => {
-            return item.transform();
-        }).then(() => {
-            this.db.close();
-            console.log("ETL finish");
-            return;
-        })
-   }
-
-   noLoadToRepertory(){
-        this.db.close()
-        return this.db.open(this.table.company).then(() => {
-           return this.db.collection.find({noLoad: null}).toArray();
-       }).then((data)=>{
-            this.db.close();
-            if(data.length == 0){
-                return null;
+    
+    async groupCompany() {
+        
+        await this.db.open(this.table.job);
+        const dataSet = await this.db.collection.group({
+            "companyAlias": true
+        }, {}, { count:0},new this.db.Code(
+             function (doc, prev) {
+                prev.count++
             }
-            return this.db.open(this.table.repertoryCompany).then(() => {
-                return this.db.collection.insertMany(data);
-            })
-       }).then(() => {
-           this.db.close();
-           console.log("noLoadToRepertory success");
-           return;
-       }).catch((e) => {
-           this.db.close();
-           console.log(e);
-           return;
-       })
+            )
+        );
+
+        this.db.close();
+
+        await this.db.open(this.table.company);
+        await this.db.collection.remove({});
+
+        await this.db.collection.insertMany(dataSet);
+        this.db.close();
+        console.log("groupCompany finish");
     }
 
+    //根据别名聚合公司
+    async parseFromJobs(){
+        await this.db.open(this.table.company);
+        const companyList = await this.db.findToArray({}, { companyAlias: 1});
+        this.db.close();
+        for (const company of companyList) {
+            const data = await this.parseCompanyFromJob(company)
+
+            await this.db.open(this.table.company);
+            await this.db.updateById(company._id, data);
+        }
+        this.db.close();
+        console.log("parseCompanyFromJobs finish");
+    }
+
+    //解析聚合公司展示
+    async parseCompanyFromJob(it){
+        const companyAlias = it.companyAlias;
+        await this.db.open(this.table.job);
+        const jobs = await this.db.findToArray({companyAlias:companyAlias});
+        this.db.close();
+
+
+        let company,alias,logo=null,salary=0,description,position=null,addr=null,count=0,bdStatus=0,companyId=null,source;
+        jobs.map((job)=>{
+            companyId = (!companyId)?job.companyId:companyId;
+            source = (companyId==job.companyId)?job.source:source;
+            company = job.company;
+            alias = job.companyAlias;
+            logo = (!logo)?job.companyLogo:logo;
+            salary = (salary>job.average)?salary:job.average;
+            addr = findBeseString(addr,job.addr);
+            description= findBeseString(description,job.companyDetail);
+            position = job.position;
+            bdStatus = !position?0:1;
+        });
+        return {company,alias,logo,salary,description,position,addr,bdStatus,companyId,source};
+
+        function findBeseString(t1,t2){
+            if(t1==null){
+                return t2;
+            }
+            if(t2==null){
+                return t1;
+            }
+            return t1.length>t2.length?t1:t2;
+        }
+    }
+
+    //从系统库中比较公司
+    async compareCompany(){
+        await this.db.open(this.table.repertoryCompany);
+        const dataset = await this.db.collection.find({}).toArray();
+        this.db.close();
+        await this.db.open(this.table.company);
+        for (const company of dataset) {
+            const alias = company.alias;
+            const i = await this.db.collection.findOne({
+                alias: alias
+            })
+            if (!i) return;
+            await this.db.updateById(i._id, {
+                position: i.position,
+                addr:(!i.addr)?i.addr:null,
+                city: i.city,
+                district: i.district,
+                bdStatus:2,
+                noLoad:true
+            })
+        }
+        this.db.close()
+        console.log("compareCompany finish") 
+    }
+
+    async compareAddress(){
+        await this.db.open(this.table.address);
+        var RegExpPositionFilter = await this.db.findToArray({});
+        this.db.close();
+
+        function getPositionByAddr(address){
+            let city=null,district=null,position=null,bdStatus=2;
+            RegExpPositionFilter.forEach((x) => {
+                if (address.match(x.reg)) {
+                    //console.log("regmatch:"+x.reg);
+                    city = x.city;
+                    district = x.district;
+                    position = x.position;
+                    return;
+                }
+            })
+            //console.log(address,position,city,district);
+            return {district,position,city,bdStatus}
+        }
+
+        await this.db.open(this.table.company);
+        const companyList = await this.db.findToArray({position: null,addr:{$ne:null}}, { addr:1});
+        for (const company of companyList) {
+            const t = getPositionByAddr(company.addr);
+            if(t.position){
+                await this.db.updateById(company._id, t);
+            }
+        }
+        this.db.close();
+        console.log("compareAddress finish");
+    }
+
+    //从百度地图加载
+    async loadGeo() {
+        await this.db.open(this.table.company);
+        //解决根据地址查
+        const addrs = await this.db.findToArray({position:null,addr:{$ne:null},noLoad:null},{addr:1});
+        await updateGeo(this,addrs,"addr");
+       
+        //根据名称查
+        const names = await this.db.findToArray({position:null,company:{$ne:null},noLoad:null},{company:1});
+        await updateGeo(this,names,"name");
+       
+        this.db.close();
+
+        console.log("loadGeo finish");
+
+        async function updateGeo(context,arr,key){
+            for (const it of arr) {
+                let {position,city,district} = await addrToGeoFull(it[key]); //获取百度坐标
+                await context.db.updateById(it._id, {position,city,district,bdStatus:3})
+            }
+        }
+    }
+
+    async fixedGeo() {
+        //console.log(1);
+        await this.db.open(this.table.company);
+        //console.log(2);
+        let arr = await this.db.findToArray({position: { $ne: null }, district: null, bdStatus: 3}, {position: 1 });
+        for (const data of arr) {
+            let cityAndDistrict = await geoToCityAndDistrict(data.position);
+            //console.log(cityAndDistrict)
+            await this.db.updateById(data._id, cityAndDistrict);
+        }
+        this.db.close();
+        console.log("fixedGeo success");
+    }
+
+    async etlDistrict(){
+        await this.db.open(this.table.company);
+        const list = await this.db.findToArray({bdStatus:3},{addr:1,district:1,city:1});
+        for (const it of list) {
+            let {city,district} = positionFilter(it); //获取百度坐标
+            await this.db.updateById(it._id, {city,district})
+        }
+        this.db.close();
+        console.log("ETLDistrict finish");
+    }
+
+    //TODO:这里可以优化，如果部分属性有更新那么我们需要去刷新。
+    async noLoadToRepertory(){
+       await this.db.open(this.table.company);
+       const data = await this.db.findToArray({noLoad: null});
+       this.db.close();
+       
+       if(data.length == 0){
+         return;
+       }
+         
+       await this.db.open(this.table.repertoryCompany);
+       await this.db.collection.insertMany(data);
+       this.db.close();
+       console.log("noLoadToRepertory success");
+
+    }
+    
+    async positionToJob(){
+        await this.db.open(this.table.company);
+        let arr = await this.db.collection.find({"position":{"$ne":null},bdStatus:{"$ne":77}}, {
+            position: 1,
+            alias: 1,
+            district:1,
+            _id: 0
+        }).toArray();
+        this.db.close();
+        await this.db.open(this.table.job);
+        for(const i of arr){
+            await this.db.collection.updateMany({
+                companyAlias: i.alias,
+                position:null
+            }, {
+                $set: {
+                    district:i.district,
+                    position: i.position
+                }
+            })
+        }
+        this.db.close();
+        console.log("positionToJob success");
+    }
 }

@@ -22,11 +22,32 @@ function addrToGeo (name,city="苏州") {
 	})
 }
 
+
+function addrToGeoFull (name,scity="苏州") {
+	let position=null,city=null,district=null;
+	return map.loadPlaceAPI(name, scity).then(function(data) {
+		if (data.status == 0 && data.total >= 0 && data.results.length > 0) {
+			//console.log(data.results);
+			var rs = data.results[0];
+			 position = (rs.location)?rs.location:null;
+			 city = (rs.city)?rs.city:null;
+			 district = (rs.area)?rs.area:null;
+		}
+		//console.log({position,city,district})
+		return {position,city,district};
+	}).catch(function(e) {
+		console.log(e);
+		return {position,city,district};;
+	})
+}
+
 function geoToCityAndDistrict(position){
 	return map.loadGeocoderGPSAPI([position.lng, position.lat]).then((t)=> {
-          return  {city: t.result.addressComponent.city, district: t.result.addressComponent.district}
-     })
+        return  {city: t.result.addressComponent.city, district: t.result.addressComponent.district}
+     }).catch(function(e){
+		return {city:null,district:null};
+	 })
 }
 
 
-export {addrToGeo,geoToCityAndDistrict}
+export {addrToGeo,geoToCityAndDistrict,addrToGeoFull}

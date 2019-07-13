@@ -1,3 +1,6 @@
 /web/node_modules
 /robot/node_modules
 /.vscode
+/web/dist
+/web/dist/images/wx
+/web/dist/images

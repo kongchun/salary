@@ -16,54 +16,58 @@ export default class Parse {
 	list(html){
 		var $ = loader.parseHTML(html);
 		var arr = [];
+
+
 		$("li",".j-jobList").each((i, item)=> {
 
-			var id = $("a.cfix", item).attr("data-positionid").replace(/[^0-9.]/ig, "");
-			var job = $(".vertical-top .mb5", item).first().text().replace(/(^\s*)|(\s*$)/g, "");
-			var tags = $(".vertical-top .mb5", item).last().find("span");
+			var img = $(".job-logo-box img").attr("src");
+			var companyLogo = (!img)?null:img;
+			if(companyLogo.indexOf("blankLogo")>-1){
+				companyLogo = null;
+			}
+			
+			var id = $("a.cm-job-list-box .m-job-left-wrap", item).attr("data-positionid");
+			var job = $(".job-name", item).text().replace(/(^\s*)|(\s*$)/g, "");
+			var tags = $(".job-list-condition-wrap span", item);
 			var price = $(tags[0]).text().replace(/(^\s*)|(\s*$)/g, "");
 			var year = $(tags[1]).text().replace(/(^\s*)|(\s*$)/g, "");
 			var level = $(tags[2]).text().replace(/(^\s*)|(\s*$)/g, "");
-			var company = $(".relative.cfix .mb5.gray6.fl", item).text().replace(/(^\s*)|(\s*$)/g, "");
-			var time = $(".cfix .no-link-color", item).text().replace(/(^\s*)|(\s*$)/g, "");
-			var addr = $(".cfix .wsnhd", item).text().replace(/(^\s*)|(\s*$)/g, "");
-			if(addr.indexOf("邮编">-1)){
-				addr  = addr.split("(邮编")[0];
-			}
-
-			if (addr == "") {
-				addr = null;
-			}
+			var company = $(".company-name", item).text().replace(/(^\s*)|(\s*$)/g, "");
+			var time = $(".date-time", item).text().replace(/(^\s*)|(\s*$)/g, "");
+			
 
 			var job = new Job({
 					   jobId:id,
 				       job:job,
 				       companyId:null,
-				       company:company,
+					   company:company,
+					   companyLogo:companyLogo,
 				       workYear:year,
 				       education: level,
 				       salary:price,
-				       addr:addr,
-				       time:time,
+					   time:time,
+					   pageContent:$(item).html(),
 				       city:this.city,
 				       kd:this.kd,
 				       source:"jobui"
 			})
-
+			//console.log(job);
 			arr.push(job);
 		})
 		return arr;
 
 	}
 
-	info($){
-		var content = $.html();
-		var info =  $(".company-introduce").text().replace(/(^\s*)|(\s*$)/g, "");
-		return {info,content};
+	info(html){
+		var $ = loader.parseHTML(html);
+		var title = $("title").text();
+		if(title.indexOf("职友集")>-1){
+			var info = $(".hasVist").text().replace(/(^\s*)|(\s*$)/g, "");
+			var addr = $(".edit-address").text().replace(/(^\s*)|(\s*$)/g, "");
+			return {info,addr};
+		}
+		return {tobeDelete:true}
 	}
 
-	position(addr){
-		return ({addr});
-	}
 }
 

@@ -7,10 +7,24 @@ export default class ETL  extends BaseETL{
 
 	salary(){
 		let salary = this.job.salary;
+
+
+
 		let [min, max] = this.getMinMax(salary);
 
 		min = min * 1000;
 		max = max * 1000;
+
+		if(salary.indexOf("天")>-1){
+			min = parseInt(min /1000*30);
+			max = parseInt(max /1000*30);
+		}
+
+		if(salary.indexOf("·")>-1){
+			let month = parseInt(salary.split("·")[1]);
+			min = parseInt(min*month/12);
+			max = parseInt(max*month/12);
+		}
 
 		if (salary == '面议' || salary == '') {
 
@@ -22,7 +36,3 @@ export default class ETL  extends BaseETL{
 		return {min,max,average,salaryRange}
 	}
 }
-
-// db.job.group({"key":{"salary":true},"cond":{},"initial":{count:0},"reduce":(doc,prev)=> {
-//         prev.count++;
-// }})

@@ -1,8 +1,6 @@
-import helper from "../../iRobots/helper.js";
-import Container from "./Container.js";
-import Company from "./model/Company.js";
+const PUBLISH = false;
 
-export default class ViewData {
+export default class StatisticData {
     constructor(db, table,year,month,types=['基础','框架和库','MVVM','图形','构建服务','数据库','其它','综合知识','浏览器','图形处理','工具','app','编程语言']) {
         this.db = db;
         this.year = year;
@@ -16,126 +14,16 @@ export default class ViewData {
         await this.tech();
         await this.top();
     }
-    async top(){
-        try {
-            var toprank = await this.getTopRank(50);
-            var detailRank = await this.getTechDetailRanks(this.types);
-            var companyRank = await this.getAvgSarlyRank(50);
-            var jobRank = await this.getCountJobRank(50);
-
-            var year = this.year;
-            var month = this.month;
-            var types = this.types;
-            var time = new Date();
-
-            this.setTop({toprank,detailRank,companyRank,jobRank,types,year,month,time});
-        }catch(e){
-            console.error(error);
-            throw error;
-        }
-
-    }
-
-    async setTop(top){
-        this.db.close();
-        await this.db.open(this.table.top)
-        var data = await this.db.collection.findOne({
-            year: this.year,
-            month:this.month
-        })
-        
-        //console.log(JSON.stringify(top,null,4))
-        if (data) {
-            await this.db.collection.update({
-                year: this.year,
-                month:this.month
-            }, {
-                $set: top
-            })
-        } else {
-            await this.db.collection.insert(top);
-        }
-       
-
-        this.db.close();
-        console.log("top success");
-    
-    }
-
-    async getTopRank(limit=20){
-        return await this.getTopRankDb(this.year,this.month,limit);
-    }
-    async getTechDetailRanks(types){
-       var arr = [];
-       for(var type in types){
-         var k = await this.getTopRankDb(this.year,this.month,10,types[type]);
-         arr.push(k);
-        }
-        console.log(arr.length);
-        return arr;
-    };
-  
-    getTopRankDb(year,month,limit,type) {
-        this.db.close();
-        var query = {year:year+'',month:month+''};
-        if(!!type){
-            query.type = type;
-        }
-        return this.db.open(this.table.tech).then((collection) =>{
-            return collection.find(query,{tech:1,type:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
-        }).then((data)=> {
-            this.db.close();
-            return data;
-        }).catch((error) => {
-            this.db.close();
-            console.error(error)
-            throw error;
-        })
-    };
-    getAvgSarlyRank(limit) {
-        this.db.close();
-        var query = {};
-        return this.db.open(this.table.job).then((collection) =>{
-            return collection.find(query,{company:1,companyAlias:1,average:1}).sort({average:-1}).skip(0).limit(limit).toArray();
-        }).then((data)=> {
-            this.db.close();
-            let hash = {};
-            data = data.reduce((item, next) => {
-                hash[next.companyAlias] ? '' : hash[next.companyAlias] = true && item.push(next);
-                return item
-            }, []);
-
-            return data;
-        }).catch((error)=> {
-            this.db.close();
-            console.error(error)
-            throw error;
-        })
-    };
-    getCountJobRank(limit) {
-        this.db.close();
-        var query = {bdState:{$ne:77}};
-        return this.db.open(this.table.company).then((collection)=> {
-            return collection.find(query,{company:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
-        }).then((data)=> {
-            this.db.close();
-            return data;
-        }).catch((error)=> {
-            this.db.close();
-            console.error(error)
-            throw error;
-        })
-    };
 
     async average() {
         try {
-            this.db.close();
+    
             await this.db.open(this.table.job);
-            var data = await this.db.findToArray({}, { average: 1 });
+            const data = await this.db.findToArray({}, { average: 1 });
             this.db.close();
 
-            var count =0;
-            var total = 0;
+            let count =0;
+            let total = 0;
 
             data.forEach((i) => {
                 if(i.average>0){
@@ -143,10 +31,10 @@ export default class ViewData {
                     count++
                 }
             });
-            console.log(total, count)
-            var average = total / count;
-            average = (average.toFixed(2));
-             console.log(average)
+
+            let average = parseFloat((total / count).toFixed(2));
+            
+            console.log(total, count,average);
 
             await this.db.open(this.table.board);
             var data = await this.db.collection.findOne({
@@ -154,25 +42,23 @@ export default class ViewData {
                 month:this.month
             })
 
+            const setData = {
+                average: parseFloat(average),
+                time:new Date(this.year,this.month-1),
+                year: this.year,
+                month:this.month,
+                publish:PUBLISH  //这里其实关系以及不大
+            }
+
              if (data) {
                 await this.db.collection.update({
                     year: this.year,
                     month:this.month
                 }, {
-                    $set: {
-                        average: parseFloat(average),
-                        time:new Date(this.year,this.month-1),
-                        publish:false
-                    }
+                    $set: setData
                 })
             } else {
-                await this.db.collection.insert({
-                    year: this.year,
-                    month:this.month,
-                    average: parseFloat(average),
-                    time:new Date(this.year,this.month-1),
-                    publish:false
-                })
+                await this.db.collection.insert(setData)
             }
                 
             this.db.close();
@@ -183,7 +69,6 @@ export default class ViewData {
             return;
         }
     }
-
 
     async chart() {
         try {
@@ -223,7 +108,7 @@ export default class ViewData {
                 })
             });
             console.log(points)
-            console.log(salaryRange)
+            //console.log(salaryRange)
 
 
             //eduRange;
@@ -286,10 +171,9 @@ export default class ViewData {
                     $ne: true
                 },
                 district:{
-                    $ne:""
+                    $ne:null
                 }
             }, {
-
                 "count": 0
             }, function(doc, prev) {
                 prev.count++;
@@ -352,10 +236,115 @@ export default class ViewData {
             console.log(e);
             return;
         }
-
-
  
     }
+
+
+
+    async top(){
+        try {
+            var toprank = await this.getTopRank(50);
+            var detailRank = await this.getTechDetailRanks(this.types);
+            var companyRank = await this.getAvgSarlyRank(50);
+            var jobRank = await this.getCountJobRank(50);
+
+            var year = this.year;
+            var month = this.month;
+            var types = this.types;
+            var time = new Date();
+
+            this.setTop({toprank,detailRank,companyRank,jobRank,types,year,month,time});
+        }catch(e){
+            console.error(error);
+            throw error;
+        }
+
+    }
+
+    async setTop(top){
+     
+        await this.db.open(this.table.top)
+        var data = await this.db.collection.findOne({
+            year: this.year,
+            month:this.month
+        })
+        
+        //console.log(JSON.stringify(top,null,4))
+        if (data) {
+            await this.db.collection.update({
+                year: this.year,
+                month:this.month
+            }, {
+                $set: top
+            })
+        } else {
+            await this.db.collection.insert(top);
+        }
+       
+
+        this.db.close();
+        console.log("top success");
+    
+    }
+
+    async getTopRank(limit=20){
+        return await this.getTopRankDb(this.year,this.month,limit);
+    }
+    async getTechDetailRanks(types){
+       var arr = [];
+       for(var type in types){
+         var k = await this.getTopRankDb(this.year,this.month,10,types[type]);
+         arr.push(k);
+        }
+        console.log(arr.length);
+        return arr;
+    };
+  
+    getTopRankDb(year,month,limit,type) {
+        this.db.close();
+        var query = {year:year+'',month:month+''};
+        if(!!type){
+            query.type = type;
+        }
+        return this.db.open(this.table.tech).then((collection) =>{
+            return collection.find(query,{tech:1,type:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
+        }).then((data)=> {
+            this.db.close();
+            return data;
+        }).catch((error) => {
+            this.db.close();
+            console.error(error)
+            throw error;
+        })
+    };
+    getAvgSarlyRank(limit) {
+        this.db.close();
+         var query = {bdState:{$ne:77}};
+        return this.db.open(this.table.company).then((collection) =>{
+            return collection.find(query,{company:1,alias:1,salary:1,_id:1}).sort({salary:-1}).skip(0).limit(limit).toArray();
+        }).then((data)=> {
+            this.db.close();
+            return data;
+        }).catch((error)=> {
+            this.db.close();
+            console.error(error)
+            throw error;
+        })
+    };
+    getCountJobRank(limit) {
+        this.db.close();
+        var query = {bdState:{$ne:77}};
+        return this.db.open(this.table.company).then((collection)=> {
+            return collection.find(query,{company:1,alias:1,count:1,_id:1}).sort({count:-1}).skip(0).limit(limit).toArray();
+        }).then((data)=> {
+            this.db.close();
+            return data;
+        }).catch((error)=> {
+            this.db.close();
+            console.error(error)
+            throw error;
+        })
+    };
 
     topTen(){
          this.db.close();

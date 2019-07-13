@@ -1,4 +1,3 @@
-import gps from "../../../../iRobots/gps.js";
 import Job from "../../model/job";
 import loader from "../../../../iRobots/loader.js";
 
@@ -37,11 +36,9 @@ export default class Parse {
                         job: jobName,
                         companyId: companyId,
                         company: company,
-                        workYear: null,
-                        education: null,
                         salary: salary,
-                        addr: null,
                         time: time,
+                        pageContent:$(item).html(),
                         city: this.city,
                         kd: this.kd,
                         source: "51job"
@@ -56,27 +53,19 @@ export default class Parse {
 
     }
 
-    info($) {
-        var content = $.html();
+    info(html) {
+        var $ = loader.parseHTML(html);
         var ltype = $(".msg.ltype").text().replace(/(^\s*)|(\s*$)/g, "").split("|");
         var workYear = ltype[1].replace(/&nbsp;/ig,"");
         var education =ltype[2].replace(/&nbsp;/ig,"");
-        if (education.indexOf("招")>-1)
-        education="不限"
-        //console.log(workYear,education);
-
-        
+        if (education.indexOf("招")>-1){
+            education="不限"
+        }
         var info = $(".bmsg.job_msg.inbox").text().replace(/(^\s*)|(\s*$)/g, "");
-        return { info, content, workYear,education};
-    }
-
-    position($) {
-
- 		var addr = $(".i_map").parent().text().replace("上班地址：","").replace("地图","").replace(/(^\s*)|(\s*$)/g, "");
- 		var position = null; 	
-
-        //console.log({addr});
-       // console.log({ addr, position,workYear,education })
-        return ({ addr, position});
+        var addr = $(".i_map").parent().text().replace("上班地址：","").replace("地图","").replace(/(^\s*)|(\s*$)/g, "");
+        var companyDetail = $(".tmsg.inbox").html().replace(/<br>/g,"\\n");
+        var img = $(".com_name.himg img").attr("src");
+		var companyLogo = (!img)?null:img;
+        return { info, workYear,education, addr,companyDetail,companyLogo};
     }
 }

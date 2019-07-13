@@ -21,22 +21,13 @@ export default class Parse {
         var arr = [];
         $("li",".job-list").each((i, item) => {
 
-                var jobId = $("a", item).attr("href").replace("/job_detail/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
-                var red = $(".info-primary .name .red", item);
-                var salary = red.text().replace(/(^\s*)|(\s*$)/g, "");
-                red.remove();
+                var jobId = $(".info-primary a", item).attr("data-jid").replace(/(^\s*)|(\s*$)/g, "");
+                var salary = $(".info-primary .red", item).text().replace(/(^\s*)|(\s*$)/g, "");
+            
 
-
-
-                $(".info-company p",item).remove();
-
-                var jobName = $(".info-primary .name .job-title", item).text().replace(/(^\s*)|(\s*$)/g, "");
-                var companyId = null;
-                var company = $(".info-company .name", item).text().replace(/(^\s*)|(\s*$)/g, "");
-               
-                var time = $(".info-publis p", item).text().replace(/(^\s*)|(\s*$)/g, "");
-
-                $(".info-primary h3",item).remove();
+                var jobName = $(".job-title", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                var companyId = $(".info-company a", item).attr("href").replace("/gongsi/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
+                var company = $(".info-company a", item).text().replace(/(^\s*)|(\s*$)/g, "");
 
                 var sp = $(".info-primary p",item).html().split('<em class="vline"></em>');
 
@@ -48,46 +39,40 @@ export default class Parse {
                         job: jobName,
                         companyId: companyId,
                         company: company,
+                        companyAlias:company,
                         workYear: workYear,
                         education: education,
                         salary: salary,
-                        addr: null,
-                        time: time,
+                        time: null,
+                        pageContent:$(item).html(),
                         city: this.city,
                         kd: this.kd,
                         source: this.source
                     })
                     //console.log(job);
                     arr.push(job);
-                
-            
 
         })
         return arr;
 
     }
 
-    info($) {
-        var content = $.html();
+    info(html) {
+        var $ = loader.parseHTML(html);
         var info = $(".detail-content .job-sec").first().text().replace(/(^\s*)|(\s*$)/g, "");
-        //var companyId = $(".info-company a").attr("href").replace("/gongsi/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
-        //var company = $(".info-company h3").next().text().replace(/(^\s*)|(\s*$)/g, "");
-        return { info, content};
-    }
 
-    position($) {
- 		var addr = $(".location-address").text().replace(/(^\s*)|(\s*$)/g, "");
-        //var map = $("#map-container").attr("data-long-lat");
+        var company = $(".job-sec .name").text().replace(/(^\s*)|(\s*$)/g, "");
+        var addr = $(".location-address").text().replace(/(^\s*)|(\s*$)/g, "");
+
+        var companyDetail = $(".job-sec.company-info .text").text().replace(/(^\s*)|(\s*$)/g, "");
+        var img = $("a[ka='job-detail-company-logo_custompage'] img").attr("src");
+        var companyLogo = (!img)?null:img;
+        
         var position = null;  
-
-        // if(map.indexOf(",")>-1){
-        //     var sp = map.split(",");
-        //     position = gps.bd_encrypt(sp[1],sp[0]);
-        // }
-
-        //console.log({ addr, position })
-        return ({ addr, position });
+        
+        return { info ,addr, position,company,companyLogo,companyDetail};
     }
+
 }
 
 
