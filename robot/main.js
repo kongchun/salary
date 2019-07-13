@@ -26,13 +26,13 @@ export default class Main {
     }
 
     async analyseCompany() {
-        await this.groupCompany();
-        await this.parseFromJobs();
-        await this.compareCompany();
-        await this.compareAddress();
-        await this.loadGeo();
-        await this.fixedGeo();
-        await this.etlDistrict();
+        // await this.groupCompany();
+        // await this.parseFromJobs();
+        // await this.compareCompany();
+        // await this.compareAddress();
+        // await this.loadGeo();
+        // await this.fixedGeo();
+        // await this.etlDistrict();
         await this.noLoadToRepertory();
         console.log("analyseCompany flinsh")
     }
@@ -216,8 +216,8 @@ export default class Main {
         await updateGeo(this,addrs,"addr");
        
         //根据名称查
-        const names = await this.db.findToArray({position:null,company:{$ne:null},noLoad:null},{company:1});
-        await updateGeo(this,names,"name");
+        // const names = await this.db.findToArray({position:null,company:{$ne:null},noLoad:null},{company:1});
+        // await updateGeo(this,names,"name");
        
         this.db.close();
 
@@ -258,6 +258,8 @@ export default class Main {
 
     //TODO:这里可以优化，如果部分属性有更新那么我们需要去刷新。
     async noLoadToRepertory(){
+
+        //未在库中的，加入库
        await this.db.open(this.table.company);
        const data = await this.db.findToArray({noLoad: null});
        this.db.close();
@@ -269,6 +271,26 @@ export default class Main {
        await this.db.open(this.table.repertoryCompany);
        await this.db.collection.insertMany(data);
        this.db.close();
+
+       //已在库中的 如果有信息更新那么更新信息
+       await this.db.open(this.table.company);
+       const ALLCompany = await this.db.findToArray({noLoad: true});
+       this.db.close();
+
+       await this.db.open(this.table.repertoryCompany);
+       for(const it of ALLCompany){
+            const nologo = await this.db.collection.findOne({alias: alias,logo:null},{alias:1});
+            if(nologo){
+                await this.db.updateById(nologo._id, {logo:it.logo});
+            }
+            const nodescription = await this.db.collection.findOne({alias: alias,description:null},{aliass:1});
+            if(nodescription){
+                await this.db.updateById(nodescription._id, {description:it.description});
+            }
+       }
+       this.db.close();
+
+
        console.log("noLoadToRepertory success");
 
     }
