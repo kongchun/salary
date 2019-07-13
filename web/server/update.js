@@ -224,6 +224,7 @@ exports.getPublishContent = async newUrl => {
 		let repertory_company = await collection.find().toArray();
 		db.close();
 		collection = await db.open('repertory_company', newUrl);
+		await collection.drop();
 		for (let item of repertory_company) {
 			await collection.save(item);
 		}
@@ -238,6 +239,7 @@ exports.getPublishContent = async newUrl => {
 		let tech = await collection.find().toArray();
 		db.close();
 		collection = await db.open('tech', newUrl);
+		await collection.drop();
 		for (let item of tech) {
 			await collection.save(item);
 		}
