@@ -12,7 +12,7 @@ import ZhiPin from "./source/zhipin/config.js";
 import Lagou from "./source/lagou/config.js"; //反爬虫很厉害 
 import Jobui from "./source/jobui/config.js"; //主要还是拉钩问题
 
-var db = Database("127.0.0.1", "kongchun2");
+var db = Database("127.0.0.1", "kongchun");
 var table = new Table({});
 
 
@@ -32,4 +32,4 @@ main.addConfig(new Baidu(1,city,kd)); //baidu  10
 
 //main.robotData();
 //main.analyseCompany();
-main.statistic();
+//main.statistic();
