@@ -279,4 +279,46 @@ router.post('/savePublishContent', async (req, res) => {
     }
 });
 
+router.get('/pagecompanyalias', (req, res) => {
+    let page = swig.renderFile('dist/manage/companyalias.html', {
+        html: ''
+    });
+    res.send(page);
+});
+
+router.get('/listCompanyAlias', async (req, res) => {
+    let page = req.query.page;
+    let limit = req.query.limit;
+    let search = req.query.search;
+    try {
+        if (!!page) page = parseInt(page);
+        if (!!limit) limit = parseInt(limit);
+        let data = await read.getCompanyAliasList(page, limit, search);
+        if (!!data) {
+            res.send({ code: 0, count: data.count, data: data.data, msg: '' });
+        } else {
+            res.send({ code: 0, count: 0, data: [], msg: '' });
+        }
+    } catch (e) {
+        console.error(e);
+        res.send({ code: 0, count: 0, data: [], msg: '' });
+    }
+});
+
+router.post('/updateCompanyAlias', async (req, res) => {
+    let company = req.body.company;
+    let alias = req.body.alias;
+    if (!company || !alias) {
+        res.send({n:0});
+    } else {
+        try {
+            let data = await update.updateCompanyAlias(company, alias);
+            res.send(data);
+        } catch (e) {
+            console.error(e);
+            res.send({});
+        }
+    }
+});
+
 module.exports = router;

@@ -323,3 +323,26 @@ exports.getCompanyLogoAndScore = async array => {
 		throw error;
 	}
 }
+
+exports.getCompanyAliasList = async (page, limit, search) => {
+	db.close();
+	try {
+		let start = (page - 1) * limit;
+		let query = {};
+		if (!!search) {
+			let reg = new RegExp(search);
+			query.$or = [{ company: { $regex: reg } }, { companyAlias: { $regex: reg } }, { realAlias: { $regex: reg } }];
+		}
+		let collection = await db.open('company_alias');
+		let data = await collection.find(query).skip(start).limit(limit).toArray();
+		let count = await collection.find(query).count();
+		db.close();
+		return {
+			count,
+			data
+		};
+	} catch (e) {
+		db.close();
+		throw e;
+	}
+};

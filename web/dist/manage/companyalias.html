@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>公司别名</title>
+
+    <link rel="stylesheet" href="/css/vendor.css" />
+    <link rel="stylesheet" href="/jlib/lay/layui.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+    <div class="layui-form">
+        <div class="layui-inline" style="padding-top: 9px;">
+            <label class="layui-form-label" style="width:120px;">公司名或别名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="keyWord" placeholder="模糊搜索" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-btn" id="searchBtnName">查询</div>
+        </div>
+    </div>
+
+    <table id="aliasList" lay-filter="alias"></table>
+
+    <script src="/js/vendor.js"></script>
+    <script src="/jlib/lay/layui.js"></script>
+    <script src="/js/bundle-companyalias.js"></script>
+</body>
+
+</html>

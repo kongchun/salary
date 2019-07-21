@@ -256,3 +256,19 @@ exports.getPublishContent = async newUrl => {
 		throw error;
 	}
 };
+
+exports.updateCompanyAlias = async (name, value) => {
+	db.close();
+	try {
+		let collection = await db.open('company_alias');
+		await collection.update({ company: name }, { $set: { realAlias: value } });
+		db.close();
+		collection = await db.open('repertory_company');
+		let result = await collection.update({ company: name }, { $set: { alias: value } });
+		db.close();
+		return result;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+}
