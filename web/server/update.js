@@ -260,11 +260,13 @@ exports.getPublishContent = async newUrl => {
 exports.updateCompanyAlias = async (name, value) => {
 	db.close();
 	try {
+		let query = { company: name };
+		let set = { $set: { realAlias: value } };
 		let collection = await db.open('company_alias');
-		await collection.update({ company: name }, { $set: { realAlias: value } });
+		await collection.update(query, set);
 		db.close();
 		collection = await db.open('repertory_company');
-		let result = await collection.update({ company: name }, { $set: { alias: value } });
+		let result = await collection.update(query, set);
 		db.close();
 		return result;
 	} catch (error) {

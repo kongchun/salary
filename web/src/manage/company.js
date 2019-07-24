@@ -47,7 +47,8 @@ function initTable() {
           }
         },
         { field: 'company', width: 250, title: '公司' }
-        , { field: 'alias', width: 150, title: '別名', sort: false, edit:'text' }
+        , { field: 'alias', width: 150, title: '別名', sort: false, edit: 'text' }
+        , { field: 'realAlias', width: 150, title: '真实別名', sort: false}
         , { field: 'addr', title: '地址',edit:'text', minWidth: 250 }
         , { field: 'city', width: 80, title: '城市', sort: false }
         , { field: 'district', width: 90, title: '区域' }
