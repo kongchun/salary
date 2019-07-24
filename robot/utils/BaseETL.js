@@ -22,14 +22,14 @@ export default class BaseETL {
 		return getRangeBySalary(salary);
 	}
 
-	companyAlias(){
+	companyAlias(companyAliasDataSet){
 		let companyAlias = this.job.companyAlias;
 		let company= this.job.company;
 		if(company == companyAlias){
 			companyAlias = null;
 		}
 
-		return  companyAlias?companyAlias:getCompanyAlias(company);
+		return  getCompanyAlias(company,companyAlias,companyAliasDataSet);
 	}
 
 	education(){
@@ -63,11 +63,11 @@ export default class BaseETL {
 		return {min,max,average,salaryRange};
 	}
 
-	all(job){
+	all(job,{companyAlias}){
 		if(job) {
 			this.setJob(job);
 		};
-		var companyAlias = this.companyAlias();
+		var companyAlias = this.companyAlias(companyAlias);
 		var eduRange = this.education();
 		var yearRange = this.workYear();
 		var etlPost = this.post();

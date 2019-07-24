@@ -26,13 +26,14 @@ export default class Main {
     }
 
     async analyseCompany() {
-        // await this.groupCompany();
-        // await this.parseFromJobs();
-        // await this.compareCompany();
-        // await this.compareAddress();
-        // await this.loadGeo();
-        // await this.fixedGeo();
-        // await this.etlDistrict();
+        await this.transform();
+        await this.groupCompany();
+        await this.parseFromJobs();
+        await this.compareCompany();
+        await this.compareAddress();
+        await this.loadGeo();
+        await this.fixedGeo();
+        await this.etlDistrict();
         await this.noLoadToRepertory();
         console.log("analyseCompany flinsh")
     }
@@ -71,6 +72,13 @@ export default class Main {
         console.log("stepInfo finish");
     }
 
+    async transform(){
+        for (const item of this.containerList) {
+            await item.transform();
+        }
+        console.log("transform finish");
+    }
+
     //bdStatus：
     //0-未识别
     //1-自动识别
@@ -96,7 +104,6 @@ export default class Main {
 
         await this.db.open(this.table.company);
         await this.db.collection.remove({});
-
         await this.db.collection.insertMany(dataSet);
         this.db.close();
         console.log("groupCompany finish");
@@ -157,12 +164,14 @@ export default class Main {
         const dataset = await this.db.collection.find({}).toArray();
         this.db.close();
         await this.db.open(this.table.company);
+      
         for (const company of dataset) {
+
             const alias = company.alias;
             const i = await this.db.collection.findOne({
                 alias: alias
             })
-            if (!i) return;
+            if (!i) continue;
             await this.db.updateById(i._id, {
                 position: i.position,
                 addr:(!i.addr)?i.addr:null,
@@ -189,7 +198,6 @@ export default class Main {
                     city = x.city;
                     district = x.district;
                     position = x.position;
-                    return;
                 }
             })
             //console.log(address,position,city,district);
@@ -267,7 +275,7 @@ export default class Main {
        if(data.length == 0){
          return;
        }
-         
+
        await this.db.open(this.table.repertoryCompany);
        await this.db.collection.insertMany(data);
        this.db.close();
@@ -277,13 +285,14 @@ export default class Main {
        const ALLCompany = await this.db.findToArray({noLoad: true});
        this.db.close();
 
+      
        await this.db.open(this.table.repertoryCompany);
        for(const it of ALLCompany){
-            const nologo = await this.db.collection.findOne({alias: alias,logo:null},{alias:1});
+            const nologo = await this.db.collection.findOne({alias: it.alias,logo:null},{alias:1});
             if(nologo){
                 await this.db.updateById(nologo._id, {logo:it.logo});
             }
-            const nodescription = await this.db.collection.findOne({alias: alias,description:null},{aliass:1});
+            const nodescription = await this.db.collection.findOne({alias: it.alias,description:null},{aliass:1});
             if(nodescription){
                 await this.db.updateById(nodescription._id, {description:it.description});
             }

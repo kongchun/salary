@@ -94,7 +94,7 @@ export default class Container {
     async info() {
         await this.getContent();
         await this.parseInfo();
-        await this.transform();
+        //await this.transform();
     }
     //加载详情信息
     async getContent() {
@@ -121,10 +121,14 @@ export default class Container {
 
     //数据清洗ELT
     async transform() {
+        await this.db.open(this.table.company_alias);
+        var company_alias = await this.db.findToArray({});
+        this.db.close();
+
         await this.db.open(this.table.job);
         const jobList = await this.db.findToArray({ source: this.source, city: this.city, kd: this.kd }, { company: 1, companyAlias: 1, workYear: 1, education: 1, salary: 1, job: 1, info: 1 });
         for (const job of jobList) {
-            await this.db.updateById(job._id, this.etl.all(job));
+            await this.db.updateById(job._id, this.etl.all(job,{companyAlias:company_alias}));
         }
         this.db.close();
         console.log(this.source + " ELT finish");
