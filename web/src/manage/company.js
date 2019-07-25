@@ -46,7 +46,8 @@ function initTable() {
             }
           }
         },
-        { field: 'company', width: 250,edit:'text', title: '公司' }
+        { field: 'logoText', width: 250,edit:'text', title: '图标URL' }
+        , { field: 'company', width: 250,edit:'text', title: '公司' }
         , { field: 'alias', width: 150, title: '別名', sort: false, edit: 'text' }
         , { field: 'realAlias', width: 150, title: '真实別名',edit:'text', sort: false}
         , { field: 'addr', title: '地址',edit:'text', minWidth: 250 }
@@ -78,6 +79,12 @@ function initTable() {
       ]]
       , page: true
       , done: initUpload
+      , parseData: res => {
+        res.data = res.data.map(item => {
+          return Object.assign({ logoText: item.logo }, item);
+        });
+        return res;
+      }
     });
 
     //监听工具条
@@ -129,7 +136,20 @@ function initTable() {
     });
 
     table.on('edit(company)', function (obj) {
-      $.post('/manage/updateCompanyInfo', { id: obj.data._id, field: obj.field, value: obj.value }, postCallback).fail(function (e) {
+      let dataField = obj.field === 'logoText' ? 'logo' : obj.field;
+      let dataValue = obj.value;
+      $.post('/manage/updateCompanyInfo', { id: obj.data._id, field: dataField, value: dataValue }, data => {
+        if (!!data & !!data['n'] && data['n'] > 0) {
+          layer.msg('更新成功');
+          if (dataField === 'logo') {
+            $(obj.tr[0]).find('[data-field=logo]').find('img').attr('src',dataValue);
+          }
+        } else if (data['n'] === 0) {
+            layer.msg('更新未执行');
+        } else {
+            layer.msg('更新执行失败');
+        }
+      }).fail(function (e) {
         console.error(e);
         layer.msg('更新失败，网络错误');
       });
@@ -199,8 +219,15 @@ function initUpload() {
     reader.onload = () => {
       let dataUrl = reader.result;
       $.post('/manage/updateCompanyInfo', { id: inputElement.attr('cpnid'), field: 'logo', value: dataUrl }, function (data) {
-        postCallback(data);
-        inputElement.next()[0].src = dataUrl;
+        if (!!data & !!data['n'] && data['n'] > 0) {
+          layer.msg('更新成功');
+          inputElement.next()[0].src = dataUrl;
+          inputElement.parent().parent().next().children().text(dataUrl);
+        } else if (data['n'] === 0) {
+            layer.msg('更新未执行');
+        } else {
+            layer.msg('更新执行失败');
+        }
       }).fail(function (e) {
         console.error(e);
         layer.msg('更新失败，网络错误');
@@ -208,14 +235,4 @@ function initUpload() {
     }
     reader.readAsDataURL(file);
   });
-}
-
-function postCallback(data) {
-  if (!!data & !!data['n'] && data['n'] > 0) {
-      layer.msg('更新成功');
-  } else if (data['n'] === 0) {
-      layer.msg('更新未执行');
-  } else {
-      layer.msg('更新执行失败');
-  }
 }
