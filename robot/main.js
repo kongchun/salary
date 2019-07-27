@@ -3,6 +3,8 @@ import { addrToGeoFull,geoToCityAndDistrict} from "./utils/bdHelper.js";
 import {filter as positionFilter} from "./utils/ETL/positionETL.js";
 import StatisticData from "./statistic/statisticData.js";
 
+const aliasSync = require('./utils/aliasSync');
+
 export default class Main {
     constructor(db, table, year, month) {
         this.db = db;
@@ -299,7 +301,8 @@ export default class Main {
        }
        this.db.close();
 
-
+        await aliasSync(this.db);
+        
        console.log("noLoadToRepertory success");
 
     }
