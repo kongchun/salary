@@ -23,10 +23,10 @@ const month = "07";
 
 
 var main = new Main(db,table,year,month);
-main.addConfig(new FiveOneJob(3,city,kd)); //51Job  10
-main.addConfig(new ZhaoPin(3,city,kd)); //智联招聘 10
+main.addConfig(new FiveOneJob(2,city,kd)); //51Job  10
+main.addConfig(new ZhaoPin(2,city,kd)); //智联招聘 10
 main.addConfig(new ZhiPin(1,city,kd)); //BOSS直聘 参数不要大于2 (baidu 包含)
-main.addConfig(new Baidu(5,city,kd)); //baidu  5
+main.addConfig(new Baidu(2,city,kd)); //baidu  5
 
 
 

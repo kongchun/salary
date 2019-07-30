@@ -41,7 +41,7 @@ export default class Main {
     }
 
     async statistic(){
-        await this.compareCompany();
+        //await this.compareCompany();
         await this.positionToJob();
         var statisticData = new StatisticData(this.db,this.table,this.year,this.month);
 	    statisticData.show();
@@ -175,11 +175,11 @@ export default class Main {
             })
             if (!i) continue;
             await this.db.updateById(i._id, {
-                position: i.position,
-                addr:(!i.addr)?i.addr:null,
-                city: i.city,
-                district: i.district,
-                bdStatus:2,
+                position: company.position,
+                addr:(!company.addr)?company.addr:null,
+                city: company.city,
+                district: company.district,
+                bdStatus:company.bdStatus==77?77:2,
                 noLoad:true
             })
         }
@@ -317,14 +317,16 @@ export default class Main {
         }).toArray();
         this.db.close();
         await this.db.open(this.table.job);
+        await this.db.collection.updateMany({},{$set: {filter:true}})
         for(const i of arr){
             await this.db.collection.updateMany({
                 companyAlias: i.alias,
-                position:null
+                //position:null
             }, {
                 $set: {
                     district:i.district,
-                    position: i.position
+                    position: i.position,
+                    filter:false
                 }
             })
         }
