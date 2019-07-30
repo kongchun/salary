@@ -306,13 +306,28 @@ router.get('/listCompanyAlias', async (req, res) => {
 });
 
 router.post('/updateCompanyAlias', async (req, res) => {
-    let company = req.body.company;
+    let id = req.body._id;
     let alias = req.body.alias;
-    if (!company || !alias) {
+    if (!id || !alias) {
         res.send({n:0});
     } else {
         try {
-            let data = await update.updateCompanyAlias(company, alias);
+            let data = await update.updateCompanyAlias(id, alias);
+            res.send(data);
+        } catch (e) {
+            console.error(e);
+            res.send({});
+        }
+    }
+});
+
+router.post('/deleteCompanyAliasById', async (req, res)=>{
+    let id = req.body._id;
+    if (!id) {
+        res.send({n:0});
+    } else {
+        try {
+            let data = await update.deleteCompanyAlias(id);
             res.send(data);
         } catch (e) {
             console.error(e);

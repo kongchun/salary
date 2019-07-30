@@ -257,16 +257,42 @@ exports.getPublishContent = async newUrl => {
 	}
 };
 
-exports.updateCompanyAlias = async (name, value) => {
+exports.updateCompanyAlias = async (id, value) => {
 	db.close();
 	try {
-		let query = { company: name };
+		let query = {};
+		try {
+			query = { _id: new mongodb.ObjectId(id) };
+		} catch (error) {
+			console.log(error);
+			query = { _id: id };
+		}
 		let set = { $set: { realAlias: value } };
 		let collection = await db.open('company_alias');
 		await collection.update(query, set);
 		db.close();
 		collection = await db.open('repertory_company');
 		let result = await collection.update(query, set);
+		db.close();
+		return result;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+}
+
+exports.deleteCompanyAlias = async id => {
+	db.close();
+	try {
+		let query = {};
+		try {
+			query = { _id: new mongodb.ObjectId(id) };
+		} catch (error) {
+			console.log(error);
+			query = { _id: id };
+		}
+		let collection = await db.open('company_alias');
+		let result = await collection.deleteOne(query);
 		db.close();
 		return result;
 	} catch (error) {
