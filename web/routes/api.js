@@ -197,4 +197,15 @@ router.post('/getCompanyLogoAndScore', async (req, res) => {
     }
 });
 
+router.post('/getCompanyById', async (req, res) => {
+    let _id = req.body._id;
+    try {
+        let result = await read.getCompanyById(_id);
+        res.send(result);
+    } catch (e) {
+        console.error(e);
+        res.send({});
+    }
+});
+
 module.exports = router;

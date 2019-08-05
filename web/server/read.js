@@ -346,3 +346,19 @@ exports.getCompanyAliasList = async (page, limit, search) => {
 		throw e;
 	}
 };
+
+exports.getCompanyById = async (_id) => {
+	if(!!!_id){
+		return null;
+	}
+	db.close();
+	try {
+		let collection = await db.open('repertory_company');
+		let company = await collection.findOne({_id: new mongodb.ObjectId(_id)});
+		db.close();
+		return company;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+};
