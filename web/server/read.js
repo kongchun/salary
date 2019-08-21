@@ -299,17 +299,8 @@ exports.getCompanyLogoAndScore = async array => {
 	try {
 		let result = [];
 		if (array instanceof Array) {
-			let collection = await db.open('company');
-			let temp = [];
-			for (let name of array) {
-				let cpn = await collection.findOne({
-					company: name
-				});
-				temp.push(!cpn?'':cpn.alias);
-			}
-			db.close();
 			collection = await db.open('repertory_company');
-			for (let item of temp) {
+			for (let item of array) {
 				let cpnFull = await collection.findOne({
 					alias: item
 				},{logo:1,score:1,company:1,alias:1,district:1});

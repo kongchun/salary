@@ -5,7 +5,7 @@ $(function () {
 function getCompanyDetail(logos, scores, stop = false) {
     let companies = '';
     for (let logoImg of logos) {
-        companies += logoImg.getAttribute('company') + ',';
+        companies += logoImg.getAttribute('alias') + ',';
     }
     let param = companies.substring(0, companies.length - 1);
     $.post('/api/getCompanyLogoAndScore', { data: param }, function (data) {

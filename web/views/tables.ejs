@@ -98,9 +98,9 @@
                     <%for (var i=0;i<companyRank.length;i++){%>
                     <tr>
                         <td><%=i+1%></td>
-                        <td><img class="table-salary-logo" company="<%=companyRank[i].company%>"></td>
+                        <td><img class="table-salary-logo" company="<%=companyRank[i].company%>"  alias="<%=companyRank[i].alias%>"></td>
                         <td><%=companyRank[i].company%></td>
-                        <td class="table-salary-score" company="<%=companyRank[i].company%>"></td>
+                        <td class="table-salary-score" company="<%=companyRank[i].company%>"  alias="<%=companyRank[i].alias%>"></td>
                     </tr>
                     <% } %>
                 </tbody>
@@ -123,9 +123,9 @@
                     <%for (var i=0;i<jobRank.length;i++){%>
                     <tr>
                         <td><%=i+1%></td>
-                        <td><img class="table-number-logo" company="<%=jobRank[i].company%>"></td>
+                        <td><img class="table-number-logo" company="<%=jobRank[i].company%>"  alias="<%=jobRank[i].alias%>"></td>
                         <td><%=jobRank[i].company%></td>
-                        <td class="table-number-score" company="<%=jobRank[i].company%>"></td>
+                        <td class="table-number-score" company="<%=jobRank[i].company%>"  alias="<%=jobRank[i].alias%>"></td>
                     </tr>
                     <% } %>
                 </tbody>
