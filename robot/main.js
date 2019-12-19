@@ -21,7 +21,7 @@ export default class Main {
 
     //抓取数据完成
     async robotData() {
-        await this.stepList();
+        //await this.stepList();
         await this.stepToJob();
         await this.stepInfo();
         console.log("robotData flinsh")
@@ -41,7 +41,7 @@ export default class Main {
     }
 
     async statistic(){
-        //await this.compareCompany();
+        await this.compareCompany();
         await this.positionToJob();
         var statisticData = new StatisticData(this.db,this.table,this.year,this.month);
 	    statisticData.show();
@@ -138,7 +138,7 @@ export default class Main {
         jobs.map((job)=>{
             companyId = (!companyId)?job.companyId:companyId;
             source = (companyId==job.companyId)?job.source:source;
-            company = job.company;
+            company = job.company==""?company:job.company;
             alias = job.companyAlias;
             logo = (!logo)?job.companyLogo:logo;
             salary = (salary>job.average)?salary:job.average;
@@ -268,28 +268,30 @@ export default class Main {
 
     //TODO:这里可以优化，如果部分属性有更新那么我们需要去刷新。
     async noLoadToRepertory(){
-
+       
         //未在库中的，加入库
        await this.db.open(this.table.company);
        const data = await this.db.findToArray({noLoad: null});
        this.db.close();
        
-       if(data.length == 0){
-         return;
+       if(data.length > 0){
+            await this.db.open(this.table.repertoryCompany);
+            await this.db.collection.insertMany(data);
+            this.db.close();
        }
 
-       await this.db.open(this.table.repertoryCompany);
-       await this.db.collection.insertMany(data);
-       this.db.close();
+  
 
        //已在库中的 如果有信息更新那么更新信息
        await this.db.open(this.table.company);
        const ALLCompany = await this.db.findToArray({noLoad: true});
        this.db.close();
 
+
       
        await this.db.open(this.table.repertoryCompany);
        for(const it of ALLCompany){
+
             const nologo = await this.db.collection.findOne({alias: it.alias,logo:null},{alias:1});
             if(nologo){
                 await this.db.updateById(nologo._id, {logo:it.logo});
@@ -298,10 +300,14 @@ export default class Main {
             if(nodescription){
                 await this.db.updateById(nodescription._id, {description:it.description});
             }
+            const upSalary = await this.db.collection.findOne({alias: it.alias},{aliass:1});
+            if(upSalary){
+                await this.db.updateById(upSalary._id, {salary:it.salary});
+            }
        }
        this.db.close();
 
-        await aliasSync(this.db);
+       await aliasSync(this.db);
         
        console.log("noLoadToRepertory success");
 

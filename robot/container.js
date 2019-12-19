@@ -94,7 +94,7 @@ export default class Container {
     async info() {
         await this.getContent();
         await this.parseInfo();
-        //await this.transform();
+        await this.transform();
     }
     //加载详情信息
     async getContent() {

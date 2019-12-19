@@ -19,7 +19,7 @@ export default class StatisticData {
         try {
     
             await this.db.open(this.table.job);
-            const data = await this.db.findToArray({}, { average: 1 });
+            const data = await this.db.findToArray({filter:false}, { average: 1 });
             this.db.close();
 
             let count =0;
@@ -319,7 +319,7 @@ export default class StatisticData {
     };
     getAvgSarlyRank(limit) {
         this.db.close();
-         var query = {bdState:{$ne:77}};
+         var query = {bdStatus:{$ne:77}};
         return this.db.open(this.table.company).then((collection) =>{
             return collection.find(query,{company:1,alias:1,salary:1,_id:1}).sort({salary:-1}).skip(0).limit(limit).toArray();
         }).then((data)=> {
@@ -333,7 +333,7 @@ export default class StatisticData {
     };
     getCountJobRank(limit) {
         this.db.close();
-        var query = {bdState:{$ne:77}};
+        var query = {bdStatus:{$ne:77}};
         return this.db.open(this.table.company).then((collection)=> {
             return collection.find(query,{company:1,alias:1,count:1,_id:1}).sort({count:-1}).skip(0).limit(limit).toArray();
         }).then((data)=> {

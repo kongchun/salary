@@ -3,12 +3,8 @@ function getCompanyAlias(company,companyAlias,companyAliasDataSet){
 	if(companyAliasDataSet){
 		for(let t of companyAliasDataSet){
 			if(t.realAlias){
-				if(t.company == company || t.companyAlias== companyAlias){
+				if(t.company == company || t.companyAlias== companyAlias || t.realAlias == companyAlias){
 					return t.realAlias;
-				}
-			}else{
-				if(t.company == company){
-					return t.companyAlias;
 				}
 			}
 		}

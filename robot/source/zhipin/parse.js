@@ -61,7 +61,7 @@ export default class Parse {
         var $ = loader.parseHTML(html);
         var info = $(".detail-content .job-sec").first().text().replace(/(^\s*)|(\s*$)/g, "");
 
-        var company = $(".job-sec .name").text().replace(/(^\s*)|(\s*$)/g, "");
+        var company = $(".job-detail-company_custompage").text().replace(/(^\s*)|(\s*$)/g, "");
         var addr = $(".location-address").text().replace(/(^\s*)|(\s*$)/g, "");
 
         var companyDetail = $(".job-sec.company-info .text").text().replace(/(^\s*)|(\s*$)/g, "");

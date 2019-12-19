@@ -20,9 +20,13 @@ export default class Loader {
 
 	info (jobId){
 		let url = `http://jobs.51job.com/all/${jobId}.html`;
+		console.log(url)
 		return loader.getDOM(url,{delay:500}).then(($)=>{
 			return {content:$.html(),url};
-		});
+		}).catch((e)=>{
+			console.log(e,url);
+			return {};
+		})
 	}
 
 }

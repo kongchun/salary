@@ -67,5 +67,6 @@ export default class Parse {
         var img = $(".com_name.himg img").attr("src");
 		var companyLogo = (!img)?null:img;
         return { info, workYear,education, addr,companyDetail,companyLogo};
+    
     }
 }

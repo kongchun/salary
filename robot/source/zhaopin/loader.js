@@ -27,9 +27,11 @@ export default class Loader {
 
 	info (jobId){
 		let url = `https://m.zhaopin.com/job/${jobId}`;
-		//console.log(url);
 		return loader.getDOM(url,{delay:300}).then(($)=>{
 			return {content:$.html(),url};
+		}).catch((e)=>{
+			console.log(e,url);
+			return {};
 		});
 	}
 }
