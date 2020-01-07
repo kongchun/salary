@@ -208,4 +208,24 @@ router.post('/getCompanyById', async (req, res) => {
     }
 });
 
+router.get('/getAverageSalaryByCompany', async (req, res) => {
+    let companyName = req.query.name;
+    try {
+        let averages = await read.getAverageSalaryByCompany(companyName);
+        let array = averages.reverse();
+        let result = [];
+        for (let data of array) {
+            result.push({
+                key: data.year + '' + data.month,
+                type: '薪酬',
+                value: data.average
+            });
+        }
+        res.send(result);
+    } catch (e) {
+        console.error(e);
+        res.send([]);
+    }
+});
+
 module.exports = router;

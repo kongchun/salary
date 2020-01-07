@@ -116,11 +116,27 @@ export default class Main {
         await this.db.open(this.table.company);
         const companyList = await this.db.findToArray({}, { companyAlias: 1});
         this.db.close();
+        let intYear = parseInt(this.year);
+        let intMonth = parseInt(this.month);
         for (const company of companyList) {
             const data = await this.parseCompanyFromJob(company)
 
             await this.db.open(this.table.company);
             await this.db.updateById(company._id, data);
+            // 更新公司薪资表
+            await this.db.open(this.table.company_salary);
+            await this.db.collection.update({
+                company: data.company,
+                year: intYear,
+                month: intMonth
+            }, {
+                    '$set': {
+                        company: data.company,
+                        average: data.salary,
+                        year: intYear,
+                        month: intMonth
+                    }
+            },{upsert:true});
         }
         this.db.close();
         console.log("parseCompanyFromJobs finish");

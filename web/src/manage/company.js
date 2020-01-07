@@ -53,7 +53,11 @@ function initTable() {
         , { field: 'addr', title: '地址',edit:'text', minWidth: 250 }
         , { field: 'city', width: 80, title: '城市', sort: false }
         , { field: 'district', width: 90, title: '区域' }
-        , { field: 'salary', width: 90, title: '平均薪酬', edit:'text' }
+        , { field: 'salary', width: 90, title: '平均薪酬', edit: 'text' }
+        , {
+          field: 'salaryGraph', width: 90, title: '薪酬统计', templet: function(d) {
+            return '<button type="button" class="layui-btn layui-btn-sm layui-btn-radius btn-salary-graph" cpnname='+ d.company +'><i class="layui-icon">&#xe62c;</i></button>';
+        }}
         , { field: 'score', width: 90, title: '评分', edit:'text' }
         , { field: 'description', width: 90, title: '介绍', edit:'text' }
         , {
@@ -78,7 +82,7 @@ function initTable() {
         , { fixed: 'right', width: 120, align: 'center', toolbar: '#barCompany' }
       ]]
       , page: true
-      , done: initUpload
+      , done: initTableEvents
       , parseData: res => {
         res.data = res.data.map(item => {
           return Object.assign({ logoText: item.logo }, item);
@@ -208,7 +212,7 @@ function initTable() {
   });
 }
 
-function initUpload() {
+function initTableEvents() {
   $('.btn-logo-upload').click(function () {
     $(this).next().click();
   });
@@ -235,4 +239,76 @@ function initUpload() {
     }
     reader.readAsDataURL(file);
   });
+
+  $('.btn-salary-graph').on('click', function () {
+    let btnElement = $(this);
+    let name = btnElement.attr('cpnname');
+    $.getJSON('/api/getAverageSalaryByCompany?name=' + name, function (data) {
+      layer.open({
+        btn: [],
+        title: name,
+        content: $('#company-graph'),
+        type: 1
+      });
+      drawGraph(data);
+    });
+  });
+}
+
+function drawGraph(data) {
+  let chart = new F2.Chart({
+    el: 'average-salary'
+  });
+
+  chart.source(data, {
+    key: {
+      range: [0, 1]
+    },
+    value: {
+      tickCount: 4
+    }
+  });
+
+  chart.axis('value', {
+    label: (text, index, total) => {
+      const cfg = {
+        text : (text/1000).toFixed(1) + 'K'
+      };
+      return cfg;
+    }
+  })
+
+  chart.tooltip({
+    custom: true, // 自定义 tooltip 内容框
+    onChange(obj) {
+      const legend = chart.get('legendController').legends.top[0];
+      const tooltipItems = obj.items;
+      const legendItems = legend.items;
+      const map = {};
+      legendItems.map(item => {
+        map[item.name] = Object.assign({}, item);
+      });
+      tooltipItems.map(item => {
+        const { name, value } = item;
+        if (map[name]) {
+          map[name].value = value + "元";
+        }
+      });
+      legend.setItems(Object.values(map));
+    },
+    onHide() {
+      const legend = chart.get('legendController').legends.top[0];
+      legend.setItems(chart.getLegendItems().country);
+    }
+  });
+
+  chart.line().position('key*value').color('type');
+
+  chart.point().position('key*value').style({
+    stroke: '#fff',
+    lineWidth: 1
+  })
+
+  chart.area().position('key*value')
+  chart.render();
 }

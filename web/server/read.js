@@ -353,3 +353,18 @@ exports.getCompanyById = async (_id) => {
 		throw error;
 	}
 };
+
+exports.getAverageSalaryByCompany = async (companyName) => {
+	if (!companyName) {
+		return [];
+	}
+	db.close();
+	try {
+		let collection = await db.open('company_salary');
+		let averages = await collection.find({company:companyName},{average:1,year:1,month:1}).sort({year:-1,month:-1}).limit(5).toArray();
+		return averages;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+};
