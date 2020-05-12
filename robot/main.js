@@ -21,9 +21,9 @@ export default class Main {
 
     //抓取数据完成
     async robotData() {
-        //await this.stepList();
+        await this.stepList();
         await this.stepToJob();
-        await this.stepInfo();
+        //await this.stepInfo();
         console.log("robotData flinsh")
     }
 

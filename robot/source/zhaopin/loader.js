@@ -12,28 +12,33 @@ export default class Loader {
 		this.px = "new";
 		this.needAddtionalResult = false;
 		this.first = false;
+		this.isCookies = false;
+		this.cookies = null;
 	}
 
-	list (pageSize = 1){
 
+/*
+	async list (pageSize = 1){
+	
 		var code = CITY_CODE[this.city];
-
-		let url = encodeURI(`https://m.zhaopin.com/${code}/?keyword=${this.kd}&pageindex=${pageSize}&maprange=3&islocation=0`);
-		//console.log(url);
-		return loader.getDOM(url,{delay:1000}).then(($)=>{
-			return {content:$.html(),url};
+		//https://m.zhaopin.com/sou/639--?keyword=%E5%89%8D%E7%AB%AF&city=639&provinceCode=639
+		let url = encodeURI(`http://m.zhaopin.com/${code}/?keyword=${this.kd}&pageindex=${pageSize}&maprange=3&islocation=0`);
+	
+		return ploader.get(url,2000).then((t)=>{
+			return t
 		})
 	}
 
-	info (jobId){
+	async info (jobId){
+		await this.getCookies();
 		let url = `https://m.zhaopin.com/job/${jobId}`;
-		return loader.getDOM(url,{delay:300}).then(($)=>{
-			return {content:$.html(),url};
-		}).catch((e)=>{
-			console.log(e,url);
-			return {};
-		});
+		return ploader.get(url,2000).then((t)=>{
+			return t
+		})
 	}
+	*/
 }
+
+
 
 

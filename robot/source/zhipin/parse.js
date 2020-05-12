@@ -21,18 +21,18 @@ export default class Parse {
         var arr = [];
         $("li",".job-list").each((i, item) => {
 
-                var jobId = $(".info-primary a", item).attr("data-jid").replace(/(^\s*)|(\s*$)/g, "");
+                var jobId = $(".info-primary .primary-box", item).attr("data-jid").replace(/(^\s*)|(\s*$)/g, "");
                 var salary = $(".info-primary .red", item).text().replace(/(^\s*)|(\s*$)/g, "");
             
 
-                var jobName = $(".job-title", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                var jobName = $(".job-name", item).text().replace(/(^\s*)|(\s*$)/g, "");
                 var companyId = $(".info-company a", item).attr("href").replace("/gongsi/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
                 var company = $(".info-company a", item).text().replace(/(^\s*)|(\s*$)/g, "");
 
-                var sp = $(".info-primary p",item).html().split('<em class="vline"></em>');
+                var sp = $(".info-primary .job-limit p",item).html().split('<em class="vline"></em>');
 
-                var workYear = sp[1].replace(/(^\s*)|(\s*$)/g, "");;
-                var education = sp[2].replace(/(^\s*)|(\s*$)/g, "");;
+                var workYear = sp[0].replace(/(^\s*)|(\s*$)/g, "");;
+                var education = sp[1].replace(/(^\s*)|(\s*$)/g, "");;
           
                     var job = new Job({
                         jobId: jobId,
@@ -61,16 +61,24 @@ export default class Parse {
         var $ = loader.parseHTML(html);
         var info = $(".detail-content .job-sec").first().text().replace(/(^\s*)|(\s*$)/g, "");
 
-        var company = $(".job-detail-company_custompage").text().replace(/(^\s*)|(\s*$)/g, "");
+        var company = $("[ka=job-detail-company_custompage]").text().replace(/(^\s*)|(\s*$)/g, "");
         var addr = $(".location-address").text().replace(/(^\s*)|(\s*$)/g, "");
 
         var companyDetail = $(".job-sec.company-info .text").text().replace(/(^\s*)|(\s*$)/g, "");
         var img = $("a[ka='job-detail-company-logo_custompage'] img").attr("src");
         var companyLogo = (!img)?null:img;
+
+        var position= null;
+        try{
+        var map = $(".job-location-map img").attr("src");
+            var t = map.split("A:")[1].split("&amp;key=")[0];
+            var lat =  t.split(",")[1];
+		    var lng =   t.split(",")[0];
+            position = {lat,lng};   
+        }catch(e){}  
+       
         
-        var position = null;  
-        
-        return { info ,addr, position,company,companyLogo,companyDetail};
+        return { info ,addr, position,company,companyLogo,companyDetail,position};
     }
 
 }

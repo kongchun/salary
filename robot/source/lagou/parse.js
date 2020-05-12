@@ -51,7 +51,20 @@ export default class Parse {
 	}
 
 	info(html){
+		console.log(html);
 		var $ = loader.parseHTML(html);
+		
+		
+		// var workYear = $(".item.workyear span").text().replace(/(^\s*)|(\s*$)/g, "");
+		// var education = $(".item.education span").text().replace(/(^\s*)|(\s*$)/g, "");
+		// var info = $(".content").text().replace(/(^\s*)|(\s*$)/g, "");
+
+		// var addr = $("input[name='positionAddress']").val().replace(/(^\s*)|(\s*$)/g, "");
+		// var lat =  $("input[name='positionLat']").val().replace(/(^\s*)|(\s*$)/g, "");
+		// var lng =  $("input[name='positionLng']").val().replace(/(^\s*)|(\s*$)/g, "");
+
+
+		// www.lagou
 		var sp = $(".job_request h3").text().split("/");
 		var workYear = sp[2].replace(/(^\s*)|(\s*$)/g, "");
 		var education = sp[3].replace(/(^\s*)|(\s*$)/g, "");

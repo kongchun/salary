@@ -57,8 +57,16 @@ export default class Parse {
         var $ = loader.parseHTML(html);
         var ltype = $(".msg.ltype").text().replace(/(^\s*)|(\s*$)/g, "").split("|");
         var workYear = ltype[1].replace(/&nbsp;/ig,"");
+        if (workYear.indexOf("招")>-1){
+            workYear="不限"
+        }
+
         var education =ltype[2].replace(/&nbsp;/ig,"");
         if (education.indexOf("招")>-1){
+            education="不限"
+        }
+    
+        if (education.indexOf("发布")>-1){
             education="不限"
         }
         var info = $(".bmsg.job_msg.inbox").text().replace(/(^\s*)|(\s*$)/g, "");

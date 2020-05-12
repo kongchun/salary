@@ -4,6 +4,7 @@
   "description": "自动爬取机器人",
   "main": "main.js",
   "dependencies": {
+    "bufferutil": "^4.0.1",
     "moment": "^2.22.2"
   },
   "devDependencies": {},
