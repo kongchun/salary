@@ -28,6 +28,8 @@ export default class Loader {
 			return {};
 		})
 	}
-
+	browserClose(){
+		//ploader.close();
+	}
 }
 

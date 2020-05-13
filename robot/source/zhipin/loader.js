@@ -1,4 +1,3 @@
-import loader from "../../../../iRobots/loader.js";
 import ploader from "../../../../iRobots/puppeteerLoader.js";
 let cookie;
 var  CITY_CODE = {
@@ -36,5 +35,9 @@ export default class Loader {
 			return t
 		})
 		
+	}
+
+	browserClose(){
+		ploader.close();
 	}
 }

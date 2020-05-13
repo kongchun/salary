@@ -1,4 +1,4 @@
-import Parse from "./parse.js";
+
 import loader from "../../../../iRobots/loader.js";
 const BASE_URL =  "https://zhaopin.baidu.com/";
 const LIST_URL =　"https://zhaopin.baidu.com/api/wiseasync";
@@ -54,6 +54,10 @@ export default class Loader {
 		}).then(($)=>{
 			return {content:$.html(),url};
 		});
+	}
+
+	browserClose(){
+		//ploader.close();
 	}
 }
 

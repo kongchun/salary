@@ -22,11 +22,11 @@ const month = "5";
 
 var main = new Main(db,table,year,month);
 
-//main.addConfig(new FiveOneJob(10,city,kd)); //51Job  10
-//main.addConfig(new Baidu(1,city,kd)); //baidu  5
-//main.addConfig(new Lagou(1,city,kd)); //lagou  10
-//main.addConfig(new ZhiPin(1,city,kd)); //ZhiPin  10
-
+main.addConfig(new FiveOneJob(10,city,kd)); //51Job  10
+main.addConfig(new Baidu(1,city,kd)); //baidu  5
+main.addConfig(new Lagou(1,city,kd)); //lagou  10
+main.addConfig(new ZhiPin(1,city,kd)); //ZhiPin  10
+main.addConfig(new ZhaoPin(1,city,kd)); //ZhaoPin  1
 
 
 main.robotData();

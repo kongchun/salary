@@ -23,8 +23,9 @@ export default class Main {
     async robotData() {
         await this.stepList();
         await this.stepToJob();
-        //await this.stepInfo();
-        console.log("robotData flinsh")
+        await this.stepInfo();
+        await this.browserClose();
+        console.log("robotData flinish")
     }
 
     async analyseCompany() {
@@ -55,6 +56,12 @@ export default class Main {
             await item.list();
         }
         console.log("StepList finish");
+    }
+
+    async browserClose(){
+        for (const item of this.containerList) {
+            await item.browserClose();
+        }
     }
 
     //列表转换职位

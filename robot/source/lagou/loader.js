@@ -52,5 +52,9 @@ export default class Loader {
 			return t;
 		});
 	}
+
+	browserClose(){
+		ploader.close();
+	}
 }
 

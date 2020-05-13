@@ -25,6 +25,10 @@ export default class Container {
         return this.parse.maxPageSize(maxSize, content);
     }
 
+    async browserClose(){
+        await this.loader.browserClose();
+    }
+
     async list() {
         let dataList = [];
         let maxSize = await this.getMaxSize(this.maxSize);
