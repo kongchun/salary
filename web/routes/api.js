@@ -154,12 +154,14 @@ router.get('/getSurroundingSalary', function(req, res, next) {
     
 });
 
-router.get('/getTopTech', async (req, res) => {
+router.get('/getTopTech', async (req, res, next) => {
     try {
         let num = parseInt(req.query.num);
         if (isNaN(num)) {
             num = 100;
         }
+        
+       
         let data = await service.getTopRankByLatestMonth(num);
         res.send(data);
     } catch (e) {
@@ -177,6 +179,7 @@ router.get('/getTagCloud', async (req, res) => {
         month = now.getMonth() + 1;
     }
     try {
+
         let result = await read.getTagCloudImg(year + '', month + '');
         res.send(result.data);
     } catch (e) {

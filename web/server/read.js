@@ -168,6 +168,7 @@ exports.getTopRank = function(year,month,limit,type) {
 	if(!!type){
 		query.type = type;
 	}
+	console.log({year:year+'',month:month+''})
 	return db.open("tech").then(function(collection) {
 		return collection.find(query,{tech:1,type:1,count:1}).sort({count:-1}).skip(0).limit(limit).toArray();
 	}).then(function(data) {

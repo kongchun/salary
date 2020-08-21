@@ -1,3 +1,5 @@
+//var echarts= require("echarts");
+var echartsBmap = require("echarts-bmap");
 $(function() {
 	initSize();
 	ChartMap.init();
@@ -65,6 +67,8 @@ var ChartMap = {
 
 	create: function(id) {
 		var myChart = echarts.init(document.getElementById(id), "macarons");
+		console.log(echarts);
+		console.log(echarts.bmap);
 		return myChart;
 	},
 

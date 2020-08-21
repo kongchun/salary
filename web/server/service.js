@@ -120,9 +120,12 @@ async function getTopRankRecurse(year, month, count, depth) {
         year--;
         month = 12;
     } else if (month < 10) {
-        monthStr = '0' + month;
+        //monthStr = '0' + month;
     }
+    console.log(year, month, count, depth)
+    
     let data = await read.getTopRank(year, monthStr, count);
+    console.log(data);
     if (0 === data.length && depth > 0) {
         data = await getTopRankRecurse(year, --month, count, --depth);
     }
@@ -133,5 +136,6 @@ exports.getTopRankByLatestMonth = async count => {
     let now = new Date();
     let year = now.getFullYear();
     let month = now.getMonth() + 1;
+
     return await getTopRankRecurse(year, month, count, 6);
 }
