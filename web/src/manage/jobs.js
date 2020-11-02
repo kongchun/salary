@@ -36,7 +36,7 @@ function initTable() {
         , { field: 'addr', width: 250, title: '地址', sort: false, edit: 'text' }
         , { field: 'source', width: 80, title: '来源' }
         , { field: 'url', width: 200, title: '数据' }
-        , { fixed: 'right', width: 100, align: 'center', toolbar: '#barjobs' }
+        , { fixed: 'right', width: 80, align: 'center', toolbar: '#barjobs' }
       ]]
       , page: true
       , done: initTableEvents
@@ -53,6 +53,10 @@ function initTable() {
       var data = obj.data //获得当前行数据
         , layEvent = obj.event; //获得 lay-event 对应的值
       if (layEvent === 'view') {
+        if (!!data.url && data.url.indexOf('baidu') != -1) {
+          window.open(data.url || '#', "_blank");
+          return;
+        }
         let index = layer.open({
           type: 2,
           title: data.job + '(' + data.company + ')' + '-原始数据',
@@ -62,6 +66,8 @@ function initTable() {
           content: data.url || '#'
         });
         layer.full(index);
+      } else if (layEvent === 'view2') {
+        window.open(data.url || '#', "_blank");
       }
     });
 

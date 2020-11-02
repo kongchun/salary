@@ -125,6 +125,11 @@ module.exports = {
                     from:'*.css',
                     to: 'css/layui'
                 },
+                {
+                    context: 'src/jlib/layui/',
+                    from:'**/*',
+                    to: path.join(__dirname, 'dist/jlib/layui') 
+                },
                 
   
                 {
