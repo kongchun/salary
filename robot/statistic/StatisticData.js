@@ -369,6 +369,8 @@ export default class StatisticData {
       
             this.db.close();
 
+           // console.log(arr)
+
             arr.forEach((data) => {
                 let tagArray = data.etlTag;
                 for (let tag of tagArray) {
@@ -485,6 +487,8 @@ export default class StatisticData {
                         count: techCount[prop]
                     });
                 };
+
+                //console.log(arr);
              
                 await this.db.open(this.table.tech);
                 await this.db.collection.remove({});

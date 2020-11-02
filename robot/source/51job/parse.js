@@ -9,27 +9,29 @@ export default class Parse {
 
     //根据返回的数据看是否自动停止解析
     maxPageSize(maxSize, html) {
+        //console.log(html)
         var $ = loader.parseHTML(html);
-        var val = parseInt($(".dw_page .td").first().text().replace(/[^0-9.]/ig, ""));
+        var val = parseInt($(".j_page .td").first().text().replace(/[^0-9.]/ig, ""));
+        //console.log(val > maxSize ? maxSize : val)
         return val > maxSize ? maxSize : val;
     }
 
     list(html) {
         var $ = loader.parseHTML(html);
         var arr = [];
-        $(".el", "#resultList").each((i, item) => {
+        $(".j_joblist .e").each((i, item) => {
             if ($(item).attr("class").indexOf("title") == -1) {
 
-                var jobId = $(".t1 input", item).val();
-                var jobName = $(".t1 a", item).text().replace(/(^\s*)|(\s*$)/g, "");
-                var companyId = $(".t2 a", item).attr("href").replace("http://jobs.51job.com/all/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
-                var company = $(".t2 a", item).text().replace(/(^\s*)|(\s*$)/g, "");
-                var salary = $(".t4", item).text().replace(/(^\s*)|(\s*$)/g, "");
-                var time = $(".t5", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                var jobId = $("input[name=delivery_jobid]", item).val();
+                var jobName = $(".jname", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                var companyId = $(".er a.cname", item).attr("href").replace("https://jobs.51job.com/all/", "").replace(".html", "").replace(/(^\s*)|(\s*$)/g, "");
+                var company = $(".er a.cname", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                var salary = $(".sal", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                var time = $(".time", item).text().replace(/(^\s*)|(\s*$)/g, "");
 
-                var city = $(".t3", item).text().replace(/(^\s*)|(\s*$)/g, "");
+                //var city = $(".t3", item).text().replace(/(^\s*)|(\s*$)/g, "");
                 
-                if (city != "异地招聘") {
+               // if (city != "异地招聘") {
 
                     var job = new Job({
                         jobId: jobId,
@@ -45,7 +47,7 @@ export default class Parse {
                     })
 
                     arr.push(job);
-                }
+                //}
             }
 
         })
@@ -58,6 +60,10 @@ export default class Parse {
         var ltype = $(".msg.ltype").text().replace(/(^\s*)|(\s*$)/g, "").split("|");
         var workYear = ltype[1].replace(/&nbsp;/ig,"");
         if (workYear.indexOf("招")>-1){
+            workYear="不限"
+        }
+
+        if (workYear.indexOf("无需经验")>-1){
             workYear="不限"
         }
 

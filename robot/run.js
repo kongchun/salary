@@ -18,16 +18,15 @@ var table = new Table({});
 const city = "苏州";
 const kd = "前端";
 const year = "2020";
-const month = "5";
+const month = "11";
 
 var main = new Main(db,table,year,month);
 
-main.addConfig(new FiveOneJob(10,city,kd)); //51Job  10
-main.addConfig(new Baidu(1,city,kd)); //baidu  5
-main.addConfig(new Lagou(1,city,kd)); //lagou  10
-main.addConfig(new ZhiPin(1,city,kd)); //ZhiPin  10
-main.addConfig(new ZhaoPin(1,city,kd)); //ZhaoPin  1
-
+main.addConfig(new FiveOneJob(1,city,kd)); //51Job  5
+// main.addConfig(new Baidu(3,city,kd)); //baidu  5
+// main.addConfig(new Lagou(2,city,kd)); //lagou  1
+// main.addConfig(new ZhiPin(2,city,kd)); //ZhiPin  1
+// main.addConfig(new ZhaoPin(1,city,kd)); //ZhaoPin  1
 
 main.robotData();
 //main.analyseCompany();

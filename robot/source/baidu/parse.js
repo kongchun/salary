@@ -53,14 +53,14 @@ export default class Parse {
 	}
 
 	info(html,json){
-		var $ = loader.parseHTML(html);
-		var addr = $(".job-addr").text().replace(/(^\s*)|(\s*$)/g, "").replace("工作地址：","").replace(/(^\s*)|(\s*$)/g, "");
-		var img = $(".media-item").first().find("img").attr("src");
-		var companyLogo = (!img)?null:img;
-		if(addr == ""){
-			addr = json.companyaddress;
-		}
-		return {addr,companyLogo};
+		// var $ = loader.parseHTML(html);
+		// var addr = $(".job-addr .job-addr-txt").text().replace(/(^\s*)|(\s*$)/g, "").replace("工作地址：","").replace(/(^\s*)|(\s*$)/g, "");
+		// var img = $(".media-item").first().find("img").attr("src");
+		// var companyLogo = (!img)?null:img;
+		//if(addr == ""){
+			var addr = json.companyaddress;
+		//}
+		return {addr};
 	}
 }
 

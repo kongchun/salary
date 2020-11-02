@@ -13,7 +13,7 @@ export default class Loader {
 
 	async getCookies(){
 		if(!this.isCookies){
-			return ploader.getCookie("http://m.lagou.com").then((t)=>{
+			return ploader.getCookie("http://m.lagou.com",5000).then((t)=>{
 				this.isCookies = t;
 				return t;
 			});
@@ -39,7 +39,7 @@ export default class Loader {
 				"Referer": "https://m.lagou.com/search.html"
 			},
 			
-			delay:1000
+			delay:5000
 		}).then((json)=>{
 			console.log(json);
 			return {content:json,url};
@@ -48,12 +48,12 @@ export default class Loader {
 
 	async info (jobId){
 		let url = `https://www.lagou.com/jobs/${jobId}.html`;
-		return ploader.get(url,2000).then((t)=>{
+		return ploader.get(url,20000).then((t)=>{
 			return t;
 		});
 	}
 
-	browserClose(){
+	async browserClose(){
 		ploader.close();
 	}
 }

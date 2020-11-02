@@ -43,7 +43,9 @@ export default class Container {
             })
             dataList.push(db_page);
         }
+        console.log(dataList)
         await this.db.open(this.table.page);
+       
         await this.db.collection.insertMany(dataList);
         this.db.close();
         console.log(this.source + " page Loaded");

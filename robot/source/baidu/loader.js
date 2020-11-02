@@ -2,7 +2,7 @@
 import loader from "../../../../iRobots/loader.js";
 const BASE_URL =  "https://zhaopin.baidu.com/";
 const LIST_URL =　"https://zhaopin.baidu.com/api/wiseasync";
-
+import ploader from "../../../../iRobots/puppeteerLoader.js";
 
 export default class Loader {
 	constructor(city = "苏州", kd = "前端") {
@@ -16,7 +16,9 @@ export default class Loader {
 
 			return loader.get(BASE_URL).then(()=>{
 				this.isCookies = true;
-			});
+			}).then(()=>{
+				return ploader.get(BASE_URL)
+			})
 		}
 		return Promise.resolve();
 	}
@@ -34,26 +36,37 @@ export default class Loader {
 				//"Cookie": cookies,
 				"Host": "zhaopin.baidu.com"
 			},
-			delay:1000
+			delay:500
 		}).then((json)=>{
 			return {content:json,url};
 		})
 	}
 
 	async info (jobId){
-		await this.getCookies();
+	
+		// await this.getCookies();
 		let url = `http://zhaopin.baidu.com/szzw?id=${jobId}`;
-		//console.log(url);
-		return loader.getDOM(url,{
-			header : {
-				'User-Agent': "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400",
-				//"Cookie": cookies,
-				"Host": "zhaopin.baidu.com"
-			},
-			delay:500
-		}).then(($)=>{
-			return {content:$.html(),url};
-		});
+		console.log(url);
+
+		return {content:"<noLoad></noLoad>",url}
+
+		// return ploader.get(url,3000).then((t)=>{
+		// 	return t;
+		// }).catch((e)=>{
+		// 	console.log(e,url);
+		// 	return {};
+		// })
+
+		// return loader.getDOM(url,{
+		// 	header : {
+		// 		'User-Agent': "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3704.400 QQBrowser/10.4.3587.400",
+		// 		//"Cookie": cookies,
+		// 		"Host": "zhaopin.baidu.com"
+		// 	},
+		// 	delay:500
+		// }).then(($)=>{
+		// 	return {content:$.html(),url};
+		// });
 	}
 
 	browserClose(){

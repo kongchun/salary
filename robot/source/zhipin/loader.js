@@ -22,7 +22,7 @@ export default class Loader {
 		
 		let url = encodeURI(`http://www.zhipin.com/${code}/?query=${this.kd}&sort=1&page=${pageSize}&ka=page-${pageSize}`);
 
-		return ploader.get(url,2000).then((t)=>{
+		return ploader.get(url,10000).then((t)=>{
 			return t
 		})
 	}
@@ -30,8 +30,8 @@ export default class Loader {
 	async info (jobId){
 
 		let url = `http://www.zhipin.com/job_detail/${jobId}.html`;
-		return ploader.get(url,2000).then((t)=>{
-			console.log(t);
+		console.log(url);
+		return ploader.get(url,20000).then((t)=>{
 			return t
 		})
 		

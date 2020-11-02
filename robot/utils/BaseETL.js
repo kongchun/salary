@@ -54,6 +54,7 @@ export default class BaseETL {
 	tag(){
 		let info = this.job.info;
 		let tag = getEtlTag(info);
+		//console.log(tag);
 		return tag;
 	}
 	

@@ -26,9 +26,10 @@ export default class Loader {
 	}
 
 	async info (jobId){
-		console.log(jobId);
+		
 		let url = `https://jobs.zhaopin.com/${jobId}.htm`;
-		return ploader.get(url,4000).then((t)=>{
+		console.log(url);
+		return ploader.get(url,10000).then((t)=>{
 			return t
 		})
 	}
