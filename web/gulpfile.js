@@ -47,6 +47,8 @@ gulp.task('vendor', ['vendor-css'], function() {
 	gulp.src(['src/lib/layui/*.js'
 	]).pipe(gulp.dest("dist/js/layui"));
 
+	gulp.src(['src/jlib/layui/**']).pipe(gulp.dest("dist/jlib/layui"));
+
 	gulp.src(['node_modules/ejs/ejs.min.js'
 	]).pipe(gulp.dest("dist/jlib/ejs"));
 	
