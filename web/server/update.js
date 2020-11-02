@@ -300,3 +300,25 @@ exports.deleteCompanyAlias = async id => {
 		throw error;
 	}
 }
+
+exports.updateJobInfo = async param => {
+	db.close();
+	let query = {};
+	let set = {}
+	try {
+		query = { '_id': new mongodb.ObjectId(param.id) };
+		set[param.field] = param.value;
+	} catch (error) {
+		console.error(error);
+		query = { '_id': id };
+	}
+	try {
+		let collection = await db.open('job');
+		let result = await collection.update(query, {'$set': set});
+		db.close();
+		return result;
+	} catch (error) {
+		db.close();
+		throw error;
+	}
+}

@@ -309,7 +309,7 @@ router.post('/updateCompanyAlias', async (req, res) => {
     let id = req.body._id;
     let alias = req.body.alias;
     if (!id || !alias) {
-        res.send({n:0});
+        res.send({ n: 0 });
     } else {
         try {
             let data = await update.updateCompanyAlias(id, alias);
@@ -321,10 +321,10 @@ router.post('/updateCompanyAlias', async (req, res) => {
     }
 });
 
-router.post('/deleteCompanyAliasById', async (req, res)=>{
+router.post('/deleteCompanyAliasById', async (req, res) => {
     let id = req.body._id;
     if (!id) {
-        res.send({n:0});
+        res.send({ n: 0 });
     } else {
         try {
             let data = await update.deleteCompanyAlias(id);
@@ -333,6 +333,52 @@ router.post('/deleteCompanyAliasById', async (req, res)=>{
             console.error(e);
             res.send({});
         }
+    }
+});
+
+router.get('/pageJobs', function (req, res, next) {
+    var page;
+    page = swig.renderFile('dist/manage/jobs.html', {
+        html: ""
+    });
+    res.send(page);
+});
+
+router.get('/listJobs', function (req, res) {
+    var page = req.query.page;
+    var limit = req.query.limit;
+    let company = req.query.company;
+
+    if (!!page) page = parseInt(page);
+    if (!!limit) limit = parseInt(limit);
+    read.getJobList(page, limit, company).then(function (data) {
+        if (!!data) {
+            res.send({ code: 0, count: data.count, data: data.data, msg: '' });
+        } else {
+            res.send({ code: 0, count: 0, data: [], msg: '' });
+        }
+    }).catch(e => {
+        console.log(e);
+        res.send({ code: 0, count: 0, data: [], msg: '' });
+    });
+});
+
+router.post('/updateJobInfo', async (req, res) => {
+    let id = req.body.id;
+    let field = req.body.field;
+    if (!!!id || !!!field) {
+        res.send({});
+    }
+    try {
+        let data = await update.updateJobInfo({
+            id: id,
+            field: field,
+            value: req.body.value
+        });
+        res.send(data);
+    } catch (e) {
+        console.error(e);
+        res.send({});
     }
 });
 

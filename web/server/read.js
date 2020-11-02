@@ -369,3 +369,31 @@ exports.getAverageSalaryByCompany = async (companyName) => {
 		throw error;
 	}
 };
+
+exports.getJobList = function(page,limit,company) {
+	db.close();
+	var start = (page - 1) * limit;
+	var query = {};
+
+	if (!!company) { //模糊查询
+		query.company = { $regex: new RegExp(company) };
+	}
+	console.log(query);
+	return db.open("job").then(function(collection) {
+		return collection.find(query).sort({'job':-1}).skip(start).limit(limit).toArray();
+	}).then(function(data) {
+		return db.collection.find(query).count().then(function(count) {
+			db.close();
+			return ({
+				limit,
+				count,
+				page,
+				data
+			});
+		})
+	}).catch(function(error) {
+		db.close();
+		console.error(error)
+		throw error;
+	})
+};
